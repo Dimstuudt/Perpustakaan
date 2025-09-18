@@ -5,11 +5,15 @@ import { Head, Link, router } from '@inertiajs/vue3'
 import Swal from 'sweetalert2'
 import { can } from '@/lib/can'
 
+// PrimeVue Components
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import InputText from 'primevue/inputtext'
+import Button from 'primevue/button'
+import { ref, computed } from 'vue'
+
 const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: 'Books',
-    href: '/books',
-  },
+  { title: 'Books', href: '/books' },
 ]
 
 const props = defineProps<{
@@ -33,6 +37,17 @@ const props = defineProps<{
   }
 }>()
 
+// Search
+const search = ref('')
+const filteredBooks = computed(() =>
+  props.books.data.filter((b) =>
+    Object.values(b)
+      .join(' ')
+      .toLowerCase()
+      .includes(search.value.toLowerCase())
+  )
+)
+
 function deleteBook(id: number) {
   Swal.fire({
     title: 'Yakin hapus?',
@@ -45,12 +60,8 @@ function deleteBook(id: number) {
   }).then((result) => {
     if (result.isConfirmed) {
       router.delete(route('books.destroy', id), {
-        onSuccess: () => {
-          Swal.fire('Terhapus!', 'Buku berhasil dihapus.', 'success')
-        },
-        onError: () => {
-          Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error')
-        },
+        onSuccess: () => Swal.fire('Terhapus!', 'Buku berhasil dihapus.', 'success'),
+        onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error'),
       })
     }
   })
@@ -73,57 +84,57 @@ function deleteBook(id: number) {
         </Link>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full border border-gray-200">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="p-2 border">ISBN</th>
-              <th class="p-2 border">Judul</th>
-              <th class="p-2 border">Penulis</th>
-              <th class="p-2 border">Penerbit</th>
-              <th class="p-2 border">Tahun</th>
-              <th class="p-2 border">Halaman</th>
-              <th class="p-2 border">Kategori</th>
-              <th class="p-2 border">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="book in props.books.data" :key="book.id">
-              <td class="p-2 border">{{ book.isbn }}</td>
-              <td class="p-2 border">{{ book.title }}</td>
-              <td class="p-2 border">{{ book.author }}</td>
-              <td class="p-2 border">{{ book.publisher }}</td>
-              <td class="p-2 border">{{ book.year }}</td>
-              <td class="p-2 border">{{ book.pages }}</td>
-              <td class="p-2 border">{{ book.category }}</td>
-              <td class="p-2 border space-x-2">
-                <Link
-                  v-if="can('books.edit')"
-                  :href="route('books.edit', book.id)"
-                  class="text-blue-600 hover:underline"
-                >
-                  Edit
-                </Link>
-                <button
-                  v-if="can('books.delete')"
-                  @click="deleteBook(book.id)"
-                  class="text-red-600 hover:underline"
-                >
-                  Hapus
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <!-- Search -->
+<div class="mb-3 w-1/2">
+  <span class="p-input-icon-left w-full">
 
-      <!-- pagination -->
+    <InputText v-model="search" placeholder="Cari buku..." class="w-full" />
+  </span>
+</div>
+
+
+      <DataTable :value="filteredBooks" responsiveLayout="scroll" class="p-datatable-sm p-datatable-gridlines text-sm">
+  <Column field="isbn" header="ISBN" :style="{ width: '120px' }" sortable></Column>
+  <Column field="title" header="Judul" :style="{ width: '200px' }" sortable></Column>
+  <Column field="author" header="Penulis" :style="{ width: '140px' }" sortable></Column>
+  <Column field="publisher" header="Penerbit" :style="{ width: '140px' }" sortable></Column>
+  <Column field="year" header="Tahun" :style="{ width: '80px' }" sortable></Column>
+  <Column field="pages" header="Halaman" :style="{ width: '80px' }" sortable></Column>
+  <Column field="category" header="Kategori" :style="{ width: '120px' }" sortable></Column>
+
+  <!-- Kolom Aksi -->
+<Column header="Aksi" :style="{ width: '140px' }">
+  <template #body="slotProps">
+    <div class="flex gap-1 justify-center">
+     <Button
+  v-if="can('books.edit')"
+  label="Edit"
+  class="p-button-sm p-button-info p-button-rounded-none text-xs"
+  @click="() => router.get(route('books.edit', slotProps.data.id))"
+/>
+
+      <Button
+        v-if="can('books.delete')"
+        label="Hapus"
+        class="p-button-sm p-button-danger p-button-rounded-none text-xs"
+        @click="deleteBook(slotProps.data.id)"
+      />
+    </div>
+  </template>
+</Column>
+
+
+</DataTable>
+
+
+      <!-- Pagination manual -->
       <div class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between mt-4">
         <span class="text-xs xs:text-sm text-gray-900">
           Showing
           {{ (props.books.current_page - 1) * props.books.per_page + 1 }}
           to
           {{
+
             props.books.current_page * props.books.per_page > props.books.total
               ? props.books.total
               : props.books.current_page * props.books.per_page

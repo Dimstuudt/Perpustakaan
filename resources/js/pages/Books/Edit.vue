@@ -25,8 +25,9 @@ const form = useForm({
 })
 
 const submit = () => {
-  form.post(route('books.update', props.book.id), { method: 'put' })
+  form.put(route('books.update', props.book.id))
 }
+
 </script>
 
 <template>
