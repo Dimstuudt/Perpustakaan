@@ -83,7 +83,7 @@ function deleteUser(id) {
                         icon: 'error',
                     });
                 },
-                
+
 
             });
         }
@@ -121,6 +121,17 @@ function toggleStatus(id) {
         }
     })
 }
+
+function showRoles(user) {
+  const rolesList = user.roles.map(r => `• ${r.name}`).join('<br>');
+  Swal.fire({
+    title: `${user.name}'s Roles`,
+    html: rolesList || 'No roles assigned',
+    icon: 'info',
+    confirmButtonText: 'Close'
+  });
+}
+
 
 </script>
 
@@ -241,14 +252,35 @@ function toggleStatus(id) {
                                                 {{ user.username }}
                                             </p>
                                         </td>
-                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                            <span v-for="role in user.roles"
-                                                class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight">
-                                                <span aria-hidden
-                                                    class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
-                                                <span class="relative">{{ role.name }}</span>
-                                            </span>
-                                        </td>
+                                      <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+  <!-- Hanya 1 role -->
+  <div v-if="user.roles.length === 1">
+    <button
+      class="text-sm bg-indigo-500 hover:bg-indigo-700 text-white py-1 px-3 rounded focus:outline-none focus:shadow-outline"
+    >
+      {{ user.roles[0].name }}
+    </button>
+  </div>
+
+  <!-- Lebih dari 1 role -->
+  <div v-else>
+    <button
+      @click="showRoles(user)"
+      :class="[
+        'text-sm text-white py-1 px-3 rounded focus:outline-none focus:shadow-outline',
+        user.roles.some(r => r.name === 'Super Admin')
+          ? 'bg-orange-500 hover:bg-orange-700'
+          : user.roles.some(r => r.name === 'Admin')
+            ? 'bg-yellow-500 hover:bg-yellow-700'
+            : 'bg-indigo-500 hover:bg-indigo-700'
+      ]"
+    >
+      View Roles
+    </button>
+  </div>
+</td>
+
+
                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                                             <p class="text-gray-900 whitespace-no-wrap">
                                                 {{ user.email }}
@@ -273,18 +305,34 @@ function toggleStatus(id) {
                                             </span>
                                         </td>
                                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                            <Link v-if="can('users.show')" :href="route('users.show', user.id)"
-                                                type="button"
-                                                class="mr-3 text-sm bg-green-500 hover:bg-green-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">
-                                            Show</Link>
-                                            <Link v-if="can('users.edit')" :href="route('users.edit', user.id)"
-                                                type="button"
-                                                class="mr-3 text-sm bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">
-                                            Edit</Link>
-                                            <button v-if="can('users.delete')" @click="deleteUser(user.id)"
-                                                type="button"
-                                                class="text-sm bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Delete</button>
-                                        </td>
+  <div class="flex items-center gap-2">
+    <Link
+      v-if="can('users.show')"
+      :href="route('users.show', user.id)"
+      class="inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-1"
+    >
+      Show
+    </Link>
+
+    <Link
+      v-if="can('users.edit')"
+      :href="route('users.edit', user.id)"
+      class="inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1"
+    >
+      Edit
+    </Link>
+
+    <button
+      v-if="can('users.delete')"
+      @click="deleteUser(user.id)"
+      type="button"
+      class="inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+    >
+      Delete
+    </button>
+  </div>
+</td>
+
                                     </tr>
                                 </tbody>
                             </table>
