@@ -3,6 +3,11 @@ import AppLayout from '@/layouts/AppLayout.vue'
 import { type BreadcrumbItem } from '@/types'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 
+// Props menerima daftar kategori dari controller
+const props = defineProps<{
+  categories: { id: number; name: string }[]
+}>()
+
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Books', href: '/books' },
   { title: 'Tambah Buku', href: '/books/create' },
@@ -16,6 +21,7 @@ const form = useForm({
   year: '',
   pages: '',
   description: '',
+  category_id: '', // dropdown kategori
   file: null as File | null,
 })
 
@@ -63,6 +69,18 @@ const submit = () => {
             <label class="block text-sm font-medium">Jumlah Halaman</label>
             <input v-model="form.pages" type="number" class="w-full border rounded p-2" />
           </div>
+        </div>
+
+        <!-- Dropdown kategori -->
+        <div>
+          <label class="block text-sm font-medium">Kategori</label>
+          <select v-model="form.category_id" class="w-full border rounded p-2">
+            <option value="">-- Pilih Kategori --</option>
+            <option v-for="cat in props.categories" :key="cat.id" :value="cat.id">
+              {{ cat.name }}
+            </option>
+          </select>
+          <span v-if="form.errors.category_id" class="text-red-500 text-sm">{{ form.errors.category_id }}</span>
         </div>
 
         <div>

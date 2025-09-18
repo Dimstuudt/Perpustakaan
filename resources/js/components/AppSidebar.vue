@@ -9,69 +9,57 @@ import { BookOpen, Folder, LayoutGrid, Users, UserRoundCog, ShieldCheck } from '
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Users',
-        href: '/users',
-        icon: Users,
-    },
-    {
-        title: 'Roles',
-        href: '/roles',
-        icon: UserRoundCog,
-    },
-    {
-        title: 'Permissions',
-        href: '/permissions',
-        icon: ShieldCheck,
-    },
-    {
-        title: 'Books',
-        href: '/books',
-        icon: BookOpen,
-    },
+    { title: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
+    { title: 'Users', href: '/users', icon: Users },
+    { title: 'Roles', href: '/roles', icon: UserRoundCog },
+    { title: 'Permissions', href: '/permissions', icon: ShieldCheck },
+    { title: 'Books', href: '/books', icon: BookOpen },
+    { title: 'Categories', href: '/categories', icon: Folder },
+
+    // bisa ditambah item lain untuk testing scroll
 ];
 
 const footerNavItems: NavItem[] = [
-    {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
+    { title: 'Github Repo', href: 'https://github.com/laravel/vue-starter-kit', icon: Folder },
+    { title: 'Documentation', href: 'https://laravel.com/docs/starter-kits#vue', icon: BookOpen },
 ];
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
-        <SidebarHeader>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton size="lg" as-child>
-                        <Link :href="route('dashboard')">
-                            <AppLogo />
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarHeader>
+  <Sidebar collapsible="icon" variant="inset" class="h-screen flex flex-col">
+    <SidebarHeader>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" as-child>
+            <Link :href="route('dashboard')">
+              <AppLogo />
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarHeader>
 
-        <SidebarContent>
-            <NavMain :items="mainNavItems" />
-        </SidebarContent>
+    <!-- Sidebar content scrollable -->
+    <SidebarContent class="flex-1 overflow-y-auto">
+      <NavMain :items="mainNavItems" />
+    </SidebarContent>
 
-        <SidebarFooter>
-            <NavFooter :items="footerNavItems" />
-            <NavUser />
-        </SidebarFooter>
-    </Sidebar>
-    <slot />
+    <SidebarFooter>
+      <NavFooter :items="footerNavItems" />
+      <NavUser />
+    </SidebarFooter>
+  </Sidebar>
+
+  <slot />
 </template>
+
+<style scoped>
+/* Optional: jika ingin scroll bar lebih halus */
+.flex-1::-webkit-scrollbar {
+  width: 6px;
+}
+.flex-1::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
+</style>

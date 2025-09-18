@@ -9,6 +9,7 @@ use App\Http\Controllers\LogController;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Requests\Auth\LoginRequest;
 use Laravel\Socialite\Facades\Socialite;
 use Spatie\Permission\Contracts\Permission;
@@ -140,6 +141,17 @@ Route::resource("books", App\Http\Controllers\BookController::class)
     ->only(['index','show'])
     ->middleware("permission:books.view");
 
+
+    // categories
+    Route::resource('categories', CategoryController::class)->except(['show'])
+    ->middleware([
+        'index'   => 'permission:categories.view',
+        'create'  => 'permission:categories.create',
+        'store'   => 'permission:categories.create',
+        'edit'    => 'permission:categories.edit',
+        'update'  => 'permission:categories.edit',
+        'destroy' => 'permission:categories.delete',
+    ]);
 
 });
 
