@@ -94,7 +94,11 @@ class BookController extends Controller
 
     // Update data buku
     public function update(Request $request, Book $book)
+
     {
+
+
+
         $validated = $request->validate([
             'isbn'        => 'required|string|max:20|unique:books,isbn,' . $book->id,
             'title'       => 'required|string|max:255',
