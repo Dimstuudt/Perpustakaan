@@ -17,9 +17,11 @@ use App\Http\Middleware\EnsureProfileComplete;
 use App\Http\Controllers\Settings\ProfileController;
 use Illuminate\Session\Middleware\AuthenticateSession;
 
+
+
 Route::get('/', function () {
     return redirect('login');
-    
+
 })->name('home');
 
 Route::get('dashboard', function () {
@@ -51,7 +53,7 @@ Route::post('profile/avatar', [ProfileController::class, 'updateAvatar'])->name(
 // Roles and Permissions mulai disini
 // users
 Route::middleware(['auth', 'web', 'verified'])->group(function () {
-    
+
 
 Route::resource("users", UserController::class)
 ->only(['create','store'])
@@ -116,6 +118,28 @@ Route::resource("permissions", PermissionController::class)
 Route::resource("logs", LogController::class)
 ->only(['index','show'])
 ->middleware("permission:logs.view");
+
+
+// books
+Route::resource("books", App\Http\Controllers\BookController::class)
+    ->middleware("permission:books.create|books.edit|books.delete|books.view");
+
+Route::resource("books", App\Http\Controllers\BookController::class)
+    ->only(['create','store'])
+    ->middleware("permission:books.create");
+
+Route::resource("books", App\Http\Controllers\BookController::class)
+    ->only(['edit','update'])
+    ->middleware("permission:books.edit");
+
+Route::resource("books", App\Http\Controllers\BookController::class)
+    ->only(['destroy'])
+    ->middleware("permission:books.delete");
+
+Route::resource("books", App\Http\Controllers\BookController::class)
+    ->only(['index','show'])
+    ->middleware("permission:books.view");
+
 
 });
 
