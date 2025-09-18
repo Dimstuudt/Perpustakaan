@@ -102,16 +102,23 @@ function deleteBook(id: number) {
   <Column field="pages" header="Halaman" :style="{ width: '80px' }" sortable></Column>
   <Column field="category" header="Kategori" :style="{ width: '120px' }" sortable></Column>
 
-  <!-- Kolom Aksi -->
-<Column header="Aksi" :style="{ width: '140px' }">
+ <!-- Kolom Aksi -->
+<Column header="Aksi" :style="{ width: '200px' }">
   <template #body="slotProps">
     <div class="flex gap-1 justify-center">
-     <Button
-  v-if="can('books.edit')"
-  label="Edit"
-  class="p-button-sm p-button-info p-button-rounded-none text-xs"
-  @click="() => router.get(route('books.edit', slotProps.data.id))"
-/>
+      <Button
+        v-if="can('books.preview')"
+        label="Preview"
+        class="p-button-sm p-button-help p-button-rounded-none text-xs"
+        @click="() => router.get(route('books.preview', slotProps.data.id))"
+      />
+
+      <Button
+        v-if="can('books.edit')"
+        label="Edit"
+        class="p-button-sm p-button-info p-button-rounded-none text-xs"
+        @click="() => router.get(route('books.edit', slotProps.data.id))"
+      />
 
       <Button
         v-if="can('books.delete')"

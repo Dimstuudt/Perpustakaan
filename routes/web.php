@@ -141,6 +141,11 @@ Route::resource("books", App\Http\Controllers\BookController::class)
     ->only(['index','show'])
     ->middleware("permission:books.view");
 
+Route::get('/books/{book}/preview', [App\Http\Controllers\BookController::class, 'preview'])
+    ->name('books.preview')
+    ->middleware('permission:books.view');
+
+
 
     // categories
     Route::resource('categories', CategoryController::class)->except(['show'])
