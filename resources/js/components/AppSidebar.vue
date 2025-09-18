@@ -29,6 +29,11 @@ const mainNavItems: NavItem[] = [
         href: '/permissions',
         icon: ShieldCheck,
     },
+    {
+        title: 'Books',
+        href: '/books',
+        icon: BookOpen,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
