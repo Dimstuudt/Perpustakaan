@@ -61,7 +61,7 @@ const submit = () => {
 //Ocr Test
 // import Tesseract from 'tesseract.js';
 import Tesseract from 'tesseract.js'
-import { ref } from 'vue'
+
 
 const ocrResult = ref('')
 const loadingOCR = ref(false)
