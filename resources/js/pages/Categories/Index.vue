@@ -22,6 +22,7 @@ const props = defineProps<{
     next_page_url: string | null
     prev_page_url: string | null
   }
+  trashed?: boolean
 }>()
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -39,7 +40,7 @@ const filteredCategories = computed(() =>
 function deleteCategory(id: number) {
   Swal.fire({
     title: 'Yakin hapus?',
-    text: 'Kategori akan dihapus permanen.',
+    text: 'Kategori akan dipindahkan ke sampah.',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#3085d6',
@@ -48,8 +49,41 @@ function deleteCategory(id: number) {
   }).then((result) => {
     if (result.isConfirmed) {
       router.delete(route('categories.destroy', id), {
-        onSuccess: () => Swal.fire('Terhapus!', 'Kategori berhasil dihapus.', 'success'),
+        onSuccess: () => Swal.fire('Terhapus!', 'Kategori masuk ke sampah.', 'success'),
         onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error'),
+      })
+    }
+  })
+}
+
+function restoreCategory(id: number) {
+  Swal.fire({
+    title: 'Yakin restore?',
+    text: 'Kategori akan dikembalikan.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, restore!',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      router.post(route('categories.restore', id), {}, {
+        onSuccess: () => Swal.fire('Berhasil!', 'Kategori dipulihkan.', 'success'),
+      })
+    }
+  })
+}
+
+function forceDeleteCategory(id: number) {
+  Swal.fire({
+    title: 'Hapus permanen?',
+    text: 'Kategori akan dihapus selamanya!',
+    icon: 'error',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, hapus permanen!',
+    confirmButtonColor: '#d33',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      router.delete(route('categories.forceDelete', id), {
+        onSuccess: () => Swal.fire('Terhapus!', 'Kategori dihapus permanen.', 'success'),
       })
     }
   })
@@ -57,19 +91,38 @@ function deleteCategory(id: number) {
 </script>
 
 <template>
-  <Head title="Categories" />
+  <Head :title="props.trashed ? 'Trash Categories' : 'Categories'" />
 
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="p-6">
+      <!-- Header -->
       <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-semibold">📂 Daftar Kategori</h1>
-        <Link
-          v-if="can('categories.create')"
-          :href="route('categories.create')"
-          class="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600"
-        >
-          + Tambah Kategori
-        </Link>
+        <h1 class="text-2xl font-semibold">
+          {{ props.trashed ? '🗑️ Sampah Kategori' : '📂 Daftar Kategori' }}
+        </h1>
+        <div class="flex gap-2">
+          <Link
+            v-if="!props.trashed && can('categories.create')"
+            :href="route('categories.create')"
+            class="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600"
+          >
+            + Tambah
+          </Link>
+          <Link
+            v-if="!props.trashed"
+            :href="route('categories.trashed')"
+            class="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600"
+          >
+            🗑️ Lihat Sampah
+          </Link>
+          <Link
+            v-else
+            :href="route('categories.index')"
+            class="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600"
+          >
+            ⬅️ Kembali
+          </Link>
+        </div>
       </div>
 
       <!-- Search -->
@@ -84,27 +137,43 @@ function deleteCategory(id: number) {
         class="p-datatable-sm p-datatable-gridlines text-sm"
       >
         <Column field="name" header="Nama Kategori" sortable />
-        <Column header="Aksi">
+        <Column header="Aksi" style="width: 250px">
           <template #body="slotProps">
             <div class="flex gap-1 justify-center">
-              <Button
-                v-if="can('categories.edit')"
-                label="Edit"
-                class="p-button-sm p-button-info p-button-rounded-none text-xs"
-                @click="() => router.get(route('categories.edit', slotProps.data.id))"
-              />
-              <Button
-                v-if="can('categories.delete')"
-                label="Hapus"
-                class="p-button-sm p-button-danger p-button-rounded-none text-xs"
-                @click="deleteCategory(slotProps.data.id)"
-              />
+              <template v-if="!props.trashed">
+                <Button
+                  v-if="can('categories.edit')"
+                  label="Edit"
+                  class="p-button-sm p-button-info text-xs"
+                  @click="() => router.get(route('categories.edit', slotProps.data.id))"
+                />
+                <Button
+                  v-if="can('categories.delete')"
+                  label="Hapus"
+                  class="p-button-sm p-button-danger text-xs"
+                  @click="deleteCategory(slotProps.data.id)"
+                />
+              </template>
+              <template v-else>
+                <Button
+                  v-if="can('categories.restore')"
+                  label="Restore"
+                  class="p-button-sm p-button-success text-xs"
+                  @click="restoreCategory(slotProps.data.id)"
+                />
+                <Button
+                  v-if="can('categories.forceDelete')"
+                  label="Hapus Permanen"
+                  class="p-button-sm p-button-danger text-xs"
+                  @click="forceDeleteCategory(slotProps.data.id)"
+                />
+              </template>
             </div>
           </template>
         </Column>
       </DataTable>
 
-      <!-- Pagination manual -->
+      <!-- Pagination -->
       <div
         class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between mt-4"
       >

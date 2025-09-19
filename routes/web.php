@@ -147,8 +147,8 @@ Route::get('/books/{book}/preview', [App\Http\Controllers\BookController::class,
 
 
 
-    // categories
-    Route::resource('categories', CategoryController::class)->except(['show'])
+// Categories (tanpa show)
+Route::resource('categories', CategoryController::class)->except(['show'])
     ->middleware([
         'index'   => 'permission:categories.view',
         'create'  => 'permission:categories.create',
@@ -157,6 +157,20 @@ Route::get('/books/{book}/preview', [App\Http\Controllers\BookController::class,
         'update'  => 'permission:categories.edit',
         'destroy' => 'permission:categories.delete',
     ]);
+
+// Soft delete tambahan
+Route::get('categories/trashed', [CategoryController::class, 'trashed'])
+    ->name('categories.trashed')
+    ->middleware('permission:categories.view');
+
+Route::put('categories/{id}/restore', [CategoryController::class, 'restore'])
+    ->name('categories.restore')
+    ->middleware('permission:categories.restore');
+
+
+Route::delete('categories/{id}/force-delete', [CategoryController::class, 'forceDelete'])
+    ->name('categories.forceDelete')
+    ->middleware('permission:categories.forceDelete');
 
 });
 
