@@ -8,7 +8,7 @@ use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
-    // Menampilkan daftar kategori
+    // Menampilkan daftar kategori (hanya yang aktif / belum dihapus)
     public function index()
     {
         $categories = Category::latest()->paginate(10);
@@ -56,11 +56,39 @@ class CategoryController extends Controller
         return redirect()->route('categories.index')->with('success', 'Kategori berhasil diperbarui');
     }
 
-    // Hapus kategori
+    // Soft delete kategori
     public function destroy(Category $category)
     {
         $category->delete();
 
-        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus');
+        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus (soft delete)');
+    }
+
+    // Menampilkan kategori yang sudah dihapus (trash)
+    public function trashed()
+    {
+        $categories = Category::onlyTrashed()->latest()->paginate(10);
+
+        return Inertia::render('Categories/Trashed', [
+            'categories' => $categories,
+        ]);
+    }
+
+    // Restore kategori yang terhapus
+    public function restore($id)
+    {
+        $category = Category::onlyTrashed()->findOrFail($id);
+        $category->restore();
+
+        return redirect()->route('categories.trashed')->with('success', 'Kategori berhasil dikembalikan');
+    }
+
+    // Hapus permanen kategori
+    public function forceDelete($id)
+    {
+        $category = Category::onlyTrashed()->findOrFail($id);
+        $category->forceDelete();
+
+        return redirect()->route('categories.trashed')->with('success', 'Kategori berhasil dihapus permanen');
     }
 }
