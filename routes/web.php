@@ -172,6 +172,21 @@ Route::delete('categories/{id}/force-delete', [CategoryController::class, 'force
     ->name('categories.forceDelete')
     ->middleware('permission:categories.forceDelete');
 
+    // Bulk delete
+   Route::post('categories/bulk-delete', [CategoryController::class, 'bulkDelete'])
+    ->name('categories.bulkDelete')
+    ->middleware('permission:categories.delete');
+
+    // Bulk restore
+    Route::post('categories/bulk-restore', [CategoryController::class, 'bulkRestore'])
+    ->name('categories.bulkRestore')
+    ->middleware('permission:categories.restore');
+
+    // Bulk force delete
+    Route::post('categories/bulk-force-delete', [CategoryController::class, 'bulkForceDelete'])
+    ->name('categories.bulkForceDelete')
+    ->middleware('permission:categories.forceDelete');
+
 });
 
 require __DIR__ . '/settings.php';
