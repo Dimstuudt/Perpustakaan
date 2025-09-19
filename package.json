@@ -45,6 +45,7 @@
         "sweetalert2": "^11.22.2",
         "tailwind-merge": "^3.2.0",
         "tailwindcss-primeui": "^0.6.1",
+        "tesseract.js": "^6.0.1",
         "toastr": "^2.1.4",
         "tw-animate-css": "^1.2.5",
         "typescript": "^5.2.2",
