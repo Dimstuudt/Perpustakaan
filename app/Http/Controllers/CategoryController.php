@@ -9,14 +9,18 @@ use Inertia\Inertia;
 class CategoryController extends Controller
 {
     // Menampilkan daftar kategori (hanya yang aktif / belum dihapus)
-    public function index()
-    {
-        $categories = Category::latest()->paginate(10);
+    // CategoryController.php
+public function index()
+{
+    $categories = Category::withCount('books')
+        ->latest()
+        ->paginate(10);
 
-        return Inertia::render('Categories/Index', [
-            'categories' => $categories,
-        ]);
-    }
+    return Inertia::render('Categories/Index', [
+        'categories' => $categories,
+    ]);
+}
+
 
     // Menampilkan form tambah kategori
     public function create()
