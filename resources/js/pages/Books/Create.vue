@@ -88,30 +88,30 @@ const handleOCR = (e: Event) => {
 const parseToForm = (text: string) => {
   const lines = text.split('\n').map(l => l.trim()).filter(l => l)
 
-  lines.forEach(line => {
-    if (/isbn/i.test(line)) {
-      form.isbn = line.replace(/isbn[: ]?/i, '').trim()
-    } else if (/judul/i.test(line)) {
-      form.title = line.replace(/judul[: ]?/i, '').trim()
-    } else if (/penulis/i.test(line)) {
-      form.author = line.replace(/penulis[: ]?/i, '').trim()
-    } else if (/penerbit/i.test(line)) {
-      form.publisher = line.replace(/penerbit[: ]?/i, '').trim()
-    } else if (/tahun/i.test(line)) {
-      form.year = line.replace(/tahun[: ]?/i, '').trim()
-    } else if (/halaman/i.test(line)) {
-      form.pages = line.replace(/halaman[: ]?/i, '').trim()
-    } else if (!form.title) {
-      // fallback: kalau judul belum ketemu, pakai baris pertama
-      form.title = line
-    }
-  })
-
-  // ==== Khusus deskripsi (multi-line) ====
-  const descMatch = text.match(/Deskripsi[:\s]+([\s\S]+)/i)
-  if (descMatch) {
-    form.description = descMatch[1].trim()
+ lines.forEach((line, index) => {
+  if (/isbn/i.test(line)) {
+    form.isbn = line.replace(/isbn[: ]?/i, '').trim()
+  } else if (/judul/i.test(line)) {
+    form.title = line.replace(/judul[: ]?/i, '').trim()
+  } else if (/penulis/i.test(line)) {
+    form.author = line.replace(/penulis[: ]?/i, '').trim()
+  } else if (/penerbit/i.test(line)) {
+    form.publisher = line.replace(/penerbit[: ]?/i, '').trim()
+  } else if (/tahun/i.test(line)) {
+    form.year = line.replace(/tahun[: ]?/i, '').trim()
+  } else if (/halaman/i.test(line)) {
+    form.pages = line.replace(/halaman[: ]?/i, '').trim()
+  } else if (!form.title && index === 0) {
+    // fallback khusus baris pertama -> dianggap judul
+    form.title = line.trim()
   }
+})
+
+// ==== Khusus deskripsi (multi-line) ====
+const descMatch = text.match(/Deskripsi[:\s]+([\s\S]+)/i)
+if (descMatch) {
+  form.description = descMatch[1].trim()
+}
 }
 
 
