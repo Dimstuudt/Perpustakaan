@@ -56,6 +56,65 @@ const handleCoverChange = (e: Event) => {
 const submit = () => {
   form.post(route('books.store'))
 }
+
+
+//Ocr Test
+// import Tesseract from 'tesseract.js';
+import Tesseract from 'tesseract.js'
+import { ref } from 'vue'
+
+const ocrResult = ref('')
+const loadingOCR = ref(false)
+
+const handleOCR = (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+
+  loadingOCR.value = true
+  ocrResult.value = '⏳ Sedang membaca teks...'
+
+  Tesseract.recognize(file, 'eng+ind', { logger: m => console.log(m) })
+    .then(({ data: { text } }) => {
+      ocrResult.value = text
+      parseToForm(text) // otomatis isi form
+      loadingOCR.value = false
+    })
+    .catch(err => {
+      ocrResult.value = 'Gagal OCR: ' + err.message
+      loadingOCR.value = false
+    })
+}
+
+const parseToForm = (text: string) => {
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l)
+
+  lines.forEach(line => {
+    if (/isbn/i.test(line)) {
+      form.isbn = line.replace(/isbn[: ]?/i, '').trim()
+    } else if (/judul/i.test(line)) {
+      form.title = line.replace(/judul[: ]?/i, '').trim()
+    } else if (/penulis/i.test(line)) {
+      form.author = line.replace(/penulis[: ]?/i, '').trim()
+    } else if (/penerbit/i.test(line)) {
+      form.publisher = line.replace(/penerbit[: ]?/i, '').trim()
+    } else if (/tahun/i.test(line)) {
+      form.year = line.replace(/tahun[: ]?/i, '').trim()
+    } else if (/halaman/i.test(line)) {
+      form.pages = line.replace(/halaman[: ]?/i, '').trim()
+    } else if (!form.title) {
+      // fallback: kalau judul belum ketemu, pakai baris pertama
+      form.title = line
+    }
+  })
+
+  // ==== Khusus deskripsi (multi-line) ====
+  const descMatch = text.match(/Deskripsi[:\s]+([\s\S]+)/i)
+  if (descMatch) {
+    form.description = descMatch[1].trim()
+  }
+}
+
+
 </script>
 
 <template>
@@ -95,6 +154,20 @@ const submit = () => {
             </div>
           </div>
         </div>
+
+        <!-- OCR Gambar Buku -->
+<div>
+  <label class="block text-sm font-medium mb-2">Scan OCR (opsional)</label>
+  <input
+    type="file"
+    accept="image/*"
+    @change="handleOCR"
+    class="w-full border rounded p-2"
+  />
+  <div v-if="loadingOCR" class="text-blue-500 mt-2">Membaca teks dari gambar...</div>
+  <pre v-if="ocrResult" class="bg-gray-100 p-2 mt-2 rounded text-xs">{{ ocrResult }}</pre>
+</div>
+
 
         <!-- ISBN -->
         <div>
