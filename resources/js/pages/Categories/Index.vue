@@ -137,6 +137,8 @@ function forceDeleteCategory(id: number) {
         class="p-datatable-sm p-datatable-gridlines text-sm"
       >
         <Column field="name" header="Nama Kategori" sortable />
+        <Column field="books_count" header="Jumlah Buku" style="width: 120px" sortable />
+
         <Column header="Aksi" style="width: 250px">
           <template #body="slotProps">
             <div class="flex gap-1 justify-center">
