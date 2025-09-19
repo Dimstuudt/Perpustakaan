@@ -5,7 +5,6 @@ import { Head, Link, router } from '@inertiajs/vue3'
 import Swal from 'sweetalert2'
 import { can } from '@/lib/can'
 
-// PrimeVue
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
@@ -14,7 +13,7 @@ import { ref, computed } from 'vue'
 
 const props = defineProps<{
   categories: {
-    data: { id: number; name: string }[]
+    data: { id: number; name: string; deleted_at: string }[]
     current_page: number
     last_page: number
     per_page: number
@@ -30,15 +29,77 @@ const breadcrumbs: BreadcrumbItem[] = [
 ]
 
 const search = ref('')
+const selected = ref<any[]>([])
+
 const filteredCategories = computed(() =>
-  props.categories.data.filter((cat) =>
+  props.categories.data.filter(cat =>
     cat.name.toLowerCase().includes(search.value.toLowerCase())
   )
 )
 
+// Bulk Restore
+function bulkRestore() {
+  if (!selected.value.length) return
+
+  Swal.fire({
+    title: 'Restore kategori terpilih?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, restore!',
+    confirmButtonColor: '#28a745'
+  }).then(result => {
+    if (result.isConfirmed) {
+      // Gunakan POST sesuai rute backend kamu
+      router.post(route('categories.bulkRestore'), {
+        ids: selected.value.map(c => c.id)
+      }, {
+        onSuccess: () => {
+          Swal.fire('Berhasil!', 'Kategori berhasil direstore.', 'success')
+          selected.value = []
+          router.reload()
+        },
+        onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error')
+      })
+    }
+  })
+}
+
+// Bulk Force Delete
+function bulkForceDelete() {
+  if (!selected.value.length) return
+
+  Swal.fire({
+    title: 'Hapus permanen kategori terpilih?',
+    text: 'Data tidak bisa dikembalikan lagi!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, hapus permanen!',
+    confirmButtonColor: '#d33'
+  }).then(result => {
+    if (result.isConfirmed) {
+      // Gunakan POST sesuai rute backend kamu
+      router.post(route('categories.bulkForceDelete'), {
+        ids: selected.value.map(c => c.id)
+      }, {
+        onSuccess: () => {
+          Swal.fire('Terhapus!', 'Kategori dihapus permanen.', 'success')
+          selected.value = []
+          router.reload()
+        },
+        onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error')
+      })
+    }
+  })
+}
+
+
+// Single Actions
 function restoreCategory(id: number) {
   router.put(route('categories.restore', id), {}, {
-    onSuccess: () => Swal.fire('Berhasil!', 'Kategori berhasil direstore.', 'success'),
+    onSuccess: () => {
+      Swal.fire('Berhasil!', 'Kategori berhasil direstore.', 'success')
+      router.reload()
+    },
     onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error'),
   })
 }
@@ -54,7 +115,7 @@ function forceDeleteCategory(id: number) {
   }).then((result) => {
     if (result.isConfirmed) {
       router.delete(route('categories.forceDelete', id), {
-        onSuccess: () => Swal.fire('Terhapus!', 'Kategori dihapus permanen.', 'success'),
+        onSuccess: () => Swal.fire('Terhapus!', 'Kategori dihapus permanen.', 'success')
       })
     }
   })
@@ -76,43 +137,57 @@ function forceDeleteCategory(id: number) {
         </Link>
       </div>
 
-      <!-- Search -->
-      <div class="mb-3 w-1/2">
-        <InputText v-model="search" placeholder="Cari kategori terhapus..." class="w-full" />
-      </div>
-
-      <!-- Table -->
-     <DataTable
-  :value="filteredCategories"
-  responsiveLayout="scroll"
-  class="p-datatable-sm p-datatable-gridlines text-sm"
->
-  <Column field="name" header="Nama Kategori" sortable />
-  <Column field="deleted_at" header="Dihapus Pada" sortable>
-    <template #body="slotProps">
-      {{ new Date(slotProps.data.deleted_at).toLocaleString('id-ID') }}
-    </template>
-  </Column>
-  <Column header="Aksi">
-    <template #body="slotProps">
-      <div class="flex gap-1 justify-center">
+      <!-- Bulk Action + Search -->
+      <div class="mb-3 flex items-center gap-2">
         <Button
-          v-if="can('categories.restore')"
-          label="Restore"
-          class="p-button-sm p-button-success text-xs"
-          @click="restoreCategory(slotProps.data.id)"
+          v-if="selected.length && can('categories.restore')"
+          label="Restore Terpilih"
+          class="p-button-sm p-button-success"
+          @click="bulkRestore"
         />
         <Button
-          v-if="can('categories.forceDelete')"
-          label="Hapus Permanen"
-          class="p-button-sm p-button-danger text-xs"
-          @click="forceDeleteCategory(slotProps.data.id)"
+          v-if="selected.length && can('categories.forceDelete')"
+          label="Hapus Permanen Terpilih"
+          class="p-button-sm p-button-danger"
+          @click="bulkForceDelete"
         />
+        <InputText v-model="search" placeholder="Cari kategori..." class="w-1/2" />
       </div>
-    </template>
-  </Column>
-</DataTable>
 
+      <!-- DataTable -->
+      <DataTable
+        v-model:selection="selected"
+        :value="filteredCategories"
+        dataKey="id"
+        responsiveLayout="scroll"
+        class="p-datatable-sm p-datatable-gridlines text-sm"
+      >
+        <Column selectionMode="multiple" style="width: 3rem" />
+        <Column field="name" header="Nama Kategori" sortable />
+        <Column field="deleted_at" header="Dihapus Pada" sortable>
+          <template #body="slotProps">
+            {{ slotProps.data.deleted_at ? new Date(slotProps.data.deleted_at).toLocaleString('id-ID') : '-' }}
+          </template>
+        </Column>
+        <Column header="Aksi">
+          <template #body="slotProps">
+            <div class="flex gap-1 justify-center">
+              <Button
+                v-if="can('categories.restore')"
+                label="Restore"
+                class="p-button-sm p-button-success text-xs"
+                @click="restoreCategory(slotProps.data.id)"
+              />
+              <Button
+                v-if="can('categories.forceDelete')"
+                label="Hapus Permanen"
+                class="p-button-sm p-button-danger text-xs"
+                @click="forceDeleteCategory(slotProps.data.id)"
+              />
+            </div>
+          </template>
+        </Column>
+      </DataTable>
 
       <!-- Pagination -->
       <div class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between mt-4">

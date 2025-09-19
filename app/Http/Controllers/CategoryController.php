@@ -95,4 +95,34 @@ public function index()
 
         return redirect()->route('categories.trashed')->with('success', 'Kategori berhasil dihapus permanen');
     }
+
+    // Bulk hapus kategori (soft delete)
+public function bulkDelete(Request $request)
+{
+    $ids = $request->input('ids', []);
+
+    if (!empty($ids)) {
+        Category::whereIn('id', $ids)->delete();
+    }
+
+    // Redirect ke halaman index seperti normal
+    return redirect()->route('categories.index')
+        ->with('success', 'Kategori berhasil dihapus.');
+}
+
+// Bulk restore
+public function bulkRestore(Request $request)
+{
+    Category::withTrashed()->whereIn('id', $request->ids)->restore();
+    return back()->with('success', 'Kategori berhasil direstore.');
+}
+
+
+// Bulk force delete
+public function bulkForceDelete(Request $request)
+{
+    Category::withTrashed()->whereIn('id', $request->ids)->forceDelete();
+    return back()->with('success', 'Kategori dihapus permanen.');
+}
+
 }
