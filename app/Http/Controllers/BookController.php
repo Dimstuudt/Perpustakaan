@@ -177,32 +177,28 @@ class BookController extends Controller
     }
 
     // Preview buku
-    public function preview(Book $book)
-    {
-        $categories = Category::all();
-
-        return Inertia::render('Books/Preview', [
-            'book' => [
-                'id'          => $book->id,
-                'isbn'        => $book->isbn,
-                'title'       => $book->title,
-                'author'      => $book->author,
-                'publisher'   => $book->publisher,
-                'year'        => $book->year,
-                'pages'       => $book->pages,
-                'description' => $book->description,
-                'category_id' => $book->category_id,
-                'cover_url'   => $book->cover_path ? asset('storage/' . $book->cover_path) : null,
-                'file_url'    => $book->file_path ? asset('storage/' . $book->file_path) : null,
-            ],
-            'categories' => $categories,
-        ]);
-    }
-
-    public function show(Book $book)
+     // Preview buku
+   public function preview(Book $book)
 {
-    // Misal redirect ke preview
-    return redirect()->route('books.preview', $book->id);
-}
+    $categories = Category::all();
 
-}
+    return Inertia::render('Books/Preview', [
+        'book' => [
+            'id'         => $book->id,
+            'isbn'       => $book->isbn,
+            'title'      => $book->title,
+            'author'     => $book->author,
+            'publisher'  => $book->publisher,
+            'year'       => $book->year,
+            'pages'      => $book->pages,
+            'description'=> $book->description,
+            'category_id'=> $book->category_id,
+            'cover_url'  => $book->cover_path, // pastikan ini nama field di DB
+            'file_url'   => $book->file_path,  // pastikan ini nama field di DB
+        ],
+        'categories' => $categories,
+    ]);
+
+
+
+}}
