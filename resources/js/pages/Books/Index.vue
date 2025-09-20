@@ -73,16 +73,32 @@ function deleteBook(id: number) {
 
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-semibold">📚 Daftar Buku</h1>
-        <Link
-          v-if="can('books.create')"
-          :href="route('books.create')"
-          class="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600"
-        >
-          + Tambah Buku
-        </Link>
-      </div>
+     <div class="flex justify-between items-center mb-4">
+  <h1 class="text-2xl font-semibold">📚 Daftar Buku</h1>
+
+  <div class="flex gap-2">
+    <!-- Tombol Tambah Buku -->
+    <Link
+      v-if="can('books.create')"
+      :href="route('books.create')"
+      class="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 flex items-center gap-1"
+    >
+      + Tambah Buku
+    </Link>
+
+    <!-- Tombol Lihat Sampah -->
+    <Link
+      v-if="can('books.view')"
+      :href="route('books.trashed')"
+      class="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600 flex items-center gap-1"
+    >
+      <!-- Bisa pakai emoji keranjang sampah atau Heroicons -->
+      <span>🗑️</span>
+      <span>Lihat Sampah</span>
+    </Link>
+  </div>
+</div>
+
 
       <!-- Search -->
 <div class="mb-3 w-1/2">

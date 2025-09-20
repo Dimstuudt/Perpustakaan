@@ -10,7 +10,7 @@ use Inertia\Inertia;
 
 class BookController extends Controller
 {
-    // Menampilkan daftar buku
+    // Menampilkan daftar buku aktif (non-deleted)
     public function index()
     {
         $books = Book::with('category')->latest()->paginate(10);
@@ -28,6 +28,29 @@ class BookController extends Controller
                 'description' => $book->description,
                 'cover_path'  => $book->cover_path ? asset('storage/' . $book->cover_path) : null,
                 'file_path'   => $book->file_path ? asset('storage/' . $book->file_path) : null,
+            ]),
+        ]);
+    }
+
+    // Menampilkan daftar buku yang dihapus (trashed)
+    public function trashed()
+    {
+        $books = Book::onlyTrashed()->with('category')->latest()->paginate(10);
+
+        return Inertia::render('Books/Trashed', [
+            'books' => $books->through(fn($book) => [
+                'id'          => $book->id,
+                'isbn'        => $book->isbn,
+                'title'       => $book->title,
+                'author'      => $book->author,
+                'publisher'   => $book->publisher,
+                'year'        => $book->year,
+                'pages'       => $book->pages,
+                'category'    => $book->category ? $book->category->name : null,
+                'description' => $book->description,
+                'cover_path'  => $book->cover_path ? asset('storage/' . $book->cover_path) : null,
+                'file_path'   => $book->file_path ? asset('storage/' . $book->file_path) : null,
+                'deleted_at'  => $book->deleted_at,
             ]),
         ]);
     }
@@ -72,33 +95,22 @@ class BookController extends Controller
     }
 
     // Menampilkan form edit buku
-   public function edit(Book $book)
-{
-    $categories = Category::all();
+    public function edit(Book $book)
+    {
+        $categories = Category::all();
 
-    // Tambahkan URL publik agar preview muncul
-    $book->cover_url = $book->cover_path
-        ? asset('storage/' . $book->cover_path)
-        : null;
+        $book->cover_url = $book->cover_path ? asset('storage/' . $book->cover_path) : null;
+        $book->file_url  = $book->file_path ? asset('storage/' . $book->file_path) : null;
 
-    $book->file_url = $book->file_path
-        ? asset('storage/' . $book->file_path)
-        : null;
-
-    return Inertia::render('Books/Edit', [
-        'book'       => $book,
-        'categories' => $categories,
-    ]);
-}
-
+        return Inertia::render('Books/Edit', [
+            'book'       => $book,
+            'categories' => $categories,
+        ]);
+    }
 
     // Update data buku
     public function update(Request $request, Book $book)
-
     {
-
-
-
         $validated = $request->validate([
             'isbn'        => 'required|string|max:20|unique:books,isbn,' . $book->id,
             'title'       => 'required|string|max:255',
@@ -112,19 +124,15 @@ class BookController extends Controller
             'cover'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Hapus file lama jika diupload baru
-        if ($request->hasFile('file')) {
-            if ($book->file_path && Storage::disk('public')->exists($book->file_path)) {
-                Storage::disk('public')->delete($book->file_path);
-            }
+        // Hapus file lama jika upload baru
+        if ($request->hasFile('file') && $book->file_path && Storage::disk('public')->exists($book->file_path)) {
+            Storage::disk('public')->delete($book->file_path);
             $validated['file_path'] = $request->file('file')->store('books', 'public');
         }
 
-        // Hapus cover lama jika diupload baru
-        if ($request->hasFile('cover')) {
-            if ($book->cover_path && Storage::disk('public')->exists($book->cover_path)) {
-                Storage::disk('public')->delete($book->cover_path);
-            }
+        // Hapus cover lama jika upload baru
+        if ($request->hasFile('cover') && $book->cover_path && Storage::disk('public')->exists($book->cover_path)) {
+            Storage::disk('public')->delete($book->cover_path);
             $validated['cover_path'] = $request->file('cover')->store('covers', 'public');
         }
 
@@ -133,9 +141,28 @@ class BookController extends Controller
         return redirect()->route('books.index')->with('success', 'Buku berhasil diperbarui');
     }
 
-    // Hapus buku
+    // Soft delete buku
     public function destroy(Book $book)
     {
+        $book->delete(); // ✅ soft delete
+        return redirect()->route('books.index')->with('success', 'Buku berhasil dihapus');
+    }
+
+    // Restore buku dari trash
+    public function restore($id)
+    {
+        $book = Book::withTrashed()->findOrFail($id);
+        $book->restore();
+
+        return redirect()->route('books.trashed')->with('success', 'Buku berhasil dikembalikan');
+    }
+
+    // Force delete buku permanen
+    public function forceDelete($id)
+    {
+        $book = Book::withTrashed()->findOrFail($id);
+
+        // Hapus file jika ada
         if ($book->file_path && Storage::disk('public')->exists($book->file_path)) {
             Storage::disk('public')->delete($book->file_path);
         }
@@ -144,32 +171,38 @@ class BookController extends Controller
             Storage::disk('public')->delete($book->cover_path);
         }
 
-        $book->delete();
+        $book->forceDelete(); // hapus permanen
 
-        return redirect()->route('books.index')->with('success', 'Buku berhasil dihapus');
+        return redirect()->route('books.trashed')->with('success', 'Buku berhasil dihapus permanen');
     }
 
     // Preview buku
-   public function preview(Book $book)
-{
-    $categories = Category::all();
+    public function preview(Book $book)
+    {
+        $categories = Category::all();
 
-    return Inertia::render('Books/Preview', [
-        'book' => [
-            'id'         => $book->id,
-            'isbn'       => $book->isbn,
-            'title'      => $book->title,
-            'author'     => $book->author,
-            'publisher'  => $book->publisher,
-            'year'       => $book->year,
-            'pages'      => $book->pages,
-            'description'=> $book->description,
-            'category_id'=> $book->category_id,
-            'cover_url'  => $book->cover_path, // pastikan ini nama field di DB
-            'file_url'   => $book->file_path,  // pastikan ini nama field di DB
-        ],
-        'categories' => $categories,
-    ]);
+        return Inertia::render('Books/Preview', [
+            'book' => [
+                'id'          => $book->id,
+                'isbn'        => $book->isbn,
+                'title'       => $book->title,
+                'author'      => $book->author,
+                'publisher'   => $book->publisher,
+                'year'        => $book->year,
+                'pages'       => $book->pages,
+                'description' => $book->description,
+                'category_id' => $book->category_id,
+                'cover_url'   => $book->cover_path ? asset('storage/' . $book->cover_path) : null,
+                'file_url'    => $book->file_path ? asset('storage/' . $book->file_path) : null,
+            ],
+            'categories' => $categories,
+        ]);
+    }
+
+    public function show(Book $book)
+{
+    // Misal redirect ke preview
+    return redirect()->route('books.preview', $book->id);
 }
 
 }
