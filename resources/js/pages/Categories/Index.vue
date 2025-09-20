@@ -104,7 +104,7 @@ function deleteCategory(id: number) {
             :href="route('categories.create')"
             class="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600"
           >
-            + Tambah
+            + Tambah Kategori
           </Link>
           <Link
             :href="route('categories.trashed')"

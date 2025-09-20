@@ -122,6 +122,13 @@ Route::resource("logs", LogController::class)
 
 
 // books
+
+// Soft delete tambahan
+Route::get('/books/trashed', [App\Http\Controllers\BookController::class, 'trashed'])
+    ->name('books.trashed')
+    ->middleware('permission:books.view');
+
+    //book preview
 Route::resource("books", App\Http\Controllers\BookController::class)
     ->middleware("permission:books.create|books.edit|books.delete|books.view");
 
@@ -144,6 +151,21 @@ Route::resource("books", App\Http\Controllers\BookController::class)
 Route::get('/books/{book}/preview', [App\Http\Controllers\BookController::class, 'preview'])
     ->name('books.preview')
     ->middleware('permission:books.view');
+
+
+
+// Restore buku dari trash
+Route::post('/books/{id}/restore', [App\Http\Controllers\BookController::class, 'restore'])
+    ->name('books.restore')
+    ->middleware('permission:books.restore');
+
+// Hapus permanen buku
+Route::delete('/books/{id}/force-delete', [App\Http\Controllers\BookController::class, 'forceDelete'])
+    ->name('books.forceDelete')
+    ->middleware('permission:books.forceDelete');
+
+
+
 
 
 
