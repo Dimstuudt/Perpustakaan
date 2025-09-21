@@ -23,6 +23,8 @@ Route::get('dashboard', fn () => Inertia::render('Dashboard')->with('message', '
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+Route::get('/welcome', fn () => Inertia::render('Welcome'));
+
 Auth::routes(['verify' => true]); // aktifkan verifikasi email
 
 // Google Login
