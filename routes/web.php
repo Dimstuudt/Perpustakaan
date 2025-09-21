@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\BookController;
 use App\Http\Requests\Auth\LoginRequest;
 use Laravel\Socialite\Facades\Socialite;
 use Spatie\Permission\Contracts\Permission;
@@ -127,6 +128,19 @@ Route::resource("logs", LogController::class)
 Route::get('/books/trashed', [App\Http\Controllers\BookController::class, 'trashed'])
     ->name('books.trashed')
     ->middleware('permission:books.view');
+  
+    // Tambahan untuk bulk delete
+
+Route::post('/books/bulk-delete', [App\Http\Controllers\BookController::class, 'bulkDelete'])
+    ->name('books.bulkDelete')
+    ->middleware('permission:books.delete');
+
+  
+
+// Bulk
+Route::post('/books/bulk-restore', [BookController::class, 'bulkRestore'])->name('books.bulkRestore');
+Route::post('/books/bulk-force-delete', [BookController::class, 'bulkForceDelete'])->name('books.bulkForceDelete');
+
 
     //book preview
 Route::resource("books", App\Http\Controllers\BookController::class)
@@ -163,7 +177,6 @@ Route::post('/books/{id}/restore', [App\Http\Controllers\BookController::class, 
 Route::delete('/books/{id}/force-delete', [App\Http\Controllers\BookController::class, 'forceDelete'])
     ->name('books.forceDelete')
     ->middleware('permission:books.forceDelete');
-
 
 
 

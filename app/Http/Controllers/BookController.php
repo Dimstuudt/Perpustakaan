@@ -171,12 +171,51 @@ class BookController extends Controller
             Storage::disk('public')->delete($book->cover_path);
         }
 
-        $book->forceDelete(); // hapus permanen
+    $book->forceDelete(); // hapus permanen
 
-        return redirect()->route('books.trashed')->with('success', 'Buku berhasil dihapus permanen');
+    return redirect()->route('books.trashed')->with('success', 'Buku berhasil dihapus permanen');
+}
+
+// Bulk soft delete buku
+public function bulkDelete(Request $request)
+{
+    $ids = $request->input('ids', []);
+
+    if (empty($ids)) {
+        return back()->withErrors(['message' => 'Tidak ada buku yang dipilih.']);
     }
 
-    // Preview buku
+    // Soft delete semua buku terpilih
+    Book::whereIn('id', $ids)->delete();
+
+    return back()->with('success', 'Buku terpilih berhasil dipindahkan ke sampah.');
+}
+
+// Bulk restore buku
+public function bulkRestore(Request $request)
+{
+    $ids = $request->input('ids', []);
+
+    if (!empty($ids)) {
+        Book::onlyTrashed()->whereIn('id', $ids)->restore();
+    }
+
+    return redirect()->route('books.index')
+        ->with('success', 'Buku terpilih berhasil direstore.');
+}
+
+public function bulkForceDelete(Request $request)
+{
+    $ids = $request->input('ids', []);
+
+    if (!empty($ids)) {
+        Book::onlyTrashed()->whereIn('id', $ids)->forceDelete();
+    }
+
+    return redirect()->route('books.index')
+        ->with('success', 'Buku terpilih berhasil dihapus permanen.');
+}
+
      // Preview buku
    public function preview(Book $book)
 {
@@ -200,5 +239,5 @@ class BookController extends Controller
     ]);
 
 
-
 }}
+
