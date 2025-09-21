@@ -50,7 +50,10 @@ const filteredBooks = computed(() =>
   )
 )
 
-// Restore buku
+// Multiple selection
+const selected = ref<any[]>([])
+
+// === Single Actions ===
 function restoreBook(id: number) {
   Swal.fire({
     title: 'Kembalikan buku?',
@@ -60,7 +63,7 @@ function restoreBook(id: number) {
     cancelButtonText: 'Batal',
   }).then((result) => {
     if (result.isConfirmed) {
-      router.post(route('books.restore', id), {
+      router.put(route('books.restore', id), {}, {
         onSuccess: () => Swal.fire('Berhasil!', 'Buku dikembalikan.', 'success'),
         onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error'),
       })
@@ -68,7 +71,6 @@ function restoreBook(id: number) {
   })
 }
 
-// Hapus permanen
 function forceDeleteBook(id: number) {
   Swal.fire({
     title: 'Hapus permanen?',
@@ -82,6 +84,58 @@ function forceDeleteBook(id: number) {
       router.delete(route('books.forceDelete', id), {
         onSuccess: () => Swal.fire('Terhapus!', 'Buku dihapus permanen.', 'success'),
         onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error'),
+      })
+    }
+  })
+}
+
+// === Bulk Actions ===
+function bulkRestore() {
+  if (!selected.value.length) return
+
+  Swal.fire({
+    title: 'Restore buku terpilih?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, restore!',
+    confirmButtonColor: '#28a745'
+  }).then(result => {
+    if (result.isConfirmed) {
+      router.post(route('books.bulkRestore'), {
+        ids: selected.value.map(b => b.id)
+      }, {
+        onSuccess: () => {
+          Swal.fire('Berhasil!', 'Buku berhasil direstore.', 'success')
+          selected.value = []
+          router.reload()
+        },
+        onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error')
+      })
+    }
+  })
+}
+
+function bulkForceDelete() {
+  if (!selected.value.length) return
+
+  Swal.fire({
+    title: 'Hapus permanen buku terpilih?',
+    text: 'Data tidak bisa dikembalikan lagi!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, hapus permanen!',
+    confirmButtonColor: '#d33'
+  }).then(result => {
+    if (result.isConfirmed) {
+      router.post(route('books.bulkForceDelete'), {
+        ids: selected.value.map(b => b.id)
+      }, {
+        onSuccess: () => {
+          Swal.fire('Terhapus!', 'Buku dihapus permanen.', 'success')
+          selected.value = []
+          router.reload()
+        },
+        onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error')
       })
     }
   })
@@ -101,25 +155,41 @@ function forceDeleteBook(id: number) {
         >
           ← Kembali ke Daftar Buku
         </Link>
-        
       </div>
 
-      <!-- Search -->
-      <div class="mb-3 w-1/2">
-        <span class="p-input-icon-left w-full">
-          <InputText v-model="search" placeholder="Cari buku..." class="w-full" />
-        </span>
+      <!-- Bulk Action + Search -->
+      <div class="mb-3 flex items-center gap-2">
+        <Button
+          v-if="selected.length && can('books.restore')"
+          label="Restore Terpilih"
+          class="p-button-sm p-button-success"
+          @click="bulkRestore"
+        />
+        <Button
+          v-if="selected.length && can('books.forceDelete')"
+          label="Hapus Permanen Terpilih"
+          class="p-button-sm p-button-danger"
+          @click="bulkForceDelete"
+        />
+        <InputText v-model="search" placeholder="Cari buku..." class="w-1/2" />
       </div>
 
       <!-- DataTable -->
-      <DataTable :value="filteredBooks" responsiveLayout="scroll" class="p-datatable-sm p-datatable-gridlines text-sm">
-        <Column field="isbn" header="ISBN" :style="{ width: '120px' }" sortable></Column>
-        <Column field="title" header="Judul" :style="{ width: '200px' }" sortable></Column>
-        <Column field="author" header="Penulis" :style="{ width: '140px' }" sortable></Column>
-        <Column field="publisher" header="Penerbit" :style="{ width: '140px' }" sortable></Column>
-        <Column field="year" header="Tahun" :style="{ width: '80px' }" sortable></Column>
-        <Column field="pages" header="Halaman" :style="{ width: '80px' }" sortable></Column>
-        <Column field="category" header="Kategori" :style="{ width: '120px' }" sortable></Column>
+      <DataTable
+        v-model:selection="selected"
+        :value="filteredBooks"
+        dataKey="id"
+        responsiveLayout="scroll"
+        class="p-datatable-sm p-datatable-gridlines text-sm"
+      >
+        <Column selectionMode="multiple" style="width: 3rem" />
+        <Column field="isbn" header="ISBN" :style="{ width: '120px' }" sortable />
+        <Column field="title" header="Judul" :style="{ width: '200px' }" sortable />
+        <Column field="author" header="Penulis" :style="{ width: '140px' }" sortable />
+        <Column field="publisher" header="Penerbit" :style="{ width: '140px' }" sortable />
+        <Column field="year" header="Tahun" :style="{ width: '80px' }" sortable />
+        <Column field="pages" header="Halaman" :style="{ width: '80px' }" sortable />
+        <Column field="category" header="Kategori" :style="{ width: '120px' }" sortable />
         <Column field="deleted_at" header="Dihapus Pada" :style="{ width: '160px' }">
           <template #body="slotProps">
             <span class="text-red-600 text-xs">{{ slotProps.data.deleted_at }}</span>
@@ -136,7 +206,6 @@ function forceDeleteBook(id: number) {
                 class="p-button-sm p-button-success text-xs"
                 @click="restoreBook(slotProps.data.id)"
               />
-
               <Button
                 v-if="can('books.forceDelete')"
                 label="Hapus Permanen"
@@ -149,7 +218,9 @@ function forceDeleteBook(id: number) {
       </DataTable>
 
       <!-- Pagination manual -->
-      <div class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between mt-4">
+      <div
+        class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between mt-4"
+      >
         <span class="text-xs xs:text-sm text-gray-900">
           Showing
           {{ (props.books.current_page - 1) * props.books.per_page + 1 }}
