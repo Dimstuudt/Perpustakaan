@@ -2,6 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue'
 import { Head, useForm, Link } from '@inertiajs/vue3'
 import { type BreadcrumbItem } from '@/types'
+import Swal from 'sweetalert2'
 
 const props = defineProps({
   category: Object,
@@ -17,9 +18,25 @@ const form = useForm({
 })
 
 const submit = () => {
-  form.put(route('categories.update', props.category.id))
+  form.put(route('categories.update', props.category.id), {
+    onSuccess: () => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: 'Kategori berhasil diperbarui.',
+        timer: 2000,
+        showConfirmButton: false,
+      })
+    },
+    onError: (errors) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: errors.name ? errors.name[0] : 'Terjadi kesalahan.',
+      })
+    },
+  })
 }
-
 </script>
 
 <template>
@@ -31,11 +48,22 @@ const submit = () => {
       <form @submit.prevent="submit" class="space-y-3">
         <div>
           <label class="block mb-1">Nama Kategori</label>
-          <input v-model="form.name" type="text" class="border p-2 w-full" />
+          <input
+            v-model="form.name"
+            type="text"
+            class="border p-2 w-full"
+          />
+          <span v-if="form.errors.name" class="text-red-600 text-sm">
+            {{ form.errors.name }}
+          </span>
         </div>
 
         <div class="flex items-center space-x-2 mt-4">
-          <button type="submit" class="bg-blue-600 text-white px-3 py-2 rounded">
+          <button
+            type="submit"
+            class="bg-blue-600 text-white px-3 py-2 rounded"
+            :disabled="form.processing"
+          >
             Update
           </button>
           <Link :href="route('categories.index')" class="text-gray-600">Batal</Link>
