@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue'
 import { type BreadcrumbItem } from '@/types'
-import { Head, Link, useForm, router } from '@inertiajs/vue3'
+import { Head, router, useForm } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import Swal from 'sweetalert2'
 import { can } from '@/lib/can'
 
@@ -49,6 +49,7 @@ if (flash) {
   })
 }
 
+// Delete permission
 function deletePermission(id: number) {
   Swal.fire({
     title: 'Are you sure?',
@@ -61,76 +62,55 @@ function deletePermission(id: number) {
   }).then(result => {
     if (result.isConfirmed) {
       router.delete(route('permissions.destroy', id), {
-        onSuccess: () => {
-          Swal.fire('Deleted!', 'Permission has been deleted.', 'success')
-        },
-        onError: () => {
-          Swal.fire('Failed!', 'Something went wrong.', 'error')
-        }
+        onSuccess: () => Swal.fire('Deleted!', 'Permission has been deleted.', 'success'),
+        onError: () => Swal.fire('Failed!', 'Something went wrong.', 'error')
       })
     }
   })
 }
 
-// filters
+// Filters
 const perPage = ref(Number(new URLSearchParams(window.location.search).get('per_page')) || 10)
-watch(perPage, (value) => {
-  router.get(route('permissions.index'), { per_page: value, page: 1 }, { preserveState: true, replace: true })
-})
-
 const form = useForm({
   search: props.filters.search || '',
   role: props.filters.role || null,
 })
 
-watch(() => form.search, () => {
-  form.get(route('permissions.index'), { preserveScroll: true, preserveState: true })
+// Gabungkan semua query parameter
+const queryParams = computed(() => ({
+  search: form.search,
+  role: form.role,
+  per_page: perPage.value,
+}))
+
+// Watch semua filter dan perPage
+watch([() => form.search, () => form.role, perPage], () => {
+  router.get(route('permissions.index'), { ...queryParams.value, page: 1 }, { preserveState: true, replace: true })
+  first.value = 0
+  rows.value = perPage.value
 })
 
-watch(() => form.role, () => {
-  form.get(route('permissions.index'), { preserveState: true, replace: true })
-})
-
-
-// tambahkan state untuk paginator
-const first = ref((props.permissions.current_page - 1) * props.permissions.per_page) // offset
+// Paginator
+const first = ref((props.permissions.current_page - 1) * props.permissions.per_page)
 const rows = ref(props.permissions.per_page)
 
-// ketika ganti halaman
 function onPage(event: { first: number; rows: number; page: number }) {
   const pageNumber = event.page + 1
-  router.get(
-    route('permissions.index'),
-    { page: pageNumber, per_page: event.rows },
-    { preserveState: true, replace: true }
-  )
+  router.get(route('permissions.index'), { ...queryParams.value, page: pageNumber }, { preserveState: true, replace: true })
   first.value = event.first
   rows.value = event.rows
 }
-
-// ketika ganti rows per page
-watch(perPage, (value) => {
-  router.get(
-    route('permissions.index'),
-    { page: 1, per_page: value },
-    { preserveState: true, replace: true }
-  )
-  rows.value = value
-  first.value = 0
-})
-
 </script>
 
 <template>
   <Head title="Permissions" />
-
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="p-6 space-y-6">
       <div class="flex justify-between items-center">
         <h2 class="text-2xl font-semibold">Permissions</h2>
-        <Button v-if="can('permissions.create')" 
-          label="Add Permission" 
-          icon="pi pi-plus" 
+        <Button v-if="can('permissions.create')"
+          label="Add Permission"
+          icon="pi pi-plus"
           severity="success"
           @click="router.get(route('permissions.create'))"
         />
@@ -138,11 +118,31 @@ watch(perPage, (value) => {
 
       <!-- Filters -->
       <div class="flex flex-wrap gap-3 items-center">
-        <Dropdown v-model="perPage" :options="[5,10,20]" placeholder="Per page" class="w-32" />
-        <Dropdown v-model="form.role" :options="[{label:'All', value:null}, ...roles.map(r => ({label: r.name, value: r.name}))]" placeholder="Filter by Role" class="w-48" />
+        <!-- Per Page -->
+        <Dropdown
+          v-model="perPage"
+          :options="[5,10,20]"
+          placeholder="Per page"
+          class="w-32 text-sm text-gray-700"
+        />
+
+        <!-- Role Filter -->
+        <Dropdown
+          v-model="form.role"
+          :options="[{ label: 'All', value: null }, ...roles]"
+          optionLabel="name"
+          optionValue="name"
+          placeholder="Filter by Role"
+          class="w-48 text-sm text-gray-700 truncate"
+        />
+
+        <!-- Search Input -->
         <span class="p-input-icon-left">
-         
-          <InputText v-model="form.search" placeholder="Search permission..." class="w-64" />
+          <InputText
+            v-model="form.search"
+            placeholder="Search permission..."
+            class="w-64 text-sm text-gray-700"
+          />
         </span>
       </div>
 
@@ -154,47 +154,49 @@ watch(perPage, (value) => {
   :rows="rows"
   :totalRecords="permissions.total"
   :rowsPerPageOptions="[5,10,20]"
-  lazy
+  :lazy="true"
+  :loading="page.props.permissionsLoading" 
   @page="onPage"
+  :key="permissions.current_page"
 >
-  <Column field="id" header="ID" />
-  <Column field="name" header="Name" />
-  <Column header="Roles">
-    <template #body="slotProps">
-      <Tag
-        v-for="role in slotProps.data.roles"
-        :key="role.id"
-        :value="role.name"
-        severity="success"
-        class="mr-1"
-      />
-    </template>
-  </Column>
-  <Column header="Action">
-    <template #body="slotProps">
-      <div class="flex gap-2">
-        <Button
-          v-if="can('permissions.edit')"
-          label="Edit"
-          icon="pi pi-pencil"
-          size="small"
-          severity="info"
-          as="a"
-          :href="route('permissions.edit', slotProps.data.id)"
-        />
-        <Button
-          v-if="can('permissions.delete')"
-          label="Delete"
-          icon="pi pi-trash"
-          size="small"
-          severity="danger"
-          @click="deletePermission(slotProps.data.id)"
-        />
-      </div>
-    </template>
-  </Column>
-</DataTable>
 
+        <Column field="id" header="ID" />
+        <Column field="name" header="Name" />
+        <Column header="Roles">
+          <template #body="slotProps">
+            <Tag
+              v-for="role in slotProps.data.roles"
+              :key="role.id"
+              :value="role.name"
+              severity="success"
+              class="mr-1"
+            />
+          </template>
+        </Column>
+        <Column header="Action">
+          <template #body="slotProps">
+            <div class="flex gap-2">
+              <Button
+                v-if="can('permissions.edit')"
+                label="Edit"
+                icon="pi pi-pencil"
+                size="small"
+                severity="info"
+                as="a"
+                :href="route('permissions.edit', slotProps.data.id)"
+              />
+              <Button
+                v-if="can('permissions.delete')"
+                label="Delete"
+                icon="pi pi-trash"
+                size="small"
+                severity="danger"
+                @click="deletePermission(slotProps.data.id)"
+              />
+            </div>
+          </template>
+        </Column>
+      </DataTable>
     </div>
   </AppLayout>
 </template>
