@@ -28,7 +28,7 @@ class AdminUserSeeder extends Seeder
         );
 
         // Assign role admin ke user
-        if (!$user->hasRole('admin')) {
+        if (!$user->hasRole('Super Admin')) {
             $user->assignRole($role);
         }
     }
