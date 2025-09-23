@@ -19,7 +19,7 @@ use App\Http\Controllers\Settings\ProfileController;
 // =================================
 Route::get('/', fn () => redirect('login'))->name('home');
 
-Route::get('dashboard', fn () => Inertia::render('Dashboard')->with('message', 'Selamat datang'))
+Route::get('dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
@@ -34,15 +34,16 @@ Route::get('/auth/google', fn () => Socialite::driver('google')->redirect())
 Route::get('/auth/google/callback', function () {
     $googleUser = Socialite::driver('google')->stateless()->user();
 
-    $user = User::firstOrCreate(
+    $user = \App\Models\User::firstOrCreate(
         ['email' => $googleUser->getEmail()]
     );
 
-    $user->assignRole('user');
-    Auth::login($user);
+    $user->assignRole('user'); // default role
+    \Illuminate\Support\Facades\Auth::login($user);
 
     return redirect('/dashboard')->with("message", "Selamat datang");
 });
+
 
 Route::get('/clear-message', fn () => redirect()->back()->without(['message']));
 Route::post('profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
