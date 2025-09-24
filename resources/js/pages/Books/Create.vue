@@ -1,289 +1,189 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue'
+import { Head } from '@inertiajs/vue3'
+import BookForm from '@/components/BookForm.vue'
+import useBookForms from '@/composables/useBookForms'
 import { type BreadcrumbItem } from '@/types'
-import { Head, Link, useForm } from '@inertiajs/vue3'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
-// Props dari controller
+// Props kategori
 const props = defineProps<{
   categories: { id: number; name: string }[]
 }>()
 
-// Breadcrumbs
+// Breadcrumb
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Books', href: '/books' },
   { title: 'Tambah Buku', href: '/books/create' },
 ]
 
-// Form state
-const form = useForm({
-  isbn: '',
-  title: '',
-  author: '',
-  publisher: '',
-  year: '',
-  pages: '',
-  description: '',
-  category_id: '',
-  file: null as File | null,
-  cover: null as File | null,
-})
+// Import composable
+const {
+  forms,
+  activeIndex,
+  MAX_FORMS,
+  addFormManual,
+  handleMultipleFiles,
+  processAllOCR,
+  nextForm,
+  prevForm,
+  submitAll,
+  addFileToQueue, // buat OCR
+} = useBookForms()
 
-// Cover preview reactive
-const defaultCover = '/images/dummy-cover.png' // siapkan di public/images
-const coverPreview = ref<string>(defaultCover)
+// Kamera
+const video = ref<HTMLVideoElement | null>(null)
+const canvas = ref<HTMLCanvasElement | null>(null)
+const showCamera = ref(false)
 
-watch(
-  () => form.cover,
-  (newCover) => {
-    if (newCover) {
-      coverPreview.value = URL.createObjectURL(newCover)
-    } else {
-      coverPreview.value = defaultCover
+async function openCamera() {
+  showCamera.value = true
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+    })
+    if (video.value) {
+      video.value.srcObject = stream
     }
-  }
-)
-
-// Handle upload cover
-const handleCoverChange = (e: Event) => {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (file) {
-    form.cover = file
+  } catch (err) {
+    console.error("Gagal akses kamera:", err)
+    showCamera.value = false
   }
 }
 
-// Submit form
-const submit = () => {
-  form.post(route('books.store'))
+function takePhoto() {
+  if (!video.value || !canvas.value) return
+  const ctx = canvas.value.getContext('2d')
+  canvas.value.width = video.value.videoWidth
+  canvas.value.height = video.value.videoHeight
+  ctx?.drawImage(video.value, 0, 0)
+  canvas.value.toBlob(blob => {
+    if (blob) {
+      const file = new File([blob], `photo-${Date.now()}.png`, { type: "image/png" })
+      addFileToQueue(file) // ⬅ masukin ke OCR file, bukan cover
+      showCamera.value = false
+      // stop stream biar kamera mati
+      const tracks = (video.value?.srcObject as MediaStream)?.getTracks()
+      tracks?.forEach(t => t.stop())
+    }
+  })
 }
-
-
-//Ocr Test
-// import Tesseract from 'tesseract.js';
-import Tesseract from 'tesseract.js'
-
-
-const ocrResult = ref('')
-const loadingOCR = ref(false)
-
-const handleOCR = (e: Event) => {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file) return
-
-  loadingOCR.value = true
-  ocrResult.value = '⏳ Sedang membaca teks...'
-
-  Tesseract.recognize(file, 'eng+ind', { logger: m => console.log(m) })
-    .then(({ data: { text } }) => {
-      ocrResult.value = text
-      parseToForm(text) // otomatis isi form
-      loadingOCR.value = false
-    })
-    .catch(err => {
-      ocrResult.value = 'Gagal OCR: ' + err.message
-      loadingOCR.value = false
-    })
-}
-
-const parseToForm = (text: string) => {
-  const lines = text.split('\n').map(l => l.trim()).filter(l => l)
-
- lines.forEach((line, index) => {
-  if (/isbn/i.test(line)) {
-    form.isbn = line.replace(/isbn[: ]?/i, '').trim()
-  } else if (/judul/i.test(line)) {
-    form.title = line.replace(/judul[: ]?/i, '').trim()
-  } else if (/penulis/i.test(line)) {
-    form.author = line.replace(/penulis[: ]?/i, '').trim()
-  } else if (/penerbit/i.test(line)) {
-    form.publisher = line.replace(/penerbit[: ]?/i, '').trim()
-  } else if (/tahun/i.test(line)) {
-    form.year = line.replace(/tahun[: ]?/i, '').trim()
-  } else if (/halaman/i.test(line)) {
-    form.pages = line.replace(/halaman[: ]?/i, '').trim()
-  } else if (!form.title && index === 0) {
-    // fallback khusus baris pertama -> dianggap judul
-    form.title = line.trim()
-  }
-})
-
-// ==== Khusus deskripsi (multi-line) ====
-const descMatch = text.match(/Deskripsi[:\s]+([\s\S]+)/i)
-if (descMatch) {
-  form.description = descMatch[1].trim()
-}
-}
-
-
 </script>
 
 <template>
   <Head title="Tambah Buku" />
 
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="p-6 max-w-3xl mx-auto">
-      <h1 class="text-2xl font-bold mb-6">Tambah Buku Baru</h1>
+    <div class="p-6 max-w-5xl mx-auto space-y-6">
+      <!-- Header -->
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-gray-800">📚 Tambah Buku</h1>
+        <span v-if="forms.length" class="text-sm text-gray-500">
+          Total Form: {{ forms.length }}/{{ MAX_FORMS }}
+        </span>
+      </div>
 
-      <form @submit.prevent="submit" class="space-y-6">
-        <!-- Cover Buku -->
-        <div>
-          <label class="block text-sm font-medium mb-2">Cover Buku</label>
-          <div class="flex items-start space-x-4">
-            <!-- Preview -->
-            <div
-              class="w-32 h-44 border rounded overflow-hidden bg-gray-50 flex items-center justify-center shadow"
-            >
-              <img
-                :src="coverPreview"
-                alt="Preview Cover"
-                class="object-cover w-full h-full"
-              />
-            </div>
-            <!-- Input -->
-            <div class="flex-1">
-              <input
-                type="file"
-                accept="image/*"
-                @change="handleCoverChange"
-                class="w-full border rounded p-2"
-              />
-              <p v-if="form.errors.cover" class="text-red-500 text-sm mt-1">
-                {{ form.errors.cover }}
-              </p>
-              <p class="text-xs text-gray-500 mt-1">Format: JPG/PNG, max 2MB</p>
-            </div>
-          </div>
-        </div>
+      <!-- Aksi Tambah -->
+      <div class="bg-white shadow rounded-xl p-5 flex flex-wrap gap-4">
+        <button
+          @click="addFormManual"
+          class="px-4 py-2 bg-green-600 hover:bg-green-700 transition text-white rounded-lg shadow disabled:opacity-50"
+          :disabled="forms.length >= MAX_FORMS"
+        >
+          + Form Manual
+        </button>
 
-        <!-- OCR Gambar Buku -->
-<div>
-  <label class="block text-sm font-medium mb-2">Scan OCR (opsional)</label>
-  <input
-    type="file"
-    accept="image/*"
-    @change="handleOCR"
-    class="w-full border rounded p-2"
-  />
-  <div v-if="loadingOCR" class="text-blue-500 mt-2">Membaca teks dari gambar...</div>
-  <pre v-if="ocrResult" class="bg-gray-100 p-2 mt-2 rounded text-xs">{{ ocrResult }}</pre>
-</div>
-
-
-        <!-- ISBN -->
-        <div>
-          <label class="block text-sm font-medium">ISBN</label>
-          <input
-            v-model="form.isbn"
-            type="text"
-            class="w-full border rounded p-2"
-          />
-          <p v-if="form.errors.isbn" class="text-red-500 text-sm">
-            {{ form.errors.isbn }}
-          </p>
-        </div>
-
-        <!-- Judul -->
-        <div>
-          <label class="block text-sm font-medium">Judul</label>
-          <input
-            v-model="form.title"
-            type="text"
-            class="w-full border rounded p-2"
-          />
-          <p v-if="form.errors.title" class="text-red-500 text-sm">
-            {{ form.errors.title }}
-          </p>
-        </div>
-
-        <!-- Penulis & Penerbit -->
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium">Penulis</label>
-            <input
-              v-model="form.author"
-              type="text"
-              class="w-full border rounded p-2"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium">Penerbit</label>
-            <input
-              v-model="form.publisher"
-              type="text"
-              class="w-full border rounded p-2"
-            />
-          </div>
-        </div>
-
-        <!-- Tahun & Halaman -->
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium">Tahun</label>
-            <input
-              v-model="form.year"
-              type="number"
-              class="w-full border rounded p-2"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium">Jumlah Halaman</label>
-            <input
-              v-model="form.pages"
-              type="number"
-              class="w-full border rounded p-2"
-            />
-          </div>
-        </div>
-
-        <!-- Kategori -->
-        <div>
-          <label class="block text-sm font-medium">Kategori</label>
-          <select v-model="form.category_id" class="w-full border rounded p-2">
-            <option value="">-- Pilih Kategori --</option>
-            <option v-for="cat in props.categories" :key="cat.id" :value="cat.id">
-              {{ cat.name }}
-            </option>
-          </select>
-          <p v-if="form.errors.category_id" class="text-red-500 text-sm">
-            {{ form.errors.category_id }}
-          </p>
-        </div>
-
-        <!-- Deskripsi -->
-        <div>
-          <label class="block text-sm font-medium">Deskripsi</label>
-          <textarea
-            v-model="form.description"
-            rows="4"
-            class="w-full border rounded p-2"
-          ></textarea>
-        </div>
-
-        <!-- File Buku -->
-        <div>
-          <label class="block text-sm font-medium">File Buku (PDF/EPUB)</label>
+        <!-- Upload dari file manager (OCR) -->
+        <label
+          class="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 transition text-white rounded-lg shadow cursor-pointer disabled:opacity-50"
+        >
           <input
             type="file"
-            @change="form.file = $event.target.files[0]"
-            class="w-full border rounded p-2"
+            accept="image/*"
+            multiple
+            class="hidden"
+            :disabled="forms.length >= MAX_FORMS"
+            @change="handleMultipleFiles"
           />
-          <p v-if="form.errors.file" class="text-red-500 text-sm">
-            {{ form.errors.file }}
-          </p>
-        </div>
+          📂 Pilih dari File (OCR)
+        </label>
 
-        <!-- Tombol -->
-        <div class="flex justify-end space-x-2">
-          <Link href="/books" class="px-4 py-2 bg-gray-300 rounded">Batal</Link>
-          <button
-            type="submit"
-            class="px-4 py-2 bg-blue-600 text-white rounded"
-            :disabled="form.processing"
-          >
-            Simpan
+        <!-- Kamera (OCR) -->
+        <button
+          @click="openCamera"
+          class="px-4 py-2 bg-purple-600 hover:bg-purple-700 transition text-white rounded-lg shadow disabled:opacity-50"
+          :disabled="forms.length >= MAX_FORMS"
+        >
+          📷 Ambil Foto (OCR)
+        </button>
+
+        <!-- Tombol proses OCR semua -->
+        <button
+          @click="processAllOCR"
+          class="px-4 py-2 bg-orange-500 hover:bg-orange-600 transition text-white rounded-lg shadow disabled:opacity-50"
+          :disabled="!forms.length"
+        >
+          🔍 Proses OCR Semua
+        </button>
+      </div>
+
+      <!-- Kamera Modal -->
+      <div
+        v-if="showCamera"
+        class="fixed inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center z-50"
+      >
+        <video ref="video" autoplay playsinline class="w-full max-w-md rounded-lg shadow-lg"></video>
+        <canvas ref="canvas" class="hidden"></canvas>
+        <div class="mt-4 flex gap-4">
+          <button @click="takePhoto" class="px-6 py-2 bg-green-600 text-white rounded-lg">
+            📸 Ambil
+          </button>
+          <button @click="showCamera=false" class="px-6 py-2 bg-gray-500 text-white rounded-lg">
+            ❌ Batal
           </button>
         </div>
-      </form>
+      </div>
+
+      <!-- Navigasi Slide -->
+      <div
+        v-if="forms.length"
+        class="bg-gray-50 border rounded-xl p-4 flex items-center justify-between"
+      >
+        <button
+          @click="prevForm"
+          :disabled="activeIndex === 0"
+          class="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-lg disabled:opacity-50"
+        >
+          ◀ Prev
+        </button>
+        <span class="font-medium text-gray-700">
+          Buku <span class="text-blue-600">{{ activeIndex + 1 }}</span> dari {{ forms.length }}
+        </span>
+        <button
+          @click="nextForm"
+          :disabled="activeIndex === forms.length - 1"
+          class="px-3 py-1.5 bg-gray-200 hover:bg-gray-300 rounded-lg disabled:opacity-50"
+        >
+          Next ▶
+        </button>
+      </div>
+
+      <!-- Form Aktif -->
+      <div v-if="forms.length" class="bg-white shadow rounded-xl p-6">
+        <!-- BookForm handle cover, OCR hasil dari kamera/file -->
+        <BookForm v-model="forms[activeIndex]" :categories="props.categories" />
+      </div>
+
+      <!-- Submit Semua -->
+      <div v-if="forms.length" class="flex justify-end">
+        <button
+          @click="submitAll"
+          class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 transition text-white rounded-lg shadow"
+        >
+          💾 Simpan Semua Buku
+        </button>
+      </div>
     </div>
   </AppLayout>
 </template>
+

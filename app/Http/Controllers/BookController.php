@@ -65,6 +65,52 @@ class BookController extends Controller
         ]);
     }
 
+public function storeMultiple(Request $request)
+{
+    $validated = $request->validate([
+        'books' => 'required|array|max:5',
+        'books.*.isbn'        => 'required|string|max:20|unique:books,isbn',
+        'books.*.title'       => 'required|string|max:255',
+        'books.*.author'      => 'nullable|string|max:255',
+        'books.*.publisher'   => 'nullable|string|max:255',
+        'books.*.year'        => 'nullable|integer|digits:4|min:1000|max:' . date('Y'),
+        'books.*.pages'       => 'nullable|integer',
+        'books.*.description' => 'nullable|string',
+        'books.*.category_id' => 'nullable|exists:categories,id',
+    ]);
+
+    $savedBooks = [];
+    $booksFiles = $request->file('books'); // ambil file nested array
+
+    foreach ($request->books as $i => $bookData) {
+        // Cover
+        $coverFile = $booksFiles[$i]['cover'] ?? null;
+        if ($coverFile instanceof \Illuminate\Http\UploadedFile) {
+            $bookData['cover_path'] = $coverFile->store('covers', 'public');
+        } else {
+            $bookData['cover_path'] = 'images/dummy-cover.png';
+        }
+
+        // File buku
+        $bookFile = $booksFiles[$i]['file'] ?? null;
+        if ($bookFile instanceof \Illuminate\Http\UploadedFile) {
+            $bookData['file_path'] = $bookFile->store('books', 'public');
+        }
+
+        // Hapus key supaya bisa masuk $fillable
+        unset($bookData['cover'], $bookData['file']);
+
+        $savedBooks[] = Book::create($bookData);
+    }
+
+    return redirect()->route('books.index')
+        ->with('success', count($savedBooks) . ' buku berhasil disimpan!');
+}
+
+
+
+
+
     // Simpan buku baru
     public function store(Request $request)
     {
