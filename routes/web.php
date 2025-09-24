@@ -145,6 +145,10 @@ Route::middleware(['auth', 'web', 'verified'])->group(function () {
         ->name('books.forceDelete')
         ->middleware('permission:books.forceDelete');
 
+        // routes/web.php
+Route::post('/books/multiple', [BookController::class, 'storeMultiple'])
+    ->name('books.storeMultiple');
+
     // -------------------------------
     // Categories
     // -------------------------------
