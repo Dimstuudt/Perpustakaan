@@ -155,37 +155,44 @@ public function storeMultiple(Request $request)
     }
 
     // Update data buku
-    public function update(Request $request, Book $book)
-    {
-        $validated = $request->validate([
-            'isbn'        => 'required|string|max:20|unique:books,isbn,' . $book->id,
-            'title'       => 'required|string|max:255',
-            'author'      => 'nullable|string|max:255',
-            'publisher'   => 'nullable|string|max:255',
-            'year'        => 'nullable|integer|digits:4|min:1000|max:' . date('Y'),
-            'pages'       => 'nullable|integer',
-            'category_id' => 'nullable|exists:categories,id',
-            'description' => 'nullable|string',
-            'file'        => 'nullable|file|mimes:pdf,epub|max:20480',
-            'cover'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+public function update(Request $request, Book $book)
+{
+    $validated = $request->validate([
+        'isbn'        => 'required|string|max:20|unique:books,isbn,' . $book->id,
+        'title'       => 'required|string|max:255',
+        'author'      => 'nullable|string|max:255',
+        'publisher'   => 'nullable|string|max:255',
+        'year'        => 'nullable|integer|digits:4|min:1000|max:' . date('Y'),
+        'pages'       => 'nullable|integer',
+        'category_id' => 'nullable|exists:categories,id',
+        'description' => 'nullable|string',
+        'file'        => 'nullable|file|mimes:pdf,epub|max:20480',
+        'cover'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
 
-        // Hapus file lama jika upload baru
-        if ($request->hasFile('file') && $book->file_path && Storage::disk('public')->exists($book->file_path)) {
+    // Simpan file buku
+    if ($request->hasFile('file')) {
+        if ($book->file_path && Storage::disk('public')->exists($book->file_path)) {
             Storage::disk('public')->delete($book->file_path);
-            $validated['file_path'] = $request->file('file')->store('books', 'public');
         }
-
-        // Hapus cover lama jika upload baru
-        if ($request->hasFile('cover') && $book->cover_path && Storage::disk('public')->exists($book->cover_path)) {
-            Storage::disk('public')->delete($book->cover_path);
-            $validated['cover_path'] = $request->file('cover')->store('covers', 'public');
-        }
-
-        $book->update($validated);
-
-        return redirect()->route('books.index')->with('success', 'Buku berhasil diperbarui');
+        $validated['file_path'] = $request->file('file')->store('books', 'public');
     }
+
+    // Simpan cover buku
+    if ($request->hasFile('cover')) {
+        if ($book->cover_path && Storage::disk('public')->exists($book->cover_path)) {
+            Storage::disk('public')->delete($book->cover_path);
+        }
+        $validated['cover_path'] = $request->file('cover')->store('covers', 'public');
+    }
+
+    // Hapus kunci 'file' dan 'cover' biar gak bentrok
+    unset($validated['file'], $validated['cover']);
+
+    $book->update($validated);
+
+    return redirect()->route('books.index')->with('success', 'Buku berhasil diperbarui');
+}
 
     // Soft delete buku
     public function destroy(Book $book)

@@ -28,4 +28,19 @@ class Book extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function getCoverUrlAttribute()
+{
+    return $this->cover_path
+        ? asset('storage/'.$this->cover_path)
+        : asset('/images/dummy-cover.png');
+}
+
+    public function getFileUrlAttribute()
+{
+    return $this->file_path
+        ? asset('storage/'.$this->file_path)
+        : null;
+
+}
 }
