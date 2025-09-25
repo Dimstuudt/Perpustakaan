@@ -52,7 +52,7 @@ const handleFileChange = (e: Event) => {
 
 <template>
   <div class="bg-white shadow-md rounded-xl p-6 space-y-6">
-    <!-- Cover Buku -->
+    <!-- Cover Buku
     <div>
       <label class="block text-sm font-semibold text-gray-700 mb-2">Cover Buku</label>
       <div class="flex items-start space-x-4">
@@ -72,7 +72,7 @@ const handleFileChange = (e: Event) => {
           />
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- OCR Section -->
     <div>
