@@ -105,6 +105,8 @@ function bulkDeleteBooks() {
       <!-- Header -->
       <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-semibold">📚 Daftar Buku</h1>
+    <i style="color: grey;">#Nambah Cover Lewat Preview/Edit </i>
+
 
         <div class="flex gap-2">
           <Link
@@ -154,6 +156,7 @@ function bulkDeleteBooks() {
         <Column field="publisher" header="Penerbit" :style="{ width: '140px' }" sortable />
         <Column field="year" header="Tahun" :style="{ width: '80px' }" sortable />
         <Column field="pages" header="Halaman" :style="{ width: '80px' }" sortable />
+        <Column field="type" header="Tipe" :style="{ width: '80px' }" sortable />
         <Column field="category" header="Kategori" :style="{ width: '120px' }" sortable />
 
         <!-- Aksi -->

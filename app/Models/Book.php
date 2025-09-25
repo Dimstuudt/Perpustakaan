@@ -17,6 +17,7 @@ class Book extends Model
         'publisher',
         'year',
         'pages',
+        'type', 
         'category_id',
         'description',
         'file_path',
@@ -33,7 +34,7 @@ class Book extends Model
 {
     return $this->cover_path
         ? asset('storage/'.$this->cover_path)
-        : asset('/images/dummy-cover.png');
+        : null;
 }
 
     public function getFileUrlAttribute()
@@ -41,6 +42,16 @@ class Book extends Model
     return $this->file_path
         ? asset('storage/'.$this->file_path)
         : null;
-
 }
+
+    public function isEbook()
+    {
+        return $this->type === 'ebook';
+    }
+
+    public function isPhysical()
+    {
+        return $this->type === 'physical';
+    }
+
 }

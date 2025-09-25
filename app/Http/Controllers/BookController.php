@@ -25,6 +25,7 @@ class BookController extends Controller
                 'year'        => $book->year,
                 'pages'       => $book->pages,
                 'category'    => $book->category ? $book->category->name : null,
+                'type'        => $book->type,
                 'description' => $book->description,
                 'cover_path'  => $book->cover_path ? asset('storage/' . $book->cover_path) : null,
                 'file_path'   => $book->file_path ? asset('storage/' . $book->file_path) : null,
@@ -125,6 +126,7 @@ public function storeMultiple(Request $request)
             'description' => 'nullable|string',
             'file'        => 'nullable|file|mimes:pdf,epub|max:20480',
             'cover'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'type'        => 'required|in:ebook,physical', // <-- baru
         ]);
 
         if ($request->hasFile('file')) {
@@ -165,9 +167,11 @@ public function update(Request $request, Book $book)
         'year'        => 'nullable|integer|digits:4|min:1000|max:' . date('Y'),
         'pages'       => 'nullable|integer',
         'category_id' => 'nullable|exists:categories,id',
+        'type'        => 'required|in:ebook,physical',
         'description' => 'nullable|string',
         'file'        => 'nullable|file|mimes:pdf,epub|max:20480',
         'cover'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'type'        => 'required|in:ebook,physical',
     ]);
 
     // Simpan file buku
