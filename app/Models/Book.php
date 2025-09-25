@@ -22,6 +22,7 @@ class Book extends Model
         'description',
         'file_path',
         'cover_path',
+        'stock'
     ];
 
     // ✅ relasi ke category
@@ -53,5 +54,11 @@ class Book extends Model
     {
         return $this->type === 'physical';
     }
+
+    public function loans()
+{
+    return $this->hasMany(Loan::class);
+}
+
 
 }

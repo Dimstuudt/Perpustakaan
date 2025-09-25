@@ -69,4 +69,10 @@ class User extends Authenticatable implements MustVerifyEmail
             'is_active' => 'boolean',
         ];
     }
+
+    public function loans()
+{
+    return $this->hasMany(Loan::class);
+}
+
 }

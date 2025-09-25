@@ -112,7 +112,7 @@ export default function useBooksForms() {
     form.loadingOCR = true
     form.ocrResult = '⏳ Membaca teks...'
     try {
-      const { data: { text } } = await Tesseract.recognize(form.ocrFile, 'eng+ind')
+      const { data: { text } } = await Tesseract.recognize(form.ocrFile, 'ara+eng+ind')
       form.ocrResult = text
       parseToForm(text, form)
     } catch (err: any) {

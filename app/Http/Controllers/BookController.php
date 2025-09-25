@@ -127,6 +127,7 @@ public function storeMultiple(Request $request)
             'file'        => 'nullable|file|mimes:pdf,epub|max:20480',
             'cover'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'type'        => 'required|in:ebook,physical', // <-- baru
+            'stock'       => 'required|integer|min:1',
         ]);
 
         if ($request->hasFile('file')) {
@@ -172,6 +173,7 @@ public function update(Request $request, Book $book)
         'file'        => 'nullable|file|mimes:pdf,epub|max:20480',
         'cover'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         'type'        => 'required|in:ebook,physical',
+        'stock'       => 'required|integer|min:1',
     ]);
 
     // Simpan file buku
