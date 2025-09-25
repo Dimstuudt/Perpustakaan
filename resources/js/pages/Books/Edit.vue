@@ -3,6 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue'
 import { type BreadcrumbItem } from '@/types'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import { ref, watch } from 'vue'
+import Swal from 'sweetalert2' // 🔥 Import SweetAlert2
 
 const props = defineProps<{
   book: {
@@ -17,6 +18,7 @@ const props = defineProps<{
     category_id: number | null
     cover_url?: string | null
     file_url?: string | null
+    type?: string | null
   }
   categories: { id: number; name: string }[]
 }>()
@@ -27,7 +29,7 @@ const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Edit Buku', href: route('books.edit', props.book.id) },
 ]
 
-// Form state (gunakan ?? agar null tidak diubah jadi string kosong)
+// Form state
 const form = useForm({
   _method: 'PUT',
   isbn: props.book.isbn,
@@ -40,13 +42,10 @@ const form = useForm({
   category_id: props.book.category_id,
   file: null,
   cover: null,
-   type: (props.book.type ?? 'physical') as BookType, // default fallback ke physical
+  type: (props.book.type ?? 'physical') as BookType, // default fallback
 })
 
-
-
-
-// Cover preview (default atau dari book.cover_url)
+// Cover preview
 const defaultCover = '/images/dummy-cover.png'
 const coverPreview = ref<string>(props.book.cover_url ?? defaultCover)
 
@@ -69,23 +68,42 @@ const handleCoverChange = (e: Event) => {
   }
 }
 
-// Submit form (gunakan forceFormData untuk file)
+// ✅ Submit form dengan SweetAlert konfirmasi & notifikasi
 const submit = () => {
-  form.post(route('books.update', props.book.id), {
-    forceFormData: true,
-    onError: (errors) => {
-      console.error(errors)
-    },
-    onSuccess: () => {
-      console.log('Update sukses')
-    },
+  Swal.fire({
+    title: 'Konfirmasi',
+    text: 'Yakin ingin update data buku ini?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, Update',
+    cancelButtonText: 'Batal',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.post(route('books.update', props.book.id), {
+        forceFormData: true,
+        onError: (errors) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal Update',
+            text: Object.values(errors).join(', '),
+          })
+        },
+        onSuccess: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: 'Buku berhasil diupdate 🎉',
+            timer: 2000,
+            showConfirmButton: false,
+          })
+        },
+      })
+    }
   })
 }
 
-//Ocr Test
-// import Tesseract from 'tesseract.js';
+// ================= OCR =================
 import Tesseract from 'tesseract.js'
-
 
 const ocrResult = ref('')
 const loadingOCR = ref(false)
@@ -97,49 +115,62 @@ const handleOCR = (e: Event) => {
   loadingOCR.value = true
   ocrResult.value = '⏳ Sedang membaca teks...'
 
-  Tesseract.recognize(file, 'eng+ind', { logger: m => console.log(m) })
+  Tesseract.recognize(file, 'eng+ind', { logger: (m) => console.log(m) })
     .then(({ data: { text } }) => {
       ocrResult.value = text
       parseToForm(text) // otomatis isi form
       loadingOCR.value = false
+
+      Swal.fire({
+        icon: 'success',
+        title: 'OCR Selesai',
+        text: 'Data berhasil dibaca dari gambar 📖',
+        timer: 2000,
+        showConfirmButton: false,
+      })
     })
-    .catch(err => {
+    .catch((err) => {
       ocrResult.value = 'Gagal OCR: ' + err.message
       loadingOCR.value = false
+
+      Swal.fire({
+        icon: 'error',
+        title: 'OCR Error',
+        text: err.message,
+      })
     })
 }
 
 const parseToForm = (text: string) => {
-  const lines = text.split('\n').map(l => l.trim()).filter(l => l)
+  const lines = text.split('\n').map((l) => l.trim()).filter((l) => l)
 
   lines.forEach((line, index) => {
-  if (/isbn/i.test(line)) {
-    form.isbn = line.replace(/isbn[: ]?/i, '').trim()
-  } else if (/judul/i.test(line)) {
-    form.title = line.replace(/judul[: ]?/i, '').trim()
-  } else if (/penulis/i.test(line)) {
-    form.author = line.replace(/penulis[: ]?/i, '').trim()
-  } else if (/penerbit/i.test(line)) {
-    form.publisher = line.replace(/penerbit[: ]?/i, '').trim()
-  } else if (/tahun/i.test(line)) {
-    form.year = line.replace(/tahun[: ]?/i, '').trim()
-  } else if (/halaman/i.test(line)) {
-    form.pages = line.replace(/halaman[: ]?/i, '').trim()
-  } else if (!form.title && index === 0) {
-    // fallback khusus baris pertama -> dianggap judul
-    form.title = line.trim()
+    if (/isbn/i.test(line)) {
+      form.isbn = line.replace(/isbn[: ]?/i, '').trim()
+    } else if (/judul/i.test(line)) {
+      form.title = line.replace(/judul[: ]?/i, '').trim()
+    } else if (/penulis/i.test(line)) {
+      form.author = line.replace(/penulis[: ]?/i, '').trim()
+    } else if (/penerbit/i.test(line)) {
+      form.publisher = line.replace(/penerbit[: ]?/i, '').trim()
+    } else if (/tahun/i.test(line)) {
+      form.year = line.replace(/tahun[: ]?/i, '').trim()
+    } else if (/halaman/i.test(line)) {
+      form.pages = line.replace(/halaman[: ]?/i, '').trim()
+    } else if (!form.title && index === 0) {
+      // fallback: baris pertama dianggap judul
+      form.title = line.trim()
+    }
+  })
+
+  // ==== Deskripsi multi-line ====
+  const descMatch = text.match(/Deskripsi[:\s]+([\s\S]+)/i)
+  if (descMatch) {
+    form.description = descMatch[1].trim()
   }
-})
-
-// ==== Khusus deskripsi (multi-line) ====
-const descMatch = text.match(/Deskripsi[:\s]+([\s\S]+)/i)
-if (descMatch) {
-  form.description = descMatch[1].trim()
 }
-}
-
-
 </script>
+
 
 <template>
   <Head title="Edit Buku" />
