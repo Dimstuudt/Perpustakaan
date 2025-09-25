@@ -5,16 +5,18 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Users, UserRoundCog, ShieldCheck } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, Users, UserRoundCog, ShieldCheck, Book, BookCopyIcon } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
-    { title: 'Dashboard', href: '/dashboard', icon: LayoutGrid },
-    { title: 'Users', href: '/users', icon: Users },
-    { title: 'Roles', href: '/roles', icon: UserRoundCog },
-    { title: 'Permissions', href: '/permissions', icon: ShieldCheck },
-    { title: 'Books', href: '/books', icon: BookOpen },
-    { title: 'Categories', href: '/categories', icon: Folder },
+    { title: 'Dashboard|SAU', href: '/dashboard', icon: LayoutGrid },
+    { title: 'Users|SA', href: '/users', icon: Users },
+    { title: 'Roles|S', href: '/roles', icon: UserRoundCog },
+    { title: 'Permissions|S', href: '/permissions', icon: ShieldCheck },
+    { title: 'Books|SA', href: '/books', icon: BookOpen },
+    { title: 'Categories|SA', href: '/categories', icon: Folder },
+    { title: 'Loans Admin|SA', href: '/loans', icon: Book},
+    { title: 'Loans User|U', href: '/user/loansuser', icon: BookCopyIcon }
 
     // bisa ditambah item lain untuk testing scroll
 ];

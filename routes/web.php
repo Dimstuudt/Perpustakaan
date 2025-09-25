@@ -9,6 +9,7 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserLoanController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\PermissionController;
@@ -186,6 +187,45 @@ Route::post('/books/multiple', [BookController::class, 'storeMultiple'])
         ->name('categories.bulkForceDelete')
         ->middleware('permission:categories.forceDelete');
 });
+
+
+//loans 
+
+use App\Http\Controllers\LoanController;
+
+// User ajukan pinjam
+Route::post('loans', [LoanController::class, 'store'])
+    ->name('loans.store')
+    ->middleware(['auth', 'role:user']);
+
+// Admin lihat daftar peminjaman
+Route::get('loans', [LoanController::class, 'index'])
+    ->name('loans.index')
+    ->middleware(['auth', 'permission:loans.view']);
+
+// Admin approve pinjam
+Route::put('loans/{loan}/approve', [LoanController::class, 'approve'])
+    ->name('loans.approve')
+    ->middleware(['auth', 'permission:loans.approve']);
+
+// Admin reject pinjam
+Route::put('loans/{loan}/reject', [LoanController::class, 'reject'])
+    ->name('loans.reject')
+    ->middleware(['auth', 'permission:loans.reject']);
+
+// Admin terima pengembalian
+Route::put('loans/{loan}/return', [LoanController::class, 'return'])
+    ->name('loans.return')
+    ->middleware(['auth', 'permission:loans.return']);
+
+// User routes
+Route::middleware(['auth', 'role:user'])->prefix('user')->group(function () {
+    Route::get('/loansuser', [UserLoanController::class, 'index'])
+        ->name('user.loans.index');
+    Route::post('/loansuser', [UserLoanController::class, 'store'])
+        ->name('user.loans.store');
+});
+
 
 // =================================
 // Extra
