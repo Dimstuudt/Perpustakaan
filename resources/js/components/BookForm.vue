@@ -17,6 +17,7 @@ interface BookForm {
   ocrPreview: string | null       // Preview gambar OCR
   ocrResult: string               // Hasil OCR
   loadingOCR: boolean             // Status OCR
+  type: 'ebook' | 'physical'       // Tipe buku
 }
 
 const props = defineProps<{
@@ -154,6 +155,18 @@ const handleFileChange = (e: Event) => {
           />
         </div>
       </div>
+
+      <div class="flex space-x-4 mt-2">
+  <label>
+    <input type="radio" value="physical" v-model="props.modelValue.type" />
+    Buku Fisik
+  </label>
+  <label>
+    <input type="radio" value="ebook" v-model="props.modelValue.type" />
+    Ebook
+  </label>
+</div>
+
 
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1">Kategori</label>

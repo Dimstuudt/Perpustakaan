@@ -40,6 +40,7 @@ const form = useForm({
   category_id: props.book.category_id,
   file: null,
   cover: null,
+   type: (props.book.type ?? 'physical') as BookType, // default fallback ke physical
 })
 
 
@@ -246,6 +247,17 @@ if (descMatch) {
             {{ form.errors.category_id }}
           </p>
         </div>
+
+<!-- Tipe Buku -->
+ <div class="flex space-x-4 mt-2">
+  <label>
+    <input type="radio" value="physical" v-model="form.type" /> Buku Fisik
+  </label>
+  <label>
+    <input type="radio" value="ebook" v-model="form.type" /> Ebook
+  </label>
+</div>
+
 
         <!-- Deskripsi -->
         <div>
