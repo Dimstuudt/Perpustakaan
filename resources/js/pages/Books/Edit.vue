@@ -19,6 +19,7 @@ const props = defineProps<{
     cover_url?: string | null
     file_url?: string | null
     type?: string | null
+    stock?: number | null
   }
   categories: { id: number; name: string }[]
 }>()
@@ -43,6 +44,7 @@ const form = useForm({
   file: null,
   cover: null,
   type: (props.book.type ?? 'physical') as BookType, // default fallback
+  stock: props.book.stock ?? 0,
 })
 
 // Cover preview
@@ -278,6 +280,21 @@ const parseToForm = (text: string) => {
             {{ form.errors.category_id }}
           </p>
         </div>
+
+        <!-- Stok Buku -->
+<div>
+  <label class="block text-sm font-medium">Stok</label>
+  <input
+    v-model="form.stock"
+    type="number"
+    min="0"
+    class="w-full border rounded p-2"
+  />
+  <p v-if="form.errors.stock" class="text-red-500 text-sm">
+    {{ form.errors.stock }}
+  </p>
+</div>
+
 
 <!-- Tipe Buku -->
  <div class="flex space-x-4 mt-2">

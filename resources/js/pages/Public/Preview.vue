@@ -1,28 +1,87 @@
 <script setup lang="ts">
 import PublicLayout from '@/Layouts/PublicLayout.vue'
+import { router, usePage } from '@inertiajs/vue3'
+import Swal from 'sweetalert2'
+import { watch } from 'vue'
 
-defineProps<{
-  book: {
-    id: number
-    isbn: string
-    title: string
-    author: string
-    publisher: string | null
-    year: number | null
-    pages: number | null
-    type: string | null
-    category: { id: number; name: string } | null
-    description: string | null
-    cover_url: string | null
-    stock: number
-  }
-  relatedBooks?: {
-    id: number
-    title: string
-    author: string
-    cover_url: string | null
-  }[]
+interface Book {
+  id: number
+  isbn: string
+  title: string
+  author: string
+  publisher: string | null
+  year: number | null
+  pages: number | null
+  type: string | null
+  category: { id: number; name: string } | null
+  description: string | null
+  cover_url: string | null
+  stock: number
+}
+
+interface RelatedBook {
+  id: number
+  title: string
+  author: string
+  cover_url: string | null
+}
+
+// Props dari backend
+const props = defineProps<{
+  book: Book
+  relatedBooks?: RelatedBook[]
+  hasPendingLoan: boolean
 }>()
+
+// Cek apakah user login
+const page = usePage()
+const isLoggedIn = !!page.props.auth?.user
+
+// Watch flash message
+watch(
+  () => page.props.flash,
+  (flash) => {
+    if (flash?.message) Swal.fire('Berhasil', flash.message, 'success')
+    if (flash?.error) Swal.fire('Gagal', flash.error, 'error')
+  },
+  { immediate: true, deep: true }
+)
+
+// Function pinjam buku
+const pinjamBuku = () => {
+  if (!isLoggedIn) {
+    router.get('/login')
+    return
+  }
+
+  if (props.hasPendingLoan) {
+    Swal.fire('Info', 'Anda sudah memiliki peminjaman yang belum selesai. Cek status di dashboard.', 'info')
+    return
+  }
+
+  if (props.book.stock <= 0) {
+    Swal.fire('Habis', 'Buku ini sedang habis, tidak bisa dipinjam.', 'warning')
+    return
+  }
+
+  Swal.fire({
+    title: 'Ajukan Peminjaman?',
+    text: `Buku: ${props.book.title}\nPenulis: ${props.book.author}`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, pinjam!',
+    cancelButtonText: 'Batal',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      router.post(route('user.loans.store'), { book_id: props.book.id }, {
+        preserveScroll: true,
+        preserveState: true,
+        onSuccess: () => Swal.fire('Berhasil', 'Peminjaman dibuat. Cek status di dashboard.', 'success'),
+        onError: () => Swal.fire('Gagal', 'Terjadi kesalahan saat meminjam buku.', 'error')
+      })
+    }
+  })
+}
 </script>
 
 <template>
@@ -63,9 +122,7 @@ defineProps<{
             </div>
 
             <!-- Deskripsi -->
-            <div
-              class="mt-5 text-gray-700 dark:text-gray-300 leading-relaxed text-sm whitespace-pre-line"
-            >
+            <div class="mt-5 text-gray-700 dark:text-gray-300 leading-relaxed text-sm whitespace-pre-line">
               {{ book.description ?? 'Belum ada deskripsi untuk buku ini.' }}
             </div>
           </div>
@@ -83,6 +140,7 @@ defineProps<{
         <button
           class="bg-sky-600 text-white px-4 py-2 rounded-md shadow hover:bg-sky-700 transition"
           :disabled="book.stock <= 0"
+          @click="pinjamBuku"
         >
           📖 Pinjam Buku
         </button>
