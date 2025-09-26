@@ -12,29 +12,57 @@ class UserLoanController extends Controller
     public function index()
     {
         $books = Book::where('stock', '>=', 1)->get();
-        return Inertia::render('User/Loans/Create', [
-            'books' => $books
-        ]);
+       return Inertia::render('User/Loans/Create', [
+    'books' => Book::all(),
+    'hasPendingLoan' => Loan::where('user_id', auth()->id())
+                            ->where('status', 'pending')
+                            ->exists(),
+]);
+
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'book_id' => 'required|exists:books,id'
-        ]);
+{
+    $request->validate([
+        'book_id' => 'required|exists:books,id'
+    ]);
 
-        $book = Book::findOrFail($request->book_id);
+    // cek kalau user sudah ada peminjaman pending
+    $alreadyLoan = Loan::where('user_id', auth()->id())
+        ->where('status', 'pending')
+        ->exists();
 
-        if($book->stock < 1){
-            return back()->with('error', 'Buku habis');
-        }
-
-        Loan::create([
-            'user_id' => auth()->id(),
-            'book_id' => $book->id,
-            'status' => 'pending'
-        ]);
-
-        return redirect()->route('user.loans.index')->with('message','Peminjaman berhasil diajukan');
+    if ($alreadyLoan) {
+        return back()->with('error', 'Anda hanya bisa membuat 1 permohonan peminjaman.');
     }
+
+    $book = Book::findOrFail($request->book_id);
+
+    if ($book->stock < 1) {
+        return back()->with('error', 'Buku habis.');
+    }
+
+    Loan::create([
+        'user_id' => auth()->id(),
+        'book_id' => $book->id,
+        'status' => 'pending'
+    ]);
+
+    return redirect()->route('user.loans.index')
+        ->with('message','Peminjaman berhasil diajukan');
+}
+
+public function status()
+{
+    $loans = \App\Models\Loan::with('book')
+        ->where('user_id', auth()->id())
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return inertia('User/Loans/Status', [
+        'loans' => $loans
+    ]);
+}
+
+
 }

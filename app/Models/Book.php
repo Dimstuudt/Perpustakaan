@@ -17,7 +17,7 @@ class Book extends Model
         'publisher',
         'year',
         'pages',
-        'type', 
+        'type',
         'category_id',
         'description',
         'file_path',
@@ -31,12 +31,14 @@ class Book extends Model
         return $this->belongsTo(Category::class);
     }
 
+   protected $appends = ['cover_url']; // otomatis ikut dimunculin
+
     public function getCoverUrlAttribute()
-{
-    return $this->cover_path
-        ? asset('storage/'.$this->cover_path)
-        : null;
-}
+    {
+        return $this->cover_path
+            ? asset('storage/' . $this->cover_path)
+            : null;
+    }
 
     public function getFileUrlAttribute()
 {

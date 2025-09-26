@@ -5,12 +5,12 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
-
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserLoanController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Settings\ProfileController;
@@ -24,7 +24,10 @@ Route::get('dashboard', [\App\Http\Controllers\DashboardController::class, 'inde
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::get('/welcome', fn () => Inertia::render('Welcome'));
+Route::get('/welcome', [LandingController::class, 'welcome'])->name('landing.welcome');
+Route::get('/book/{id}', [LandingController::class, 'preview'])->name('public.preview');
+
+
 
 Auth::routes(['verify' => true]); // aktifkan verifikasi email
 
@@ -189,7 +192,7 @@ Route::post('/books/multiple', [BookController::class, 'storeMultiple'])
 });
 
 
-//loans 
+//loans
 
 use App\Http\Controllers\LoanController;
 
@@ -197,6 +200,11 @@ use App\Http\Controllers\LoanController;
 Route::post('loans', [LoanController::class, 'store'])
     ->name('loans.store')
     ->middleware(['auth', 'role:user']);
+
+    //user status
+    Route::get('/user/loans/status', [UserLoanController::class, 'status'])->name('user.loans.status');
+
+
 
 // Admin lihat daftar peminjaman
 Route::get('loans', [LoanController::class, 'index'])
@@ -219,7 +227,7 @@ Route::put('loans/{loan}/return', [LoanController::class, 'return'])
     ->middleware(['auth', 'permission:loans.return']);
 
 // User routes
-Route::middleware(['auth', 'role:user'])->prefix('user')->group(function () {
+Route::middleware(['auth'])->prefix('user')->group(function () {
     Route::get('/loansuser', [UserLoanController::class, 'index'])
         ->name('user.loans.index');
     Route::post('/loansuser', [UserLoanController::class, 'store'])
