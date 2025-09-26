@@ -16,11 +16,6 @@ const books = ref([
   { id: 4, title: 'Belajar Vue 3', author: 'Sandy Dev', cover: 'https://via.placeholder.com/150x220' },
 ])
 
-const articles = ref([
-  { id: 1, title: 'Belajar Vue 3', excerpt: 'Panduan lengkap Vue 3 Composition API.', image: 'https://via.placeholder.com/400x200' },
-  { id: 2, title: 'Laravel & Inertia', excerpt: 'Membangun SPA dengan Laravel + Inertia.', image: 'https://via.placeholder.com/400x200' },
-  { id: 3, title: 'Tailwind CSS Tips', excerpt: 'Membuat layout modern dengan Tailwind.', image: 'https://via.placeholder.com/400x200' },
-])
 
 const categories = ref([
   { id: 1, name: 'Teknologi' },
@@ -95,19 +90,10 @@ function formatNumber(n: number) {
           </ul>
 
           <div class="mt-6">
-            <h4 class="font-medium mb-2">Pencarian Cepat</h4>
-            <div class="flex gap-2">
-              <input type="text" placeholder="Cari judul atau pengarang" class="flex-1 px-3 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-sky-400" />
-              <button class="px-3 py-2 bg-sky-600 text-white rounded">Cari</button>
-            </div>
-          </div>
-
-          <div class="mt-6">
             <h4 class="font-medium mb-2">Menu</h4>
             <ul class="space-y-2 text-sm">
               <li><a href="#" class="block px-3 py-2 rounded hover:bg-sky-50 dark:hover:bg-gray-700">Home</a></li>
               <li><a href="#" class="block px-3 py-2 rounded hover:bg-sky-50 dark:hover:bg-gray-700">Buku Baru</a></li>
-              <li><a href="#" class="block px-3 py-2 rounded hover:bg-sky-50 dark:hover:bg-gray-700">Artikel</a></li>
               <li><a href="#" class="block px-3 py-2 rounded hover:bg-sky-50 dark:hover:bg-gray-700">Tentang</a></li>
             </ul>
           </div>
@@ -133,23 +119,7 @@ function formatNumber(n: number) {
             </div>
           </section>
 
-          <!-- Artikel -->
-          <section class="mb-8">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="text-2xl font-bold">Artikel Terbaru</h2>
-              <a href="#" class="text-sky-600 hover:underline">Lihat Semua →</a>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <article v-for="art in articles" :key="art.id" class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow hover:shadow-lg transition">
-                <img :src="art.image" alt="thumb" class="w-full h-44 object-cover"/>
-                <div class="p-4">
-                  <h3 class="font-semibold text-lg mb-2">{{ art.title }}</h3>
-                  <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">{{ art.excerpt }}</p>
-                </div>
-              </article>
-            </div>
-          </section>
+          
 
           <!-- Statistik + CTA -->
           <section class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow flex flex-col md:flex-row items-center justify-between gap-4">
