@@ -3,6 +3,8 @@ import AppLayout from '@/layouts/AppLayout.vue'
 import { Head, useForm, router } from '@inertiajs/vue3'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
+import Swal from 'sweetalert2'
+import { type BreadcrumbItem } from '@/types'
 
 const form = useForm({
   name: '',
@@ -10,14 +12,49 @@ const form = useForm({
   description: '',
 })
 
+// Breadcrumbs
+const breadcrumbs: BreadcrumbItem[] = [
+  { title: 'Racks', href: route('racks.index') },
+  { title: 'Add Rack', href: route('racks.create') },
+]
+
 function submit() {
-  form.post(route('racks.store'))
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Pastikan data rack sudah benar sebelum disimpan!',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, save it!',
+    cancelButtonText: 'Cancel',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      form.post(route('racks.store'), {
+        preserveScroll: true,
+        onSuccess: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Saved!',
+            text: 'Rack berhasil ditambahkan.',
+            timer: 2000,
+            showConfirmButton: false,
+          })
+        },
+        onError: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Failed!',
+            text: 'Terjadi kesalahan saat menyimpan rack.',
+          })
+        },
+      })
+    }
+  })
 }
 </script>
 
 <template>
   <Head title="Add Rack" />
-  <AppLayout>
+  <AppLayout :breadcrumbs="breadcrumbs">
     <div class="p-6 space-y-6">
       <h2 class="text-2xl font-semibold">Add Rack</h2>
 

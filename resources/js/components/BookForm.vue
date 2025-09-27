@@ -18,6 +18,7 @@ interface BookForm {
   ocrResult: string               // Hasil OCR
   loadingOCR: boolean             // Status OCR
   type: 'ebook' | 'physical'       // Tipe buku
+  stock: number
 }
 
 const props = defineProps<{
@@ -155,6 +156,19 @@ const handleFileChange = (e: Event) => {
           />
         </div>
       </div>
+
+
+<!-- Input stok muncul hanya jika Buku Fisik -->
+<div v-if="props.modelValue.type === 'physical'">
+  <label class="block text-sm font-semibold text-gray-700 mb-1">Stok</label>
+  <input
+    v-model="props.modelValue.stock"
+    type="number"
+    min="0"
+    class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+    placeholder="Masukkan jumlah stok"
+  />
+</div>
 
       <div class="flex space-x-4 mt-2">
   <label>

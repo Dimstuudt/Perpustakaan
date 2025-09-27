@@ -6,8 +6,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\LogController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserLoanController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LandingController;
@@ -57,39 +55,6 @@ Route::post('profile/avatar', [ProfileController::class, 'updateAvatar'])->name(
 // =================================
 Route::middleware(['auth', 'web', 'verified'])->group(function () {
 
-    // -------------------------------
-    // Users
-    // -------------------------------
-    Route::resource('users', UserController::class)->only(['create', 'store'])
-        ->middleware('permission:users.create');
-
-    Route::resource('users', UserController::class)->only(['edit', 'update'])
-        ->middleware('permission:users.edit');
-
-    Route::resource('users', UserController::class)->only(['destroy'])
-        ->middleware('permission:users.delete');
-
-    Route::put('/users/{user}/toggleStatus', [UserController::class, 'toggleStatus'])
-        ->name('users.toggleStatus')
-        ->middleware('permission:users.toggleStatus');
-
-    Route::resource('users', UserController::class)->only(['index', 'show'])
-        ->middleware('permission:users.view');
-
-    // -------------------------------
-    // Roles
-    // -------------------------------
-    Route::resource('roles', RoleController::class)->only(['create', 'store'])
-        ->middleware('permission:roles.create');
-
-    Route::resource('roles', RoleController::class)->only(['edit', 'update'])
-        ->middleware('permission:roles.edit');
-
-    Route::resource('roles', RoleController::class)->only(['destroy'])
-        ->middleware('permission:roles.delete');
-
-    Route::resource('roles', RoleController::class)->only(['index', 'show'])
-        ->middleware('permission:roles.view');
 
     // -------------------------------
     // Permissions
@@ -234,13 +199,13 @@ Route::middleware(['auth'])->prefix('user')->group(function () {
         ->name('user.loans.store');
 });
 
-//racks
-use App\Http\Controllers\RackController;
-
-Route::resource('racks', RackController::class);
 
 // =================================
 // Extra
 // =================================
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
+require __DIR__ . '/users.php';
+require __DIR__ . '/roles.php';
+require __DIR__ . '/racks.php';
+
