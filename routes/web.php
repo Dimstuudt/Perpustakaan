@@ -234,6 +234,10 @@ Route::middleware(['auth'])->prefix('user')->group(function () {
         ->name('user.loans.store');
 });
 
+//racks
+use App\Http\Controllers\RackController;
+
+Route::resource('racks', RackController::class);
 
 // =================================
 // Extra
