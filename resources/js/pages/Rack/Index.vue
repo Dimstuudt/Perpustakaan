@@ -16,9 +16,12 @@ const props = defineProps<{
     last_page: number,
     per_page: number,
     total: number,
+    
   },
   filters: {
     search?: string,
+
+
   }
 }>()
 
