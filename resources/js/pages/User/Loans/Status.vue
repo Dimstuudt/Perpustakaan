@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Head } from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3'
+import Swal from 'sweetalert2'
+
 
 // PrimeVue components
 import DataTable from 'primevue/datatable'
@@ -24,6 +27,21 @@ const breadcrumbs = [
   { title: 'Peminjaman', href: '/user/loansuser' },
   { title: 'Status Peminjaman', href: '/user/loans/status' },
 ]
+
+const cancelLoan = (id: number) => {
+  Swal.fire({
+    title: 'Batalkan Pengajuan?',
+    text: 'Apakah kamu yakin ingin membatalkan peminjaman ini?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, Batalkan',
+    cancelButtonText: 'Tidak',
+  }).then(result => {
+    if (result.isConfirmed) {
+      router.delete(`/user/loans/${id}/cancel`)
+    }
+  })
+}
 </script>
 
 <template>
@@ -74,6 +92,18 @@ const breadcrumbs = [
             </span>
           </template>
         </Column>
+        <Column header="Aksi" style="width: 120px; text-align: center;">
+  <template #body="slotProps">
+    <button
+      v-if="slotProps.data.status === 'pending'"
+      @click="cancelLoan(slotProps.data.id)"
+      class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
+    >
+      Batalkan
+    </button>
+  </template>
+</Column>
+
       </DataTable>
 
       <div v-if="props.loans.length === 0" class="mt-4 text-center text-gray-500">
