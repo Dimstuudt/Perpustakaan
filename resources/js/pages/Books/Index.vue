@@ -4,12 +4,6 @@ import { type BreadcrumbItem } from '@/types'
 import { Head, Link, router } from '@inertiajs/vue3'
 import Swal from 'sweetalert2'
 import { can } from '@/lib/can'
-
-// PrimeVue Components
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
 import { ref, computed } from 'vue'
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -27,6 +21,7 @@ const props = defineProps<{
       year: number | null
       pages: number | null
       category: string | null
+      cover?: string | null
     }[]
     current_page: number
     last_page: number
@@ -37,9 +32,9 @@ const props = defineProps<{
   }
 }>()
 
-// Search & Selection
 const search = ref('')
-const selected = ref<any[]>([]) // <-- untuk bulk delete
+const selected = ref<number[]>([])
+
 const filteredBooks = computed(() =>
   props.books.data.filter((b) =>
     Object.values(b)
@@ -49,7 +44,14 @@ const filteredBooks = computed(() =>
   )
 )
 
-// Hapus satuan
+function toggleSelect(id: number) {
+  if (selected.value.includes(id)) {
+    selected.value = selected.value.filter((sid) => sid !== id)
+  } else {
+    selected.value.push(id)
+  }
+}
+
 function deleteBook(id: number) {
   Swal.fire({
     title: 'Yakin hapus?',
@@ -69,10 +71,8 @@ function deleteBook(id: number) {
   })
 }
 
-// Bulk delete
 function bulkDeleteBooks() {
   if (!selected.value.length) return
-
   Swal.fire({
     title: 'Hapus buku terpilih?',
     text: 'Semua buku akan dipindahkan ke sampah.',
@@ -82,16 +82,18 @@ function bulkDeleteBooks() {
     confirmButtonText: 'Ya, hapus!',
   }).then((result) => {
     if (result.isConfirmed) {
-      router.post(route('books.bulkDelete'), {
-        ids: selected.value.map((b) => b.id),
-      }, {
-        onSuccess: () => {
-          Swal.fire('Terhapus!', 'Buku dipindahkan ke sampah.', 'success')
-          selected.value = []
-          router.reload()
-        },
-        onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error'),
-      })
+      router.post(
+        route('books.bulkDelete'),
+        { ids: selected.value },
+        {
+          onSuccess: () => {
+            Swal.fire('Terhapus!', 'Buku dipindahkan ke sampah.', 'success')
+            selected.value = []
+            router.reload()
+          },
+          onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error'),
+        }
+      )
     }
   })
 }
@@ -103,9 +105,9 @@ function bulkDeleteBooks() {
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="p-6">
       <!-- Header -->
-      <div class="flex justify-between items-center mb-4">
+      <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold">📚 Daftar Buku</h1>
-    <i style="color: grey;">#Nambah Cover Lewat Preview/Edit </i>
+      <i style="color: grey;">#NambahCoverLewatEdit/Preview</i>
 
 
         <div class="flex gap-2">
@@ -116,78 +118,104 @@ function bulkDeleteBooks() {
           >
             + Tambah Buku
           </Link>
-
           <Link
             v-if="can('books.view')"
             :href="route('books.trashed')"
             class="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-600 flex items-center gap-1"
           >
-            <span>🗑️</span>
-            <span>Lihat Sampah</span>
+            🗑️ Lihat Sampah
           </Link>
         </div>
       </div>
 
-      <!-- Bulk Action + Search -->
-      <div class="mb-3 flex items-center gap-2">
-        <Button
-          v-if="selected.length && can('books.delete')"
-          label="Hapus Terpilih"
-          class="p-button-sm p-button-danger"
-          @click="bulkDeleteBooks"
+      <!-- Search & Bulk Action -->
+      <div class="mb-6 flex items-center gap-3">
+        <input
+          v-model="search"
+          placeholder="Cari buku..."
+          class="w-full md:w-1/2 px-3 py-2 border rounded focus:ring focus:border-blue-400"
         />
-        <InputText v-model="search" placeholder="Cari buku..." class="w-1/2" />
+        <button
+          v-if="selected.length && can('books.delete')"
+          @click="bulkDeleteBooks"
+          class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600"
+        >
+          Hapus Terpilih ({{ selected.length }})
+        </button>
       </div>
 
-      <!-- DataTable -->
-      <DataTable
-        v-model:selection="selected"
-        :value="filteredBooks"
-        dataKey="id"
-        responsiveLayout="scroll"
-        class="p-datatable-sm p-datatable-gridlines text-sm"
-      >
-        <!-- Checkbox untuk pilih banyak -->
-        <Column selectionMode="multiple" style="width: 3rem" />
+      <!-- Card Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div
+          v-for="book in filteredBooks"
+          :key="book.id"
+          class="bg-white shadow-md rounded-lg overflow-hidden flex flex-col relative"
+        >
+          <!-- Checkbox Select -->
+          <input
+            type="checkbox"
+            class="absolute top-2 left-2 w-4 h-4 accent-red-500"
+            :checked="selected.includes(book.id)"
+            @change="toggleSelect(book.id)"
+          />
 
-        <Column field="isbn" header="ISBN" :style="{ width: '120px' }" sortable />
-        <Column field="title" header="Judul" :style="{ width: '200px' }" sortable />
-        <Column field="author" header="Penulis" :style="{ width: '140px' }" sortable />
-        <Column field="publisher" header="Penerbit" :style="{ width: '140px' }" sortable />
-        <Column field="year" header="Tahun" :style="{ width: '80px' }" sortable />
-        <Column field="pages" header="Halaman" :style="{ width: '80px' }" sortable />
-        <Column field="type" header="Tipe" :style="{ width: '80px' }" sortable />
-        <Column field="category" header="Kategori" :style="{ width: '120px' }" sortable />
+          <!-- Cover -->
+ <!-- Cover -->
+<div
+  class="h-56 w-full flex items-center justify-center bg-gray-200 text-center px-2"
+>
+  <img
+    v-if="book.cover_path"
+    :src="book.cover_path"
+    alt="Cover"
+    class="h-56 w-full object-cover"
+  />
+  <span
+    v-else
+    class="text-gray-700 font-semibold text-sm line-clamp-3"
+  >
+    {{ book.title }}
+  </span>
+</div>
 
-        <!-- Aksi -->
-        <Column header="Aksi" :style="{ width: '200px' }">
-          <template #body="slotProps">
-            <div class="flex gap-1 justify-center">
-              <Button
+
+          <!-- Info -->
+          <div class="p-4 flex flex-col flex-1">
+            <h2 class="text-lg font-semibold truncate">{{ book.title }}</h2>
+            <p class="text-sm text-gray-600">✍️ {{ book.author ?? '-' }}</p>
+            <p class="text-xs text-gray-500 mt-1">🏷️ {{ book.category ?? '-' }}</p>
+
+            <div class="mt-auto flex gap-2 pt-3">
+              <button
                 v-if="can('books.preview')"
-                label="Preview"
-                class="p-button-sm p-button-help text-xs"
-                @click="() => router.get(route('books.preview', slotProps.data.id))"
-              />
-              <Button
+                @click="router.get(route('books.preview', book.id))"
+                class="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+              >
+                Preview
+              </button>
+              <button
                 v-if="can('books.edit')"
-                label="Edit"
-                class="p-button-sm p-button-info text-xs"
-                @click="() => router.get(route('books.edit', slotProps.data.id))"
-              />
-              <Button
+                @click="router.get(route('books.edit', book.id))"
+                class="px-3 py-1 bg-yellow-500 text-white rounded text-xs hover:bg-yellow-600"
+              >
+                Edit
+              </button>
+              <button
                 v-if="can('books.delete')"
-                label="Hapus"
-                class="p-button-sm p-button-danger text-xs"
-                @click="deleteBook(slotProps.data.id)"
-              />
+                @click="deleteBook(book.id)"
+                class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600"
+              >
+                Hapus
+              </button>
             </div>
-          </template>
-        </Column>
-      </DataTable>
+          </div>
+        </div>
+      </div>
 
       <!-- Pagination -->
-      <div class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between mt-4">
+      <div
+        class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between mt-6"
+      >
         <span class="text-xs xs:text-sm text-gray-900">
           Showing
           {{ (props.books.current_page - 1) * props.books.per_page + 1 }}
