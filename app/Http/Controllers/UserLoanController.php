@@ -67,4 +67,18 @@ class UserLoanController extends Controller
             'loans' => $loans
         ]);
     }
+
+   public function cancel($id)
+{
+    $loan = Loan::where('id', $id)
+        ->where('status', 'pending')
+        ->where('user_id', auth()->id())
+        ->firstOrFail();
+
+    $loan->delete(); // langsung hapus
+
+    return back()->with('success', 'Peminjaman berhasil dibatalkan.');
+}
+
+
 }

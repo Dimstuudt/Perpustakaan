@@ -199,6 +199,9 @@ Route::middleware(['auth'])->prefix('user')->group(function () {
         ->name('user.loans.store');
 });
 
+Route::delete('/user/loans/{id}/cancel', [UserLoanController::class, 'cancel'])
+    ->name('loans.cancel');
+
 
 
 // =================================
