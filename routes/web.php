@@ -200,6 +200,7 @@ Route::middleware(['auth'])->prefix('user')->group(function () {
 });
 
 
+
 // =================================
 // Extra
 // =================================
@@ -208,4 +209,5 @@ require __DIR__ . '/auth.php';
 require __DIR__ . '/users.php';
 require __DIR__ . '/roles.php';
 require __DIR__ . '/racks.php';
+require __DIR__ . '/cabinets.php';
 

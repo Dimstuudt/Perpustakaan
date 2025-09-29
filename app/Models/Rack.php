@@ -12,4 +12,10 @@ class Rack extends Model
     {
         return $this->hasMany(Book::class);
     }
+
+    public function cabinet()
+{
+    return $this->belongsTo(Cabinet::class, 'cabinet_id');
+}
+
 }
