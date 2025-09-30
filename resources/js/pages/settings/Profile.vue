@@ -11,250 +11,294 @@ import SettingsLayout from '@/layouts/settings/Layout.vue';
 import { type BreadcrumbItem, type User } from '@/types';
 import InputText from 'primevue/inputtext';
 import { Transition } from 'vue';
-import {ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { computed } from 'vue';
 import { useInitials } from '@/composables/useInitials';
 import Swal from 'sweetalert2';
 
-const props = defineProps<Props>();
+const props = defineProps<{
+  mustVerifyEmail: boolean;
+  status?: string;
+}>();
 
-interface Props {
-    mustVerifyEmail: boolean;
-    status?: string;
-}
 const breadcrumbItems: BreadcrumbItem[] = [
-    {
-        title: 'Profile settings',
-        href: '/settings/profile',
-    },
+  { title: 'Profile settings', href: '/settings/profile' },
 ];
 
 const page = usePage();
 const user = page.props.auth.user as User;
 
-const form = useForm({
-    name: user.name,
-    username: user.username,
-    email: user.email,
-    avatar: null,
+// 🔹 Pisahkan form
+const profileForm = useForm({
+  name: user.name,
+  username: user.username,
+  email: user.email,
 });
 
-const submit = () => {
-    form.patch(route('profile.update'), {
-        preserveScroll: true,
-        onSuccess: () => {
-            Swal.fire({
-                title: "Process Success",
-                text: "Profile Berhasil Diperbarui",
-                icon: "success",
+const avatarForm = useForm({
+  avatar: null as File | null,
+});
 
-            });
-        },
-        onError: () => {
-            Swal.fire({
-                title: "Process Failed",
-                text: form.errors.email ?? form.errors.name ?? form.errors.username,
-                icon: "error"
-            });
-        }
-    });
+// --------------------
+// Update Profile Info
+// --------------------
+const submit = () => {
+  profileForm.patch(route('profile.update'), {
+    preserveScroll: true,
+    onSuccess: () => {
+      Swal.fire({
+        title: 'Process Success',
+        text: 'Profile Berhasil Diperbarui',
+        icon: 'success',
+      });
+    },
+    onError: () => {
+      Swal.fire({
+        title: 'Process Failed',
+        text:
+          profileForm.errors.email ??
+          profileForm.errors.name ??
+          profileForm.errors.username,
+        icon: 'error',
+      });
+    },
+  });
 };
 
-const photoPreview = ref(null);
+// --------------------
+// Update Avatar
+// --------------------
+const photoPreview = ref<string | null>(null);
 
-const selectNewPhoto = (event) => {
-    form.avatar = event.target.files[0];
-    if (form.avatar) {
-        photoPreview.value = URL.createObjectURL(form.avatar);
-    }
+const selectNewPhoto = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0] || null;
+  avatarForm.avatar = file;
+  if (file) {
+    photoPreview.value = URL.createObjectURL(file);
+  }
 };
 
 const updateProfilePhoto = () => {
-    form.post(route('profile.avatar'), {
-        preserveScroll: true,
-        onSuccess: () => {
-            form.reset('avatar');
-            photoPreview.value = null;
-        },
-    });
-}
+  avatarForm.post(route('profile.avatar'), {
+    preserveScroll: true,
+    onSuccess: () => {
+      avatarForm.reset('avatar');
+      photoPreview.value = null;
+    },
+  });
+};
+
+// --------------------
+// Username Warning
+// --------------------
 const usernameWarning = ref('');
-watch(() => form.username, (val) => {
+watch(
+  () => profileForm.username,
+  (val) => {
     if (/\s/.test(val)) {
-        usernameWarning.value = 'Username field cannot use spaces'
+      usernameWarning.value = 'Username field cannot use spaces';
     } else {
-        usernameWarning.value = ''
+      usernameWarning.value = '';
     }
-})
+  }
+);
+
+// --------------------
+// SweetAlert reminder
+// --------------------
 const flash = page.props?.flash?.message;
 if (flash || !user.username || !user.name) {
-    Swal.fire({
-        icon: "info",
-        title: "Complete Your Profile",
-        text: "Please Complete your Profile info before proceed",
-    });
+  Swal.fire({
+    icon: 'info',
+    title: 'Complete Your Profile',
+    text: 'Please complete your profile info before proceed',
+  });
 }
 
-// watch(form, () => {
-//     isDirty.value = true;
-// }, { deep: true });
-// const isDirty = ref(false);
-// onMounted(() => {
-//     console.log('[DEBUG] onMounted called');
-//     window.addEventListener('beforeunload', function(){
-//         // return   Swal.fire({
-//         //         title: 'Perubahan belum disimpan',
-//         //         text: 'Yakin ingin meninggalkan halaman ini?',
-//         //         icon: 'warning',
-//         //         showCancelButton: true,
-//         //         confirmButtonText: 'Ya, tinggalkan',
-//         //         cancelButtonText: 'Batal',
-//             })
-//     });
-
-//     router.on('before', (event) => {
-
-//         if (isDirty.value) {
-//             event.preventDefault();
-
-//             Swal.fire({
-//                 title: 'Harap isi form yang ada',
-//                 text: 'Sebelum melajutkan harap isi form yang ada',
-//                 icon: 'warning',
-//                 showCancelButton: true,
-//                 confirmButtonText: 'Ya, tinggalkan',
-//                 cancelButtonText: 'Batal',
-//             }).then((result) => {
-//                 if (result.isConfirmed) {
-//                     isDirty.value = false;
-//                     router.visit('/settings/profile',{
-//                         preserveScroll: true,
-//                         preserveState: true,
-//                     });
-//                 }
-//             });
-//         }
-//     });
-// });
-
-
-
-
-
-// onBeforeUnmount(() => {
-//     window.removeEventListener('beforeunload', handleBeforeUnload);
-// });
-const fileInput = ref(null);
+const fileInput = ref<HTMLInputElement | null>(null);
 const openFileInput = () => {
-    fileInput.value.click();
-}
-const { getInitials } = useInitials();
+  fileInput.value?.click();
+};
 
-// Compute whether we should show the avatar image
-// const showAvatar = computed(() => props.user.avatar && props.user.avatar !== '');
+const { getInitials } = useInitials();
 </script>
+
 <style>
 .profile-user-img {
-    cursor: pointer;
+  cursor: pointer;
 }
 </style>
 
 <template>
-    <AppLayout :breadcrumbs="breadcrumbItems">
+  <AppLayout :breadcrumbs="breadcrumbItems">
+    <Head title="Profile Settings" />
 
-        <Head title="Profile settings" />
+    <SettingsLayout>
+      <div class="space-y-10">
+        <!-- Password Link -->
+        <div class="flex justify-end">
+          <Link
+            href="/settings/password"
+            class="text-sm text-primary underline hover:text-primary/80"
+          >
+            Ganti Password
+          </Link>
+        </div>
 
-        <SettingsLayout>
-            <Link href="/settings/password">Ganti Password</Link>
+        <!-- Foto Profil -->
+        <section
+          class="bg-white dark:bg-neutral-900 shadow rounded-2xl p-6 space-y-4"
+        >
+          <HeadingSmall
+            title="Foto Profil"
+            description="Unggah atau perbarui foto profil Anda"
+          />
 
-            <div class="flex flex-col space-y-6">
-                <HeadingSmall title="Profile information" description="Update your name and email address" />
-                <div class="mt-6">
-                    <h2 class="text-lg font-medium text-gray-900">Foto Profil</h2>
-                    <p class="mt-1 text-sm text-gray-600">
-                        Unggah atau perbarui foto profil Anda.
-                    </p>
-                </div>
-                <div class="mt-4">
-                    <Avatar class="w-32 h-32 rounded-full object-cover profile-user-img" @click="openFileInput">
-                        <AvatarImage v-if="user.avatar || photoPreview" :src="photoPreview || '/storage/' + user.avatar"
-                        alt="Foto Profil" class="w-32 h-32 rounded-full object-cover profile-user-img" @click = "openFileInput" />
-                        <AvatarFallback class="rounded-lg text-black dark:text-white">
-                            {{ getInitials(user.username) }}
-                        </AvatarFallback>
-                    </Avatar>
-                </div>
+          <div class="flex flex-col items-center space-y-4">
+            <Avatar
+              class="w-32 h-32 rounded-full ring-2 ring-offset-2 ring-primary cursor-pointer hover:scale-105 transition-transform"
+              @click="openFileInput"
+            >
+              <AvatarImage
+                v-if="user.avatar || photoPreview"
+                :src="photoPreview || '/storage/' + user.avatar"
+                alt="Foto Profil"
+              />
+              <AvatarFallback
+                class="text-2xl font-semibold text-black dark:text-white"
+              >
+                {{ getInitials(user.username) }}
+              </AvatarFallback>
+            </Avatar>
 
-                <form @submit.prevent="updateProfilePhoto" class="mt-4 space-y-4">
-                    <div>
-                        <Input for="avatar" value="Pilih Foto" />
-                        <input ref="fileInput" id="avatar" type="file" accept="image/*" class="mt-1 block w-full"
-                            @change="selectNewPhoto" />
-                        <InputError class="mt-2" :message="form.errors.avatar" />
-                    </div>
+            <form
+              @submit.prevent="updateProfilePhoto"
+              class="flex flex-col items-center gap-3"
+            >
+              <input
+                ref="fileInput"
+                id="avatar"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="selectNewPhoto"
+              />
 
-                    <div class="flex items-center gap-4">
-                        <Button :disabled="form.processing || !form.avatar">
-                            Unggah
-                        </Button>
+              <Button
+                :disabled="avatarForm.processing || !avatarForm.avatar"
+                class="w-fit"
+              >
+                Unggah Foto
+              </Button>
 
-                        <p v-if="props.status === 'profile-photo-updated'" class="text-sm font-medium text-green-600">
-                            Foto profil berhasil diperbarui.
-                        </p>
-                    </div>
-                </form>
-                <form @submit.prevent="submit" class="space-y-6">
+              <InputError :message="avatarForm.errors.avatar" />
+              <p
+                v-if="props.status === 'profile-photo-updated'"
+                class="text-sm font-medium text-green-600"
+              >
+                Foto profil berhasil diperbarui.
+              </p>
+            </form>
+          </div>
+        </section>
 
-                    <div class="grid gap-2">
-                        <Label for="name">fullname</Label>
-                        <InputText id="name" class="mt-1 block w-full" v-model="form.name" required autocomplete="name"
-                            autofocus="true" placeholder="enter your fullname" />
-                        <InputError class="mt-2" :message="form.errors.name" />
-                    </div>
-                    <div class="grid gap-2">
-                        <Label for="username">Username</Label>
-                        <InputText id="username" class="mt-1 block w-full" v-model="form.username" required
-                            autocomplete="username" placeholder="enter your username" />
-                        <InputError class="mt-2" :message="form.errors.username ?? usernameWarning" />
-                        <!-- <p v-if="usernameWarning" class="text-sm text-red-600 mt-1">
-                            {{ usernameWarning }}
-                        </p> -->
-                    </div>
+        <!-- Profile Information -->
+        <section
+          class="bg-white dark:bg-neutral-900 shadow rounded-2xl p-6 space-y-6"
+        >
+          <HeadingSmall
+            title="Informasi Profil"
+            description="Update nama, username, dan email Anda"
+          />
 
-                    <div class="grid gap-2">
-                        <Label for="email">Email address</Label>
-                        <InputText id="email" type="email" class="mt-1 block w-full" v-model="form.email" required
-                            autocomplete="username" placeholder="Email address" />
-                        <InputError class="mt-2" :message="form.errors.email" />
-                    </div>
-
-                    <div v-if="mustVerifyEmail && !user.email_verified_at">
-                        <p class="-mt-4 text-sm text-muted-foreground">
-                            Your email address is unverified.
-                            <Link :href="route('verification.send')" method="post" as="button"
-                                class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500">
-                            Click here to resend the verification email.
-                            </Link>
-                        </p>
-
-                        <div v-if="status === 'verification-link-sent'" class="mt-2 text-sm font-medium text-green-600">
-                            A new verification link has been sent to your email address.
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4">
-                        <Button :disabled="form.processing">Save</Button>
-
-                        <Transition enter-active-class="transition ease-in-out" enter-from-class="opacity-0"
-                            leave-active-class="transition ease-in-out" leave-to-class="opacity-0">
-                            <p v-show="form.recentlySuccessful" class="text-sm text-neutral-600">Saved.</p>
-                        </Transition>
-                    </div>
-                </form>
+          <form @submit.prevent="submit" class="space-y-5">
+            <!-- Fullname -->
+            <div class="grid gap-2">
+              <Label for="name">Fullname</Label>
+              <InputText
+                id="name"
+                class="w-full"
+                v-model="profileForm.name"
+                required
+                placeholder="Masukkan nama lengkap"
+              />
+              <InputError :message="profileForm.errors.name" />
             </div>
 
-            <DeleteUser />
-        </SettingsLayout>
-    </AppLayout>
+            <!-- Username -->
+            <div class="grid gap-2">
+              <Label for="username">Username</Label>
+              <InputText
+                id="username"
+                class="w-full"
+                v-model="profileForm.username"
+                required
+                placeholder="Masukkan username"
+              />
+              <InputError
+                :message="profileForm.errors.username ?? usernameWarning"
+              />
+            </div>
+
+            <!-- Email -->
+            <div class="grid gap-2">
+              <Label for="email">Email Address</Label>
+              <InputText
+                id="email"
+                type="email"
+                class="w-full"
+                v-model="profileForm.email"
+                required
+                placeholder="Masukkan email aktif"
+              />
+              <InputError :message="profileForm.errors.email" />
+            </div>
+
+            <!-- Verification -->
+            <div v-if="mustVerifyEmail && !user.email_verified_at">
+              <p class="text-sm text-muted-foreground">
+                Email Anda belum diverifikasi.
+                <Link
+                  :href="route('verification.send')"
+                  method="post"
+                  as="button"
+                  class="ml-1 text-primary underline hover:text-primary/80"
+                >
+                  Klik di sini untuk kirim ulang verifikasi.
+                </Link>
+              </p>
+              <div
+                v-if="status === 'verification-link-sent'"
+                class="mt-2 text-sm font-medium text-green-600"
+              >
+                Link verifikasi baru telah dikirim ke email Anda.
+              </div>
+            </div>
+
+            <!-- Save -->
+            <div class="flex items-center gap-4">
+              <Button :disabled="profileForm.processing">Simpan</Button>
+              <Transition
+                enter-active-class="transition ease-in-out"
+                enter-from-class="opacity-0"
+                leave-active-class="transition ease-in-out"
+                leave-to-class="opacity-0"
+              >
+                <p
+                  v-show="profileForm.recentlySuccessful"
+                  class="text-sm text-neutral-600"
+                >
+                  Tersimpan.
+                </p>
+              </Transition>
+            </div>
+          </form>
+        </section>
+
+        <!-- Delete Account -->
+        <DeleteUser />
+      </div>
+    </SettingsLayout>
+  </AppLayout>
 </template>
