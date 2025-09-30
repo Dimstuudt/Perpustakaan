@@ -16,6 +16,7 @@ interface Book {
   title: string
   author: string
   stock: number
+   fee: number
 }
 
 // Props dari backend: daftar buku + status peminjaman pending
@@ -46,11 +47,15 @@ const breadcrumbs = [
 
 // Tombol pinjam buku
 const pinjam = (book: Book) => {
-  if (props.hasPendingLoan) return // prevent click jika sudah ada peminjaman
+  if (props.hasPendingLoan) return
 
   Swal.fire({
     title: 'Ajukan Peminjaman?',
-    text: `Buku: ${book.title}\nPenulis: ${book.author}`,
+    html: `
+      <b>Buku:</b> ${book.title}<br>
+      <b>Penulis:</b> ${book.author}<br>
+      <b>Fee:</b> Rp ${book.fee.toLocaleString('id-ID')}
+    `,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Ya, pinjam!',
@@ -99,37 +104,47 @@ const isButtonDisabled = (book: Book) => {
 </div>
 
 
-      <DataTable
-        :value="props.books"
-        :paginator="true"
-        :rows="5"
-        :globalFilterFields="['title','author']"
-        :filters="{ 'global': { value: search, matchMode: 'contains' } }"
-        class="p-datatable-gridlines p-datatable-sm"
-      >
-        <Column field="title" header="Judul Buku" sortable />
-        <Column field="author" header="Penulis" sortable />
-        <Column header="Stok">
-          <template #body="slotProps">
-            <Tag
-              :value="slotProps.data.stock > 0 ? slotProps.data.stock : 'Habis'"
-              :severity="slotProps.data.stock > 0 ? 'success' : 'danger'"
-            />
-          </template>
-        </Column>
-        <Column header="Aksi">
-          <template #body="slotProps">
-            <Button
-              label="Pinjam"
-              size="small"
-              :class="{'bg-gray-400 hover:bg-gray-400': props.hasPendingLoan}"
-              severity="info"
-              :disabled="isButtonDisabled(slotProps.data)"
-              @click="pinjam(slotProps.data)"
-            />
-          </template>
-        </Column>
-      </DataTable>
+<DataTable
+  :value="props.books"
+  :paginator="true"
+  :rows="5"
+  :globalFilterFields="['title','author']"
+  :filters="{ 'global': { value: search, matchMode: 'contains' } }"
+  class="p-datatable-gridlines p-datatable-sm"
+>
+  <Column field="title" header="Judul Buku" sortable />
+  <Column field="author" header="Penulis" sortable />
+
+  <!-- Fee / harga peminjaman -->
+  <Column header="Fee">
+    <template #body="slotProps">
+      Rp {{ slotProps.data.fee.toLocaleString('id-ID') }}
+    </template>
+  </Column>
+
+  <Column header="Stok">
+    <template #body="slotProps">
+      <Tag
+        :value="slotProps.data.stock > 0 ? slotProps.data.stock : 'Habis'"
+        :severity="slotProps.data.stock > 0 ? 'success' : 'danger'"
+      />
+    </template>
+  </Column>
+
+  <Column header="Aksi">
+    <template #body="slotProps">
+      <Button
+        label="Pinjam"
+        size="small"
+        :class="{'bg-gray-400 hover:bg-gray-400': props.hasPendingLoan}"
+        severity="info"
+        :disabled="isButtonDisabled(slotProps.data)"
+        @click="pinjam(slotProps.data)"
+      />
+    </template>
+  </Column>
+</DataTable>
+
 
       <div v-if="props.books.length === 0" class="mt-4 text-center text-gray-500">
         Tidak ada buku tersedia

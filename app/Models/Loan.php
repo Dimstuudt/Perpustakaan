@@ -9,7 +9,7 @@ class Loan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'book_id', 'status', 'borrowed_at', 'returned_at'];
+    protected $fillable = ['user_id', 'book_id', 'status', 'borrowed_at', 'returned_at', 'fee',];
 
     protected $casts = [
         'borrowed_at' => 'datetime',

@@ -22,7 +22,8 @@ class Book extends Model
         'description',
         'file_path',
         'cover_path',
-        'stock'
+        'stock',
+        'fee',
     ];
 
     // ✅ relasi ke category

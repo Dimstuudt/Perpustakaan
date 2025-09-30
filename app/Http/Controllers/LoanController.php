@@ -5,35 +5,35 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Loan;
 use App\Models\Book;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class LoanController extends Controller
 {
     // Admin lihat daftar peminjaman
-   public function index()
-{
-    $loans = Loan::with('user', 'book')
-                 ->orderBy('created_at', 'desc')
-                 ->get()
-                 ->map(fn($loan) => [
-                     'id' => $loan->id,
-                     'status' => $loan->status,
-                     'borrowed_at' => $loan->borrowed_at?->format('Y-m-d H:i') ?? null,
-                     'returned_at' => $loan->returned_at?->format('Y-m-d H:i') ?? null,
-                     'user' => [
-                         'name' => $loan->user->name,
-                     ],
-                     'book' => [
-                         'title' => $loan->book->title,
-                     ],
-                 ]);
+    public function index()
+    {
+        $loans = Loan::with('user', 'book')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn($loan) => [
+                'id' => $loan->id,
+                'status' => $loan->status,
+                'borrowed_at' => $loan->borrowed_at?->format('Y-m-d H:i') ?? null,
+                'returned_at' => $loan->returned_at?->format('Y-m-d H:i') ?? null,
+                'fee' => $loan->fee, // ✅ tampilkan fee
+                'user' => [
+                    'name' => $loan->user->name,
+                ],
+                'book' => [
+                    'title' => $loan->book->title,
+                ],
+            ]);
 
-    return Inertia::render('Admin/Loans/Index', [
-        'loans' => $loans
-    ]);
-}
-
-
+        return Inertia::render('Admin/Loans/Index', [
+            'loans' => $loans
+        ]);
+    }
 
     // Approve peminjaman
     public function approve(Loan $loan)
@@ -87,5 +87,39 @@ class LoanController extends Controller
         $loan->book->increment('stock');
 
         return back()->with('success', 'Pengembalian buku diterima.');
+    }
+
+    // User create loan
+    public function store(Request $request)
+    {
+        $request->validate([
+            'book_id' => 'required|exists:books,id'
+        ]);
+
+        // cek pending
+        $alreadyLoan = Loan::where('user_id', auth()->id())
+            ->where('status', 'pending')
+            ->exists();
+
+        if ($alreadyLoan) {
+            return back()->with('error', 'Anda hanya bisa membuat 1 permohonan peminjaman.');
+        }
+
+        $book = Book::findOrFail($request->book_id);
+
+        if ($book->stock < 1) {
+            return back()->with('error', 'Buku habis.');
+        }
+
+        // ✅ simpan fee dari book ke loan
+        Loan::create([
+            'user_id' => auth()->id(),
+            'book_id' => $book->id,
+            'status' => 'pending',
+            'fee' => $book->fee,
+        ]);
+
+        return redirect()->route('user.loans.index')
+            ->with('message', 'Peminjaman berhasil diajukan');
     }
 }
