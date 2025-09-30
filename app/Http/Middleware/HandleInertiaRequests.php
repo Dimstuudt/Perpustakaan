@@ -50,22 +50,23 @@ class HandleInertiaRequests extends Middleware
                 'message' => session('message')
             ],
             'quote' => ['message' => trim($message), 'author' => trim($author)],
-            'auth' => [
-                'user' => function () {
-                    $user = Auth::user();
-                    return $user ? [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'username' => $user->username,
-                        'email' => $user->email,
-                        'avatar' => $user->avatar,
-                        'email_verified_at' => $user->email_verified_at,
-                        'has_password' => !is_null($user->password),
-                    ] : null;
-                },
-                'permissions' => fn() => $request->user()?->getAllPermissions()->pluck("name") ?? [],
+         'auth' => [
+    'user' => function () use ($request) {
+        $user = $request->user();
+        return $user ? [
+            'id' => $user->id,
+            'name' => $user->name,
+            'username' => $user->username,
+            'email' => $user->email,
+            'avatar' => $user->avatar,
+            'email_verified_at' => $user->email_verified_at,
+            'has_password' => !is_null($user->password),
+            'roles' => $user->getRoleNames(),
+            'permissions' => $user->getAllPermissions()->pluck('name'),
+        ] : null;
+    },
+],
 
-            ],
             'ziggy' => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
