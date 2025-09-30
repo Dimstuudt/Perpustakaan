@@ -9,52 +9,55 @@ use Inertia\Inertia;
 
 class UserLoanController extends Controller
 {
-    public function index()
-    {
-        // ambil hanya buku fisik yang masih ada stok
-        $books = Book::where('type', 'physical')
-            ->where('stock', '>=', 0)
-            ->select('id', 'title', 'author', 'stock')
-            ->get();
+   public function index()
+{
+    // ambil hanya buku fisik yang masih ada stok
+    $books = Book::where('type', 'physical')
+        ->where('stock', '>', 0) // lebih rapi pakai > daripada >= 0
+        ->select('id', 'title', 'author', 'stock', 'fee') // ✅ tambahin fee
+        ->get();
 
-        return Inertia::render('User/Loans/Create', [
-            'books' => $books,
-            'hasPendingLoan' => Loan::where('user_id', auth()->id())
-                ->where('status', 'pending')
-                ->exists(),
-        ]);
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'book_id' => 'required|exists:books,id'
-        ]);
-
-        // cek kalau user sudah ada peminjaman pending
-        $alreadyLoan = Loan::where('user_id', auth()->id())
+    return Inertia::render('User/Loans/Create', [
+        'books' => $books,
+        'hasPendingLoan' => Loan::where('user_id', auth()->id())
             ->where('status', 'pending')
-            ->exists();
+            ->exists(),
+    ]);
+}
 
-        if ($alreadyLoan) {
-            return back()->with('error', 'Anda hanya bisa membuat 1 permohonan peminjaman.');
-        }
 
-        $book = Book::findOrFail($request->book_id);
+public function store(Request $request)
+{
+    $request->validate([
+        'book_id' => 'required|exists:books,id'
+    ]);
 
-        if ($book->stock < 1) {
-            return back()->with('error', 'Buku habis.');
-        }
+    // cek kalau user sudah ada peminjaman pending
+    $alreadyLoan = Loan::where('user_id', auth()->id())
+        ->where('status', 'pending')
+        ->exists();
 
-        Loan::create([
-            'user_id' => auth()->id(),
-            'book_id' => $book->id,
-            'status' => 'pending'
-        ]);
-
-        return redirect()->route('user.loans.index')
-            ->with('message', 'Peminjaman berhasil diajukan');
+    if ($alreadyLoan) {
+        return back()->with('error', 'Anda hanya bisa membuat 1 permohonan peminjaman.');
     }
+
+    $book = Book::findOrFail($request->book_id);
+
+    if ($book->stock < 1) {
+        return back()->with('error', 'Buku habis.');
+    }
+
+    Loan::create([
+        'user_id' => auth()->id(),
+        'book_id' => $book->id,
+        'status' => 'pending',
+        'fee'    => $book->fee, // ✅ ambil harga dari buku
+    ]);
+
+    return redirect()->route('user.loans.index')
+        ->with('message', 'Peminjaman berhasil diajukan dengan fee Rp ' . number_format($book->fee, 0, ',', '.'));
+}
+
 
     public function status()
     {

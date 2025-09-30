@@ -17,6 +17,7 @@ interface Loan {
   returned_at: string | null
   user: { name: string }
   book: { title: string }
+ fee: number // ✅ tambahin fee
 }
 
 // Props dari backend
@@ -135,6 +136,13 @@ const returned = (loan: Loan) => {
     </span>
   </template>
 </Column>
+
+<Column header="Fee" style="width: 120px; text-align: left;">
+  <template #body="slotProps">
+    Rp {{ slotProps.data.fee.toLocaleString('id-ID') }}
+  </template>
+</Column>
+
 
        <!-- Tanggal pinjam -->
 <Column header="Pinjam" style="width: 140px; text-align: center;">
