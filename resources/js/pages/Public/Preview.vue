@@ -17,6 +17,7 @@ interface Book {
   description: string | null
   cover_url: string | null
   stock: number
+  fee: number
 }
 
 interface RelatedBook {
@@ -55,33 +56,88 @@ const pinjamBuku = () => {
   }
 
   if (props.hasPendingLoan) {
-    Swal.fire('Info', 'Anda sudah memiliki peminjaman yang belum selesai. Cek status di dashboard.', 'info')
+    Swal.fire({
+      icon: 'info',
+      title: 'Info',
+      text: 'Anda sudah memiliki peminjaman yang belum selesai. Cek status di dashboard.',
+    })
     return
   }
 
   if (props.book.stock <= 0) {
-    Swal.fire('Habis', 'Buku ini sedang habis, tidak bisa dipinjam.', 'warning')
+    Swal.fire({
+      icon: 'warning',
+      title: 'Habis',
+      text: 'Buku ini sedang habis, tidak bisa dipinjam.',
+    })
     return
   }
 
+  const feeText = props.book.fee && props.book.fee > 0
+    ? `Rp ${props.book.fee.toLocaleString()}`
+    : 'GRATIS'
+
+  const feeClass = props.book.fee && props.book.fee > 0
+    ? 'bg-green-100 text-green-800'
+    : 'bg-green-600 text-white'
+
   Swal.fire({
-    title: 'Ajukan Peminjaman?',
-    text: `Buku: ${props.book.title}\nPenulis: ${props.book.author}`,
+    title: `<strong>Ajukan Peminjaman?</strong>`,
+    html: `
+      <div style="text-align: left; margin-top: 10px;">
+        <p><strong>Buku:</strong> ${props.book.title}</p>
+        <p><strong>Penulis:</strong> ${props.book.author}</p>
+        <p><strong>Kategori:</strong> ${props.book.category?.name ?? '-'}</p>
+        <p><strong>Fee:</strong>
+          <span style="
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            ${props.book.fee && props.book.fee > 0
+              ? 'background-color: #DCFCE7; color: #166534;'
+              : 'background-color: #16A34A; color: white;'
+            }
+          ">
+            ${feeText}
+          </span>
+        </p>
+        <p><strong>Batas pengembalian:</strong> 7 hari. Jika terlambat akan dikenakan denda.</p>
+      </div>
+    `,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Ya, pinjam!',
     cancelButtonText: 'Batal',
+    width: '450px',
+    showCloseButton: true,
+    focusConfirm: false,
   }).then((result) => {
     if (result.isConfirmed) {
       router.post(route('user.loans.store'), { book_id: props.book.id }, {
         preserveScroll: true,
         preserveState: true,
-        onSuccess: () => Swal.fire('Berhasil', 'Peminjaman dibuat. Cek status di dashboard.', 'success'),
-        onError: () => Swal.fire('Gagal', 'Terjadi kesalahan saat meminjam buku.', 'error')
+        onSuccess: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: 'Cek status di dashboard.',
+            timer: 2000,
+            showConfirmButton: false,
+          })
+        },
+        onError: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: 'Terjadi kesalahan saat meminjam buku.',
+          })
+        }
       })
     }
   })
 }
+
 </script>
 
 <template>
@@ -93,7 +149,7 @@ const pinjamBuku = () => {
           <!-- Cover -->
           <div class="flex items-center justify-center bg-gray-100 dark:bg-gray-700 p-4">
             <img
-              :src="book.cover_url ?? 'https://via.placeholder.com/300x450'"
+              :src="props.book.cover_url ?? 'https://via.placeholder.com/300x450'"
               alt="cover"
               class="w-[250px] h-[350px] object-cover rounded"
             />
@@ -101,29 +157,49 @@ const pinjamBuku = () => {
 
           <!-- Info -->
           <div class="md:col-span-2 p-6 flex flex-col">
-            <h1 class="text-2xl font-bold">{{ book.title }}</h1>
-            <p class="text-sm text-gray-500 mt-1">oleh {{ book.author }}</p>
+            <h1 class="text-2xl font-bold">{{ props.book.title }}</h1>
+            <p class="text-sm text-gray-500 mt-1">oleh {{ props.book.author }}</p>
 
-            <span
-              v-if="book.category"
-              class="inline-block bg-sky-100 text-sky-700 text-xs px-3 py-1 rounded-full mt-3 w-fit"
-            >
-              {{ book.category.name }}
-            </span>
+            <!-- Badges -->
+            <div class="flex flex-wrap gap-2 mt-3">
+              <span
+                v-if="props.book.category"
+                class="inline-block bg-sky-100 text-sky-700 text-xs px-3 py-1 rounded-full"
+              >
+                {{ props.book.category.name }}
+              </span>
+
+              <span
+                v-if="props.book.type"
+                :class="[
+                  'inline-block text-xs px-3 py-1 rounded-full',
+                  props.book.type === 'ebook' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'
+                ]"
+              >
+                {{ props.book.type }}
+              </span>
+
+          <span
+  class="inline-block bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full"
+>
+  {{ props.book.fee && props.book.fee > 0 ? 'Rp ' + props.book.fee.toLocaleString() : 'GRATIS' }}
+</span>
+
+
+            </div>
 
             <!-- Detail Buku -->
             <div class="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm text-gray-600 dark:text-gray-300">
-              <p><strong>ISBN:</strong> {{ book.isbn }}</p>
-              <p v-if="book.publisher"><strong>Penerbit:</strong> {{ book.publisher }}</p>
-              <p v-if="book.year"><strong>Tahun:</strong> {{ book.year }}</p>
-              <p v-if="book.pages"><strong>Halaman:</strong> {{ book.pages }} hlm</p>
-              <p v-if="book.type"><strong>Tipe:</strong> {{ book.type }}</p>
-              <p><strong>Stok:</strong> {{ book.stock > 0 ? book.stock + ' tersedia' : 'Habis' }}</p>
+              <p><strong>ISBN:</strong> {{ props.book.isbn }}</p>
+              <p v-if="props.book.publisher"><strong>Penerbit:</strong> {{ props.book.publisher }}</p>
+              <p v-if="props.book.year"><strong>Tahun:</strong> {{ props.book.year }}</p>
+              <p v-if="props.book.pages"><strong>Halaman:</strong> {{ props.book.pages }} hlm</p>
+              <p><strong>Stok:</strong> {{ props.book.stock > 0 ? props.book.stock + ' tersedia' : 'Habis' }}</p>
             </div>
 
             <!-- Deskripsi -->
             <div class="mt-5 text-gray-700 dark:text-gray-300 leading-relaxed text-sm whitespace-pre-line">
-              {{ book.description ?? 'Belum ada deskripsi untuk buku ini.' }}
+              {{ props.book.description ?? 'Belum ada deskripsi untuk buku ini.' }}
             </div>
           </div>
         </div>
@@ -132,14 +208,14 @@ const pinjamBuku = () => {
       <!-- Tombol Aksi -->
       <div class="mt-6 flex gap-3">
         <a
-          href="/"
+          href="/welcome"
           class="bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
         >
           ← Kembali
         </a>
         <button
           class="bg-sky-600 text-white px-4 py-2 rounded-md shadow hover:bg-sky-700 transition"
-          :disabled="book.stock <= 0"
+          :disabled="props.book.stock <= 0"
           @click="pinjamBuku"
         >
           📖 Pinjam Buku
@@ -147,11 +223,11 @@ const pinjamBuku = () => {
       </div>
 
       <!-- Buku Terkait -->
-      <div v-if="relatedBooks && relatedBooks.length" class="mt-10">
+      <div v-if="props.relatedBooks && props.relatedBooks.length" class="mt-10">
         <h2 class="text-xl font-semibold mb-4">Buku Terkait</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
           <div
-            v-for="rb in relatedBooks"
+            v-for="rb in props.relatedBooks"
             :key="rb.id"
             class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow hover:shadow-md transition flex flex-col text-sm"
           >
