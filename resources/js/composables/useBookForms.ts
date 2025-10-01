@@ -14,6 +14,7 @@ export interface BookForm {
   category_id: string | number
   type: 'ebook' | 'physical'       // Tipe buku
   stock: number
+  fee: number
   file: File | null              // File buku (PDF/EPUB)
   cover: File | null             // Sampul
   coverPreview: string
@@ -46,6 +47,7 @@ export default function useBooksForms() {
       category_id: '',
       type: 'ebook',            // default ke ebook
       stock: 0,
+      fee:0,
       file: null,
       cover: null,
       coverPreview: defaultCover,
@@ -91,6 +93,7 @@ export default function useBooksForms() {
       category_id: '',
       type: 'physical',            // default ke ebook
       stock: 0,
+      fee: 0,
       file: null,
       cover: null,               // tetap null, OCR tidak menimpa cover
       coverPreview: defaultCover,
@@ -176,6 +179,8 @@ export default function useBooksForms() {
       fd.append(`books[${i}][category_id]`, form.category_id.toString())
       fd.append(`books[${i}][type]`, form.type) // Tipe buku
       fd.append(`books[${i}][stock]`, form.stock.toString())
+      fd.append(`books[${i}][fee]`, form.fee.toString())
+
 
 
       // 🔹 Kirim cover & file hanya kalau user pilih

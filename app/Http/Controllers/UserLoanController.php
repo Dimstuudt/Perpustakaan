@@ -9,12 +9,11 @@ use Inertia\Inertia;
 
 class UserLoanController extends Controller
 {
-   public function index()
+public function index()
 {
-    // ambil hanya buku fisik yang masih ada stok
+    // ambil semua buku fisik, termasuk stok 0
     $books = Book::where('type', 'physical')
-        ->where('stock', '>', 0) // lebih rapi pakai > daripada >= 0
-        ->select('id', 'title', 'author', 'stock', 'fee') // ✅ tambahin fee
+        ->select('id', 'title', 'author', 'stock', 'fee')
         ->get();
 
     return Inertia::render('User/Loans/Create', [
@@ -24,6 +23,7 @@ class UserLoanController extends Controller
             ->exists(),
     ]);
 }
+
 
 
 public function store(Request $request)
