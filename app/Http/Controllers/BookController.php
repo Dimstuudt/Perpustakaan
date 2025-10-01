@@ -78,6 +78,10 @@ public function storeMultiple(Request $request)
         'books.*.pages'       => 'nullable|integer',
         'books.*.description' => 'nullable|string',
         'books.*.category_id' => 'nullable|exists:categories,id',
+        'books.*.type'  => 'required|in:ebook,physical',
+        'books.*.stock' => 'required|integer|min:0',
+        'books.*.fee'   => 'required|numeric|min:0',
+
     ]);
 
     $savedBooks = [];

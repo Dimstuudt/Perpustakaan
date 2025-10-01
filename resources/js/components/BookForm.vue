@@ -19,6 +19,7 @@ interface BookForm {
   loadingOCR: boolean             // Status OCR
   type: 'ebook' | 'physical'       // Tipe buku
   stock: number
+  fee: number
 }
 
 const props = defineProps<{
@@ -169,6 +170,19 @@ const handleFileChange = (e: Event) => {
     placeholder="Masukkan jumlah stok"
   />
 </div>
+
+<!-- Fee Buku -->
+<div>
+  <label class="block text-sm font-semibold text-gray-700 mb-1">Fee (Rp)</label>
+  <input
+    type="number"
+    min="0"
+    v-model.number="props.modelValue.fee"
+    class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+    placeholder="Masukkan harga/fee buku"
+  />
+</div>
+
 
       <div class="flex space-x-4 mt-2">
   <label>
