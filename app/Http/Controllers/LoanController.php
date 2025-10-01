@@ -11,29 +11,31 @@ use Inertia\Inertia;
 class LoanController extends Controller
 {
     // Admin lihat daftar peminjaman
-    public function index()
-    {
-        $loans = Loan::with('user', 'book')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(fn($loan) => [
-                'id' => $loan->id,
-                'status' => $loan->status,
-                'borrowed_at' => $loan->borrowed_at?->format('Y-m-d H:i') ?? null,
-                'returned_at' => $loan->returned_at?->format('Y-m-d H:i') ?? null,
-                'fee' => $loan->fee, // ✅ tampilkan fee
-                'user' => [
-                    'name' => $loan->user->name,
-                ],
-                'book' => [
-                    'title' => $loan->book->title,
-                ],
-            ]);
-
-        return Inertia::render('Admin/Loans/Index', [
-            'loans' => $loans
+  public function index()
+{
+    $loans = Loan::with('user', 'book')
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(fn($loan) => [
+            'id' => $loan->id,
+            'status' => $loan->status,
+            'borrowed_at' => $loan->borrowed_at?->format('Y-m-d H:i') ?? null,
+            'returned_at' => $loan->returned_at?->format('Y-m-d H:i') ?? null,
+            'fee' => $loan->fee,
+            'user' => [
+                // ✅ ambil username bukan name
+                'username' => $loan->user->username,
+            ],
+            'book' => [
+                'title' => $loan->book->title,
+            ],
         ]);
-    }
+
+    return Inertia::render('Admin/Loans/Index', [
+        'loans' => $loans
+    ]);
+}
+
 
     // Approve peminjaman
     public function approve(Loan $loan)

@@ -104,92 +104,116 @@ const returned = (loan: Loan) => {
     <div class="p-6">
       <h1 class="text-2xl font-bold mb-6">Daftar Peminjaman</h1>
 
-      <DataTable
-        :value="props.loans"
-        :paginator="true"
-        :first="first"
-        :rows="rows"
-        :totalRecords="props.loans.length"
-        :rowsPerPageOptions="[5,10,20]"
-        @page="onPage"
-        class="p-datatable-gridlines p-datatable-sm"
-      >
-        <Column field="user.name" header="User" />
-        <Column field="book.title" header="Buku" />
-      <Column header="Status" style="text-align: center; width: 120px;">
+<div class="overflow-x-auto">
+  <DataTable
+    :value="props.loans"
+    :paginator="true"
+    :first="first"
+    :rows="rows"
+    :totalRecords="props.loans.length"
+    :rowsPerPageOptions="[5,10,20]"
+    @page="onPage"
+    class="p-datatable-gridlines p-datatable-sm min-w-[900px]"
+  >
+    <!-- Username -->
+    <Column header="Username" style="min-width: 160px; max-width: 220px;">
+      <template #body="slotProps">
+        <span class="block truncate" :title="slotProps.data.user.username">
+          {{ slotProps.data.user.username }}
+        </span>
+      </template>
+    </Column>
+
+    <!-- Judul Buku -->
+    <Column header="Buku" style="min-width: 220px; max-width: 300px;">
+      <template #body="slotProps">
+        <span class="block truncate" :title="slotProps.data.book.title">
+          {{ slotProps.data.book.title }}
+        </span>
+      </template>
+    </Column>
+
+    <!-- Status -->
+    <Column header="Status" style="width: 120px; text-align: center;">
+      <template #body="slotProps">
+        <span
+          class="inline-block px-2 py-1 text-xs font-semibold rounded-full text-white text-center"
+          :class="{
+            'bg-yellow-500': slotProps.data.status === 'pending',
+            'bg-blue-500': slotProps.data.status === 'dipinjam',
+            'bg-green-500': slotProps.data.status === 'dikembalikan',
+            'bg-red-500': slotProps.data.status === 'ditolak'
+          }"
+        >
+          {{
+            slotProps.data.status === 'pending' ? 'Pending' :
+            slotProps.data.status === 'dipinjam' ? 'Dipinjam' :
+            slotProps.data.status === 'dikembalikan' ? 'Dikembalikan' :
+            slotProps.data.status === 'ditolak' ? 'Ditolak' : 'Unknown'
+          }}
+        </span>
+      </template>
+    </Column>
+
+  <!-- Fee -->
+<Column header="Fee" style="min-width: 120px; max-width: 140px; text-align: left;">
   <template #body="slotProps">
-    <span
-      class="inline-block w-full px-2 py-1 text-xs font-semibold rounded-full text-white text-center"
-      :class="{
-        'bg-yellow-500': slotProps.data.status === 'pending',
-        'bg-blue-500': slotProps.data.status === 'dipinjam',
-        'bg-green-500': slotProps.data.status === 'dikembalikan',
-        'bg-red-500': slotProps.data.status === 'ditolak'
-      }"
-    >
-      {{
-        slotProps.data.status === 'pending' ? 'Pending' :
-        slotProps.data.status === 'dipinjam' ? 'Dipinjam' :
-        slotProps.data.status === 'dikembalikan' ? 'Dikembalikan' :
-        slotProps.data.status === 'ditolak' ? 'Ditolak' : 'Unknown'
-      }}
+    <span class="whitespace-nowrap">
+      Rp {{ slotProps.data.fee.toLocaleString('id-ID') }}
     </span>
   </template>
 </Column>
 
-<Column header="Fee" style="width: 120px; text-align: left;">
-  <template #body="slotProps">
-    Rp {{ slotProps.data.fee.toLocaleString('id-ID') }}
-  </template>
-</Column>
 
+    <!-- Pinjam -->
+    <Column header="Pinjam" style="width: 140px; text-align: center;">
+      <template #body="slotProps">
+        <span class="text-gray-500 text-xs">
+          {{ slotProps.data.borrowed_at ?? 'Belum Pinjam' }}
+        </span>
+      </template>
+    </Column>
 
-       <!-- Tanggal pinjam -->
-<Column header="Pinjam" style="width: 140px; text-align: center;">
-  <template #body="slotProps">
-    <span class="text-gray-500 text-xs">
-      {{ slotProps.data.borrowed_at ? slotProps.data.borrowed_at : 'Belum Pinjam' }}
-    </span>
-  </template>
-</Column>
+    <!-- Kembali -->
+    <Column header="Kembali" style="width: 140px; text-align: center;">
+      <template #body="slotProps">
+        <span class="text-gray-500 text-xs">
+          {{ slotProps.data.returned_at ?? 'Belum Kembali' }}
+        </span>
+      </template>
+    </Column>
 
-<!-- Tanggal kembali -->
-<Column header="Kembali" style="width: 140px; text-align: center;">
-  <template #body="slotProps">
-    <span class="text-gray-500 text-xs">
-      {{ slotProps.data.returned_at ? slotProps.data.returned_at : 'Belum Kembali' }}
-    </span>
-  </template>
-</Column>
+    <!-- Aksi -->
+    <Column header="Aksi" style="width: 200px; text-align: center;">
+      <template #body="slotProps">
+        <div class="flex gap-2 justify-center">
+          <Button
+            v-if="slotProps.data.status === 'pending'"
+            label="Approve"
+            severity="success"
+            size="small"
+            @click="approve(slotProps.data)"
+          />
+          <Button
+            v-if="slotProps.data.status === 'pending'"
+            label="Reject"
+            severity="danger"
+            size="small"
+            @click="reject(slotProps.data)"
+          />
+          <Button
+            v-if="slotProps.data.status === 'dipinjam'"
+            label="Terima Pengembalian"
+            severity="info"
+            size="small"
+            @click="returned(slotProps.data)"
+          />
+        </div>
+      </template>
+    </Column>
+  </DataTable>
+</div>
 
-        <Column header="Aksi">
-          <template #body="slotProps">
-            <div class="flex gap-2">
-              <Button
-                v-if="slotProps.data.status === 'pending'"
-                label="Approve"
-                severity="success"
-                size="small"
-                @click="approve(slotProps.data)"
-              />
-              <Button
-                v-if="slotProps.data.status === 'pending'"
-                label="Reject"
-                severity="danger"
-                size="small"
-                @click="reject(slotProps.data)"
-              />
-              <Button
-                v-if="slotProps.data.status === 'dipinjam'"
-                label="Terima Pengembalian"
-                severity="info"
-                size="small"
-                @click="returned(slotProps.data)"
-              />
-            </div>
-          </template>
-        </Column>
-      </DataTable>
 
       <div v-if="props.loans.length === 0" class="mt-4 text-center text-gray-500">
         Belum ada peminjaman
