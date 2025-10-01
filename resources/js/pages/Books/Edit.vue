@@ -45,6 +45,7 @@ const form = useForm({
   cover: null,
   type: (props.book.type ?? 'physical') as BookType, // default fallback
   stock: props.book.stock ?? 0,
+  fee: props.book.fee ?? 0,
 })
 
 // Cover preview
@@ -293,6 +294,18 @@ const parseToForm = (text: string) => {
   <p v-if="form.errors.stock" class="text-red-500 text-sm">
     {{ form.errors.stock }}
   </p>
+</div>
+
+<!-- Fee Buku -->
+<div>
+  <label class="block text-sm font-medium">Fee</label>
+  <input
+    v-model="form.fee"
+    type="number"
+    min="0"
+    class="w-full border rounded p-2"
+  />
+  <p v-if="form.errors.fee" class="text-red-500 text-sm">{{ form.errors.fee }}</p>
 </div>
 
 
