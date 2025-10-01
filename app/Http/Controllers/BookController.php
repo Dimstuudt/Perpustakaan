@@ -174,9 +174,9 @@ public function update(Request $request, Book $book)
         'category_id' => 'nullable|exists:categories,id',
         'type'        => 'required|in:ebook,physical',
         'description' => 'nullable|string',
+        'fee'         => 'required|numeric|min:0', // <-- fee
         'file'        => 'nullable|file|mimes:pdf,epub|max:20480',
         'cover'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        'type'        => 'required|in:ebook,physical',
         'stock'       => 'required|integer|min:1',
     ]);
 
@@ -203,6 +203,7 @@ public function update(Request $request, Book $book)
 
     return redirect()->route('books.index')->with('success', 'Buku berhasil diperbarui');
 }
+
 
     // Soft delete buku
     public function destroy(Book $book)
