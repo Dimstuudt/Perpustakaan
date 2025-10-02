@@ -9,19 +9,31 @@ class Loan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'book_id', 'status', 'borrowed_at', 'returned_at', 'fee',];
+    protected $fillable = [
+        'user_id',
+        'book_id',
+        'status',
+        'borrowed_at',
+        'due_date',     // ✅ tambahin
+        'returned_at',
+        'fee',
+        'fine',         // ✅ tambahin
+    ];
 
     protected $casts = [
         'borrowed_at' => 'datetime',
+        'due_date' => 'datetime',     // ✅ tambahin
         'returned_at' => 'datetime',
     ];
 
     // Relasi
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function book() {
+    public function book()
+    {
         return $this->belongsTo(Book::class);
     }
 }
