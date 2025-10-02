@@ -15,9 +15,11 @@ interface Loan {
   status: string
   borrowed_at: string | null
   returned_at: string | null
-  user: { name: string }
+  due_date: string | null      // ✅ baru
+  fee: number
+  fine: number                 // ✅ baru
+  user: { username: string }
   book: { title: string }
- fee: number // ✅ tambahin fee
 }
 
 // Props dari backend
@@ -163,6 +165,34 @@ const returned = (loan: Loan) => {
     </span>
   </template>
 </Column>
+
+<!-- Due Date -->
+<Column header="Batas Kembali" style="width: 140px; text-align: center;">
+  <template #body="slotProps">
+    <span class="text-gray-500 text-xs">
+      {{ slotProps.data.due_date ?? '-' }}
+    </span>
+  </template>
+</Column>
+
+<!-- Fine -->
+<Column header="Denda" style="min-width: 120px; max-width: 140px; text-align: left;">
+  <template #body="slotProps">
+    <span class="whitespace-nowrap">
+      Rp {{ slotProps.data.fine.toLocaleString('id-ID') }}
+    </span>
+  </template>
+</Column>
+
+<!-- Total (Fee + Fine) -->
+<Column header="Total" style="min-width: 120px; max-width: 140px; text-align: left;">
+  <template #body="slotProps">
+    <span class="whitespace-nowrap font-semibold">
+      Rp {{ (slotProps.data.fee + slotProps.data.fine).toLocaleString('id-ID') }}
+    </span>
+  </template>
+</Column>
+
 
 
     <!-- Pinjam -->

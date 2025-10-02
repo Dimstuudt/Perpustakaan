@@ -59,17 +59,30 @@ public function store(Request $request)
 }
 
 
-    public function status()
-    {
-        $loans = Loan::with('book')
-            ->where('user_id', auth()->id())
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return Inertia::render('User/Loans/Status', [
-            'loans' => $loans
+  public function status()
+{
+    $loans = Loan::with('book')
+        ->where('user_id', auth()->id())
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->map(fn($loan) => [
+            'id' => $loan->id,
+            'status' => $loan->status,
+            'borrowed_at' => $loan->borrowed_at?->format('Y-m-d H:i') ?? null,
+            'due_date' => $loan->due_date?->format('Y-m-d H:i') ?? null, // ✅ baru
+            'returned_at' => $loan->returned_at?->format('Y-m-d H:i') ?? null,
+            'fee' => $loan->fee,
+            'fine' => $loan->fine,                                         // ✅ baru
+            'book' => [
+                'title' => $loan->book->title,
+            ],
         ]);
-    }
+
+    return Inertia::render('User/Loans/Status', [
+        'loans' => $loans
+    ]);
+}
+
 
    public function cancel($id)
 {
