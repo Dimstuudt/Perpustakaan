@@ -12,19 +12,19 @@ use Inertia\Inertia;
 class LoanController extends Controller
 {
     // Admin lihat daftar peminjaman
-  public function index()
+public function index()
 {
     $loans = Loan::with('user', 'book')
         ->orderBy('created_at', 'desc')
-        ->get()
-        ->map(fn($loan) => [
+        ->paginate(6) // pagination
+        ->through(fn($loan) => [
             'id' => $loan->id,
             'status' => $loan->status,
             'borrowed_at' => $loan->borrowed_at?->format('Y-m-d H:i') ?? null,
-            'due_date' => $loan->due_date?->format('Y-m-d H:i') ?? null,   // ✅ baru
+            'due_date' => $loan->due_date?->format('Y-m-d H:i') ?? null,
             'returned_at' => $loan->returned_at?->format('Y-m-d H:i') ?? null,
             'fee' => $loan->fee,
-            'fine' => $loan->fine,                                           // ✅ baru
+            'fine' => $loan->fine,
             'user' => [
                 'username' => $loan->user->username,
             ],
@@ -37,6 +37,7 @@ class LoanController extends Controller
         'loans' => $loans
     ]);
 }
+
 
 
 

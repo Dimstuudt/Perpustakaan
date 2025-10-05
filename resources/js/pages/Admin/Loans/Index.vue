@@ -1,30 +1,29 @@
 <script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Head, router } from '@inertiajs/vue3'
+import { Head, Link, router } from '@inertiajs/vue3'
 import Swal from 'sweetalert2'
-import { ref } from 'vue'
-
-// PrimeVue components
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
+import { ref, computed } from 'vue'
 import Button from 'primevue/button'
-import Tag from 'primevue/tag'
 
 interface Loan {
   id: number
   status: string
   borrowed_at: string | null
   returned_at: string | null
-  due_date: string | null      // ✅ baru
+  due_date: string | null
   fee: number
-  fine: number                 // ✅ baru
+  fine: number
   user: { username: string }
   book: { title: string }
 }
 
-// Props dari backend
+// Props dari backend dengan pagination
 const props = defineProps<{
-  loans: Loan[]
+  loans: {
+    data: Loan[]
+    links: { url: string | null; label: string; active: boolean }[]
+    meta: { current_page: number; last_page: number }
+  }
 }>()
 
 // Breadcrumbs
@@ -33,21 +32,26 @@ const breadcrumbs = [
   { title: 'Loans', href: '/loans' },
 ]
 
-// Pagination
-const first = ref(0)
-const rows = ref(10)
-const onPage = (event: { first: number; rows: number; page: number }) => {
-  const pageNumber = event.page + 1
-  router.get(route('loans.index'), { page: pageNumber, per_page: event.rows }, { preserveState: true, replace: true })
-  first.value = event.first
-  rows.value = event.rows
+// === Filter & Prioritas ===
+const selectedStatus = ref('all')
+const statusPriority: Record<string, number> = {
+  pending: 1,
+  dipinjam: 2,
+  dikembalikan: 3,
+  ditolak: 4,
 }
 
-// Actions with SweetAlert
+const filteredLoans = computed(() => {
+  return props.loans.data
+    .filter(loan => selectedStatus.value === 'all' || loan.status === selectedStatus.value)
+    .sort((a, b) => statusPriority[a.status] - statusPriority[b.status])
+})
+
+// === Actions ===
 const approve = (loan: Loan) => {
   Swal.fire({
     title: 'Approve peminjaman?',
-    text: `Buku: ${loan.book.title}\nUser: ${loan.user.name}`,
+    text: `Buku: ${loan.book.title}\nUser: ${loan.user.username}`,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Ya, approve!',
@@ -65,7 +69,7 @@ const approve = (loan: Loan) => {
 const reject = (loan: Loan) => {
   Swal.fire({
     title: 'Tolak peminjaman?',
-    text: `Buku: ${loan.book.title}\nUser: ${loan.user.name}`,
+    text: `Buku: ${loan.book.title}\nUser: ${loan.user.username}`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Ya, tolak!',
@@ -83,7 +87,7 @@ const reject = (loan: Loan) => {
 const returned = (loan: Loan) => {
   Swal.fire({
     title: 'Konfirmasi pengembalian?',
-    text: `Buku: ${loan.book.title}\nUser: ${loan.user.name}`,
+    text: `Buku: ${loan.book.title}\nUser: ${loan.user.username}`,
     icon: 'info',
     showCancelButton: true,
     confirmButtonText: 'Ya, terima!',
@@ -97,6 +101,16 @@ const returned = (loan: Loan) => {
     }
   })
 }
+
+// Format tanggal
+const formatDate = (date: string | null) => {
+  if (!date) return '-'
+  return new Date(date).toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
 </script>
 
 <template>
@@ -104,149 +118,141 @@ const returned = (loan: Loan) => {
     <Head title="Daftar Peminjaman" />
 
     <div class="p-6">
-      <h1 class="text-2xl font-bold mb-6">Daftar Peminjaman</h1>
-
-<div class="overflow-x-auto">
-  <DataTable
-    :value="props.loans"
-    :paginator="true"
-    :first="first"
-    :rows="rows"
-    :totalRecords="props.loans.length"
-    :rowsPerPageOptions="[5,10,20]"
-    @page="onPage"
-    class="p-datatable-gridlines p-datatable-sm min-w-[900px]"
-  >
-    <!-- Username -->
-    <Column header="Username" style="min-width: 160px; max-width: 220px;">
-      <template #body="slotProps">
-        <span class="block truncate" :title="slotProps.data.user.username">
-          {{ slotProps.data.user.username }}
-        </span>
-      </template>
-    </Column>
-
-    <!-- Judul Buku -->
-    <Column header="Buku" style="min-width: 220px; max-width: 300px;">
-      <template #body="slotProps">
-        <span class="block truncate" :title="slotProps.data.book.title">
-          {{ slotProps.data.book.title }}
-        </span>
-      </template>
-    </Column>
-
-    <!-- Status -->
-    <Column header="Status" style="width: 120px; text-align: center;">
-      <template #body="slotProps">
-        <span
-          class="inline-block px-2 py-1 text-xs font-semibold rounded-full text-white text-center"
-          :class="{
-            'bg-yellow-500': slotProps.data.status === 'pending',
-            'bg-blue-500': slotProps.data.status === 'dipinjam',
-            'bg-green-500': slotProps.data.status === 'dikembalikan',
-            'bg-red-500': slotProps.data.status === 'ditolak'
-          }"
+      <!-- Header + Filter -->
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold">Daftar Peminjaman</h1>
+        <select
+          v-model="selectedStatus"
+          class="border rounded-lg px-3 py-2 text-sm text-gray-700 shadow-sm"
         >
-          {{
-            slotProps.data.status === 'pending' ? 'Pending' :
-            slotProps.data.status === 'dipinjam' ? 'Dipinjam' :
-            slotProps.data.status === 'dikembalikan' ? 'Dikembalikan' :
-            slotProps.data.status === 'ditolak' ? 'Ditolak' : 'Unknown'
-          }}
-        </span>
-      </template>
-    </Column>
+          <option value="all">Semua Status</option>
+          <option value="pending">Pending</option>
+          <option value="dipinjam">Dipinjam</option>
+          <option value="ditolak">Ditolak</option>
+          <option value="dikembalikan">Dikembalikan</option>
+        </select>
+      </div>
 
-  <!-- Fee -->
-<Column header="Fee" style="min-width: 120px; max-width: 140px; text-align: left;">
-  <template #body="slotProps">
-    <span class="whitespace-nowrap">
-      Rp {{ slotProps.data.fee.toLocaleString('id-ID') }}
-    </span>
-  </template>
-</Column>
+      <!-- Cards -->
+      <div v-if="filteredLoans.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          v-for="loan in filteredLoans"
+          :key="loan.id"
+          class="rounded-xl shadow-lg overflow-hidden border border-gray-200 bg-white flex flex-col"
+        >
+          <!-- Header Color Strip -->
+          <div
+            class="h-2"
+            :class="{
+              'bg-yellow-500': loan.status === 'pending',
+              'bg-blue-500': loan.status === 'dipinjam',
+              'bg-green-500': loan.status === 'dikembalikan',
+              'bg-red-500': loan.status === 'ditolak'
+            }"
+          ></div>
 
-<!-- Due Date -->
-<Column header="Batas Kembali" style="width: 140px; text-align: center;">
-  <template #body="slotProps">
-    <span class="text-gray-500 text-xs">
-      {{ slotProps.data.due_date ?? '-' }}
-    </span>
-  </template>
-</Column>
+          <!-- Content -->
+          <div class="p-5 flex flex-col flex-grow">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-100 text-gray-600">
+                <i class="pi pi-book text-xl"></i>
+              </div>
+              <div>
+                <h2 class="font-semibold text-gray-800 truncate">{{ loan.book.title }}</h2>
+                <p class="text-sm text-gray-500">oleh {{ loan.user.username }}</p>
+              </div>
+            </div>
 
-<!-- Fine -->
-<Column header="Denda" style="min-width: 120px; max-width: 140px; text-align: left;">
-  <template #body="slotProps">
-    <span class="whitespace-nowrap">
-      Rp {{ slotProps.data.fine.toLocaleString('id-ID') }}
-    </span>
-  </template>
-</Column>
+            <div class="mt-3">
+              <span
+                class="px-3 py-1 text-xs font-semibold rounded-full"
+                :class="{
+                  'bg-yellow-100 text-yellow-800': loan.status === 'pending',
+                  'bg-blue-100 text-blue-800': loan.status === 'dipinjam',
+                  'bg-green-100 text-green-800': loan.status === 'dikembalikan',
+                  'bg-red-100 text-red-800': loan.status === 'ditolak'
+                }"
+              >
+                {{ loan.status }}
+              </span>
+            </div>
 
-<!-- Total (Fee + Fine) -->
-<Column header="Total" style="min-width: 120px; max-width: 140px; text-align: left;">
-  <template #body="slotProps">
-    <span class="whitespace-nowrap font-semibold">
-      Rp {{ (slotProps.data.fee + slotProps.data.fine).toLocaleString('id-ID') }}
-    </span>
-  </template>
-</Column>
+            <div class="mt-4 grid grid-cols-2 gap-y-1 text-sm">
+              <p class="text-gray-500">Fee</p>
+              <p class="text-gray-800">Rp {{ loan.fee.toLocaleString('id-ID') }}</p>
 
+              <p class="text-gray-500">Denda</p>
+              <p class="text-red-600">Rp {{ loan.fine.toLocaleString('id-ID') }}</p>
 
+              <p class="text-gray-500 font-medium">Total</p>
+              <p class="font-bold text-indigo-600">Rp {{ (loan.fee + loan.fine).toLocaleString('id-ID') }}</p>
 
-    <!-- Pinjam -->
-    <Column header="Pinjam" style="width: 140px; text-align: center;">
-      <template #body="slotProps">
-        <span class="text-gray-500 text-xs">
-          {{ slotProps.data.borrowed_at ?? 'Belum Pinjam' }}
-        </span>
-      </template>
-    </Column>
+              <p class="text-gray-500">Batas</p>
+              <p>{{ formatDate(loan.due_date) }}</p>
 
-    <!-- Kembali -->
-    <Column header="Kembali" style="width: 140px; text-align: center;">
-      <template #body="slotProps">
-        <span class="text-gray-500 text-xs">
-          {{ slotProps.data.returned_at ?? 'Belum Kembali' }}
-        </span>
-      </template>
-    </Column>
+              <p class="text-gray-500">Pinjam</p>
+              <p>{{ formatDate(loan.borrowed_at) }}</p>
 
-    <!-- Aksi -->
-    <Column header="Aksi" style="width: 200px; text-align: center;">
-      <template #body="slotProps">
-        <div class="flex gap-2 justify-center">
-          <Button
-            v-if="slotProps.data.status === 'pending'"
-            label="Approve"
-            severity="success"
-            size="small"
-            @click="approve(slotProps.data)"
-          />
-          <Button
-            v-if="slotProps.data.status === 'pending'"
-            label="Reject"
-            severity="danger"
-            size="small"
-            @click="reject(slotProps.data)"
-          />
-          <Button
-            v-if="slotProps.data.status === 'dipinjam'"
-            label="Terima Pengembalian"
-            severity="info"
-            size="small"
-            @click="returned(slotProps.data)"
-          />
+              <p class="text-gray-500">Kembali</p>
+              <p>{{ formatDate(loan.returned_at) }}</p>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-5 flex gap-2">
+              <Button
+                v-if="loan.status === 'pending'"
+                icon="pi pi-check"
+                label="Approve"
+                severity="success"
+                size="small"
+                rounded
+                class="flex-1"
+                @click="approve(loan)"
+              />
+              <Button
+                v-if="loan.status === 'pending'"
+                icon="pi pi-times"
+                label="Reject"
+                severity="danger"
+                size="small"
+                rounded
+                outlined
+                class="flex-1"
+                @click="reject(loan)"
+              />
+              <Button
+                v-if="loan.status === 'dipinjam'"
+                icon="pi pi-undo"
+                label="Kembali"
+                severity="info"
+                size="small"
+                rounded
+                class="w-full"
+                @click="returned(loan)"
+              />
+            </div>
+          </div>
         </div>
-      </template>
-    </Column>
-  </DataTable>
-</div>
+      </div>
 
-
-      <div v-if="props.loans.length === 0" class="mt-4 text-center text-gray-500">
+      <!-- Empty State -->
+      <div v-else class="mt-4 text-center text-gray-500">
         Belum ada peminjaman
+      </div>
+
+      <!-- Pagination -->
+      <div v-if="props.loans.links.length > 3" class="flex justify-center mt-6 space-x-2">
+        <Link
+          v-for="link in props.loans.links"
+          :key="link.label"
+          :href="link.url || ''"
+          class="px-3 py-1 rounded text-sm"
+          :class="{
+            'bg-indigo-500 text-white': link.active,
+            'text-gray-500 cursor-not-allowed': !link.url
+          }"
+          v-html="link.label"
+        />
       </div>
     </div>
   </AppLayout>
