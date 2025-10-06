@@ -26,12 +26,12 @@ watch(isDark, (val) => {
     <!-- Navbar -->
     <nav class="sticky top-0 z-50 bg-white dark:bg-gray-800 shadow-md px-6 py-3 flex flex-wrap justify-between items-center">
       <!-- Logo -->
-      <Link href="/" class="text-2xl font-bold text-blue-700 dark:text-blue-400">📚 Perpus</Link>
+      <Link href="/welcome" class="text-2xl font-bold text-blue-700 dark:text-blue-400">📚 Perpus</Link>
 
       <!-- Menu -->
       <div class="flex items-center space-x-4 md:space-x-6 mt-2 md:mt-0">
-        <Link href="/" class="text-gray-700 dark:text-gray-200 hover:text-blue-500 transition font-medium">Home</Link>
-        <Link href="/books" class="text-gray-700 dark:text-gray-200 hover:text-blue-500 transition font-medium">Books</Link>
+        <Link href="/welcome" class="text-gray-700 dark:text-gray-200 hover:text-blue-500 transition font-medium">Home</Link>
+        <Link href="/koleksi" class="text-gray-700 dark:text-gray-200 hover:text-blue-500 transition font-medium">Books</Link>
         <Link href="/categories" class="text-gray-700 dark:text-gray-200 hover:text-blue-500 transition font-medium">Categories</Link>
         <Link href="/about" class="text-gray-700 dark:text-gray-200 hover:text-blue-500 transition font-medium">About</Link>
       </div>

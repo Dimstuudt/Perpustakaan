@@ -11,6 +11,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PublicController;
 use App\Http\Controllers\Settings\ProfileController;
 
 // =================================
@@ -208,6 +209,8 @@ Route::middleware(['auth'])->prefix('user')->group(function () {
 Route::delete('/user/loans/{id}/cancel', [UserLoanController::class, 'cancel'])
     ->name('loans.cancel');
 
+    //koleksi
+    Route::get('/koleksi', [PublicController::class, 'koleksi'])->name('public.koleksi');
 
 
 
