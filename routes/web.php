@@ -195,12 +195,19 @@ Route::put('loans/{loan}/return', [LoanController::class, 'return'])
 Route::middleware(['auth'])->prefix('user')->group(function () {
     Route::get('/loansuser', [UserLoanController::class, 'index'])
         ->name('user.loans.index');
+
     Route::post('/loansuser', [UserLoanController::class, 'store'])
         ->name('user.loans.store');
+
+    // ✅ Tambahkan ini untuk halaman detail
+    Route::get('/loansuser/{id}', [UserLoanController::class, 'show'])
+        ->name('user.loans.show');
 });
 
+// Cancel tetap di luar (boleh kalau butuh)
 Route::delete('/user/loans/{id}/cancel', [UserLoanController::class, 'cancel'])
     ->name('loans.cancel');
+
 
 
 
