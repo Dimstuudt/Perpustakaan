@@ -11,9 +11,9 @@ class UserLoanController extends Controller
 {
 public function index()
 {
-    // ambil semua buku fisik, termasuk stok 0
+    // Ambil semua buku fisik + cover_path
     $books = Book::where('type', 'physical')
-        ->select('id', 'title', 'author', 'stock', 'fee')
+        ->select('id', 'title', 'author', 'stock', 'fee', 'cover_path') // ⬅️ Tambahin ini
         ->get();
 
     return Inertia::render('User/Loans/Create', [
@@ -94,6 +94,20 @@ public function store(Request $request)
     $loan->delete(); // langsung hapus
 
     return back()->with('success', 'Peminjaman berhasil dibatalkan.');
+}
+
+
+
+public function show($id)
+{
+    $book = Book::with(['category', 'rack', 'loans'])->findOrFail($id);
+
+    return Inertia::render('User/Loans/Show', [
+        'book' => $book,
+        'hasPendingLoan' => Loan::where('user_id', auth()->id())
+            ->where('status', 'pending')
+            ->exists(),
+    ]);
 }
 
 
