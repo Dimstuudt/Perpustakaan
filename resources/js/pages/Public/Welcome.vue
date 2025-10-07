@@ -232,7 +232,7 @@ onUnmounted(() => {
               <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Koleksi Terbaru</h2>
               <p class="text-gray-600 dark:text-gray-400">Buku berkualitas siap dipinjam</p>
             </div>
-            <Link href="/books" class="hidden md:flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm">
+            <Link href="/koleksi" class="hidden md:flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm">
               Lihat Semua
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
