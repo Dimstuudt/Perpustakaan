@@ -17,7 +17,7 @@ use App\Http\Controllers\Settings\ProfileController;
 // =================================
 // Default & Auth
 // =================================
-Route::get('/', fn () => redirect('login'))->name('home');
+Route::get('/', fn () => redirect('welcome'))->name('home');
 
 Route::get('dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -210,7 +210,7 @@ Route::delete('/user/loans/{id}/cancel', [UserLoanController::class, 'cancel'])
     ->name('loans.cancel');
 
     //koleksi
-   
+
 
 Route::get('/koleksi', [PublicController::class, 'koleksi'])->name('koleksi');
 
