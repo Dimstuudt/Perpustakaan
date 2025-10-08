@@ -24,8 +24,10 @@ const form = useForm({
   code: props.cabinet?.code || '',
   name: props.cabinet?.name || '',
   description: props.cabinet?.description || '',
-  rack_ids: [] as number[]
+  rack_ids: props.cabinet?.racks?.map(r => r.id) || [] // <--- isi racks lama
 })
+
+
 
 // Submit update
 function submit() {

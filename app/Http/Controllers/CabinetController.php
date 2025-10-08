@@ -64,32 +64,44 @@ class CabinetController extends Controller
 }
 
 
-    // Update cabinet
-    public function update(Request $request, Cabinet $cabinet)
-    {
-        $validated = $request->validate([
-            'code' => 'required|unique:cabinets,code,' . $cabinet->id,
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'rack_ids' => 'array',
-            'rack_ids.*' => 'exists:racks,id',
-        ]);
+   // Update cabinet
+public function update(Request $request, Cabinet $cabinet)
+{
+    $validated = $request->validate([
+        'code' => 'required|unique:cabinets,code,' . $cabinet->id,
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'rack_ids' => 'array',
+        'rack_ids.*' => 'exists:racks,id',
+    ]);
 
-        // update data utama
-        $cabinet->update($validated);
+    // update data utama
+    $cabinet->update($validated);
 
-        // kalau ada rack_ids dikirim, update relasi racks
-        if ($request->has('rack_ids')) {
-            // reset racks lama -> set cabinet_id = null
-            Rack::where('cabinet_id', $cabinet->id)->update(['cabinet_id' => null]);
+    // Cek kalau rack_ids dikirim
+    if ($request->filled('rack_ids')) { // hanya eksekusi kalau rack_ids ada dan tidak kosong
+        $newRackIds = $request->rack_ids;
 
-            // assign racks baru
-            Rack::whereIn('id', $request->rack_ids)->update(['cabinet_id' => $cabinet->id]);
+        // Ambil racks lama
+        $oldRackIds = Rack::where('cabinet_id', $cabinet->id)->pluck('id')->toArray();
+
+        // Rak yang dilepas
+        $racksToUnset = array_diff($oldRackIds, $newRackIds);
+        if(!empty($racksToUnset)){
+            Rack::whereIn('id', $racksToUnset)->update(['cabinet_id' => null]);
         }
 
-        return redirect()->route('cabinets.index')
-            ->with('success', 'Cabinet updated successfully.');
+        // Rak yang ditambahkan
+        $racksToSet = array_diff($newRackIds, $oldRackIds);
+        if(!empty($racksToSet)){
+            Rack::whereIn('id', $racksToSet)->update(['cabinet_id' => $cabinet->id]);
+        }
     }
+    // Jika rack_ids **tidak dikirim sama sekali**, racks lama tetap dipertahankan
+
+    return redirect()->route('cabinets.index')
+        ->with('success', 'Cabinet updated successfully.');
+}
 
     // Delete cabinet
     public function destroy(Cabinet $cabinet)
