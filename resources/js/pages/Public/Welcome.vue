@@ -164,6 +164,74 @@ onUnmounted(() => {
         </div>
       </section>
 
+        <!-- WHY CHOOSE US -->
+      <section class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 text-white py-24">
+        <div class="max-w-7xl mx-auto px-6">
+          <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="space-y-8">
+              <div>
+                <h2 class="text-4xl lg:text-5xl font-bold mb-6">Mengapa Memilih Perpustakaan Kami?</h2>
+                <p class="text-xl text-blue-100">
+                  Kami berkomitmen memberikan pelayanan terbaik untuk mendukung literasi masyarakat
+                </p>
+              </div>
+
+              <div class="space-y-6">
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-lg mb-2">Koleksi Terawat & Terpercaya</h3>
+                    <p class="text-blue-100">Semua buku dalam kondisi baik dan dirawat dengan standar perpustakaan profesional</p>
+                  </div>
+                </div>
+
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-lg mb-2">Tanpa Biaya Tersembunyi</h3>
+                    <p class="text-blue-100">Gratis mendaftar, gratis meminjam, tanpa biaya deposit atau administrasi apapun</p>
+                  </div>
+                </div>
+
+                <div class="flex gap-4">
+                  <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-lg mb-2">Komunitas Pembaca Aktif</h3>
+                    <p class="text-blue-100">Bergabung dengan ribuan anggota yang antusias berbagi pengalaman membaca</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative">
+              <img
+                src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=800&auto=format&fit=crop"
+                alt="Library Interior"
+                class="rounded-2xl shadow-2xl border-4 border-white/20"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- STATS BAR -->
       <section class="bg-gray-50 dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800 py-8">
         <div class="max-w-7xl mx-auto px-6">
@@ -187,6 +255,9 @@ onUnmounted(() => {
           </div>
         </div>
       </section>
+
+
+
 
       <!-- HOW IT WORKS -->
       <section class="py-16 bg-white dark:bg-gray-950">
@@ -303,6 +374,8 @@ onUnmounted(() => {
         </div>
       </section>
 
+
+
       <!-- CTA -->
       <section class="py-16 bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
         <div class="max-w-3xl mx-auto px-6 text-center">
@@ -323,6 +396,8 @@ onUnmounted(() => {
           </div>
         </div>
       </section>
+
+
 
     </div>
   </PublicLayout>
