@@ -210,7 +210,10 @@ Route::delete('/user/loans/{id}/cancel', [UserLoanController::class, 'cancel'])
     ->name('loans.cancel');
 
     //koleksi
-    Route::get('/koleksi', [PublicController::class, 'koleksi'])->name('public.koleksi');
+   
+
+Route::get('/koleksi', [PublicController::class, 'koleksi'])->name('koleksi');
+
 
 
 

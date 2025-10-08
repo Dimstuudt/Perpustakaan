@@ -4,38 +4,71 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Category;
+use App\Models\Rack;
+use App\Models\Cabinet;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
 class PublicController extends Controller
 {
- public function koleksi(Request $request)
-{
-    $query = Book::query()->with('category');
+    public function koleksi(Request $request)
+    {
+        // Level 1: Cabinet
+        if (!$request->cabinet && !$request->rack) {
+            $cabinets = Cabinet::withCount('racks')->get();
 
-    // Filter kategori jika ada
-    if ($request->category) {
-        $query->whereHas('category', fn($q) => $q->where('id', $request->category));
+            return Inertia::render('Public/CabinetIndex', [
+                'cabinets' => $cabinets,
+            ]);
+        }
+
+        // Level 2: Rack dalam Cabinet
+        if ($request->cabinet && !$request->rack) {
+            $cabinet = Cabinet::with('racks.books')->findOrFail($request->cabinet);
+            $racks = $cabinet->racks()->withCount('books')->get();
+
+            return Inertia::render('Public/RackIndex', [
+                'cabinet' => [
+                    'id' => $cabinet->id,
+                    'name' => $cabinet->name,
+                ],
+                'racks' => $racks,
+            ]);
+        }
+
+        // Level 3: Buku dalam Rack
+        if ($request->rack) {
+            $rack = Rack::with(['cabinet', 'books.category'])->findOrFail($request->rack);
+
+            $books = Book::where('rack_id', $rack->id)
+                ->with(['category', 'rack.cabinet'])
+                ->latest()
+                ->paginate(12)
+                ->withQueryString()
+                ->through(fn($book) => [
+                    'id' => $book->id,
+                    'title' => $book->title,
+                    'author' => $book->author,
+                    'publisher' => $book->publisher,
+                    'description' => $book->description,
+                    'cover_url' => $book->cover_url,
+                    'category' => $book->category?->only(['id', 'name']),
+                ]);
+
+            $categories = Category::select('id', 'name')->get();
+
+            return Inertia::render('Public/BooksIndex', [
+                'rack' => [
+                    'id' => $rack->id,
+                    'name' => $rack->name,
+                ],
+                'cabinet' => [
+                    'id' => $rack->cabinet->id,
+                    'name' => $rack->cabinet->name,
+                ],
+                'books' => $books,
+                'categories' => $categories,
+            ]);
+        }
     }
-
-    // Ambil data buku dengan pagination (misal 12 per halaman)
-    $books = $query->latest()->paginate(12)->withQueryString()->through(fn($book) => [
-        'id' => $book->id,
-        'title' => $book->title,
-        'author' => $book->author,
-        'publisher' => $book->publisher,  // ✅ tambahkan publisher
-        'description' => $book->description,
-        'cover_url' => $book->cover_url,
-        'category' => $book->category ? ['id' => $book->category->id, 'name' => $book->category->name] : null,
-    ]);
-
-    $categories = Category::select('id', 'name')->get();
-
-    return Inertia::render('Public/BooksIndex', [
-        'books' => $books,
-        'categories' => $categories,
-        'currentCategory' => $request->category ? (int)$request->category : null,
-    ]);
-}
-
 }

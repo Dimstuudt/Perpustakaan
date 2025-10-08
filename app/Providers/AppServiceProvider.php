@@ -34,11 +34,26 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // 🔥 Share flash ke Inertia
-        Inertia::share('flash', function () {
-            return [
-                'message' => session('message'),
-                'error'   => session('error'),
-            ];
-        });
+        Inertia::share([
+            'flash' => function () {
+                return [
+                    'message' => session('message'),
+                    'error'   => session('error'),
+                ];
+            },
+
+            // 🔥 Share auth user ke semua Inertia views
+            'auth' => function () {
+                return [
+                    'user' => auth()->check() ? [
+                        'id' => auth()->user()->id,
+                        'name' => auth()->user()->name,
+                        'email' => auth()->user()->email,
+                        'role' => auth()->user()->role ?? 'user',
+                        'avatar' => auth()->user()->avatar ?? null,
+                    ] : null,
+                ];
+            },
+        ]);
     }
 }
