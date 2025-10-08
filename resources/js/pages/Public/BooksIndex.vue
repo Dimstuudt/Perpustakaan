@@ -92,81 +92,72 @@ const props = defineProps({
 
       <!-- Books Grid -->
       <div
-        v-if="books.data && books.data.length > 0"
-        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
-      >
-        <Link
-          v-for="book in books.data"
-          :key="book.id"
-          :href="route('public.preview', { id: book.id })"
-          class="group relative cursor-pointer block"
-        >
-          <!-- Book Card with 3D Effect -->
-          <div class="relative">
-            <!-- Book Cover Container -->
-            <div class="relative transform transition-all duration-500 group-hover:scale-105 group-hover:-translate-y-2">
-              <!-- Book Spine Shadow -->
-              <div class="absolute -left-2 top-2 bottom-2 w-2 bg-gradient-to-r from-gray-800 to-gray-700 rounded-l-sm opacity-60"></div>
+  v-if="books.data && books.data.length > 0"
+  class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
+>
+  <Link
+    v-for="book in books.data"
+    :key="book.id"
+    :href="route('public.preview', { id: book.id })"
+    class="group relative cursor-pointer block"
+  >
+    <!-- Book Card with 3D Effect -->
+    <div class="relative">
+      <!-- Book Cover Container -->
+      <div class="relative transform transition-all duration-500 group-hover:scale-105 group-hover:-translate-y-2">
+        <!-- Book Spine Shadow -->
+        <div class="absolute -left-2 top-2 bottom-2 w-2 bg-gradient-to-r from-gray-800 to-gray-700 rounded-l-sm opacity-60 dark:from-gray-700 dark:to-gray-600"></div>
 
-              <!-- Main Book Cover -->
-              <div class="relative bg-white rounded-lg shadow-xl overflow-hidden group-hover:shadow-2xl transition-shadow duration-500 border-2 border-gray-200">
-                <!-- Cover Image -->
-                <div class="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-                  <img
-                    v-if="book.cover_url"
-                    :src="book.cover_url"
-                    :alt="book.title"
-                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    loading="lazy"
-                  />
-                  <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-200 to-orange-300">
-                    <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                  </div>
-
-                  <!-- Overlay on Hover -->
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div class="absolute bottom-0 left-0 right-0 p-3">
-                      <div class="flex items-center justify-center space-x-2 text-white">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                        <span class="text-sm font-semibold">Lihat Detail</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Shine Effect -->
-                  <div class="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
-                </div>
-
-                <!-- Book Pages Effect -->
-                <div class="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-gray-300 via-gray-200 to-gray-300">
-                  <div class="absolute inset-y-0 right-0 w-px bg-white/50"></div>
-                </div>
-              </div>
-
-              <!-- Bottom Shadow -->
-              <div class="absolute -bottom-1 left-0 right-0 h-3 bg-gradient-to-b from-black/20 to-transparent blur-sm transform scale-95 group-hover:scale-100 transition-transform duration-500"></div>
+        <!-- Main Book Cover -->
+        <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-700 overflow-hidden group-hover:shadow-2xl transition-shadow duration-500 border-2 border-gray-200 dark:border-gray-700">
+          <!-- Cover Image -->
+          <div class="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600">
+            <img
+              v-if="book.cover_url"
+              :src="book.cover_url"
+              :alt="book.title"
+              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              loading="lazy"
+            />
+            <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-600">
+              <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
             </div>
+
+            <!-- Overlay on Hover -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+            <!-- Shine Effect -->
+            <div class="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-0 group-hover:opacity-30 transition-opacity duration-500 dark:from-white/20"></div>
           </div>
 
-          <!-- Book Info -->
-          <div class="mt-4 space-y-1">
-            <h3 class="font-bold text-gray-900 line-clamp-2 text-sm leading-tight group-hover:text-amber-600 transition-colors duration-300">
-              {{ book.title }}
-            </h3>
-            <p class="text-xs text-gray-600 truncate">
-              {{ book.author }}
-            </p>
+          <!-- Book Pages Effect -->
+          <div class="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-gray-300 via-gray-200 to-gray-300 dark:from-gray-600 dark:via-gray-500 dark:to-gray-600">
+            <div class="absolute inset-y-0 right-0 w-px bg-white/50 dark:bg-white/30"></div>
           </div>
+        </div>
 
-          <!-- Hover Indicator -->
-          <div class="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full"></div>
-        </Link>
+        <!-- Bottom Shadow -->
+        <div class="absolute -bottom-1 left-0 right-0 h-3 bg-gradient-to-b from-black/20 to-transparent blur-sm transform scale-95 group-hover:scale-100 transition-transform duration-500 dark:from-black/40"></div>
       </div>
+    </div>
+
+    <!-- Book Info -->
+    <div class="mt-4 space-y-1">
+      <h3 class="font-bold line-clamp-2 text-sm leading-tight text-gray-900 dark:text-gray-100 group-hover:text-amber-600 transition-colors duration-300">
+        {{ book.title }}
+      </h3>
+      <p class="text-xs text-gray-600 dark:text-gray-300 truncate">
+        {{ book.author }}
+      </p>
+    </div>
+
+    <!-- Hover Indicator -->
+    <div class="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full"></div>
+  </Link>
+</div>
+
 
       <!-- Pagination (if needed) -->
       <div v-if="books.links && books.links.length > 3" class="mt-8 flex justify-center">
