@@ -76,71 +76,72 @@ const props = defineProps<{ cabinets: Array }>()
           <div class="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-indigo-50/80 to-purple-50/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
           <!-- Card Content -->
-          <div class="relative p-6">
-            <!-- Cabinet Icon -->
-            <div class="w-16 h-16 mb-4 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
+          <div class="relative p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-gray-700">
+  <!-- Cabinet Icon -->
+  <div class="w-16 h-16 mb-4 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 dark:shadow-gray-600">
+    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+    </svg>
+  </div>
 
-            <!-- Cabinet Name -->
-            <h2 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-700 transition-colors duration-300 pr-20">
-              {{ cabinet.name }}
-            </h2>
+  <!-- Cabinet Name -->
+  <h2 class="text-xl font-bold mb-3 line-clamp-2 group-hover:text-blue-700 dark:text-white dark:group-hover:text-blue-400 transition-colors duration-300 pr-20">
+    {{ cabinet.name }}
+  </h2>
 
-            <!-- Divider Line -->
-            <div class="h-px bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 mb-4"></div>
+  <!-- Divider Line -->
+  <div class="h-px bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 dark:from-gray-600 dark:via-gray-500 dark:to-gray-600 mb-4"></div>
 
-            <!-- Racks Count Info -->
-            <div class="mb-5">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm text-gray-600 font-medium">Total Rak</span>
-                <div class="flex items-center space-x-1.5">
-                  <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                  <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    {{ cabinet.racks_count }}
-                  </span>
-                </div>
-              </div>
+  <!-- Racks Count Info -->
+  <div class="mb-5">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Rak</span>
+      <div class="flex items-center space-x-1.5">
+        <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+        <span class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          {{ cabinet.racks_count }}
+        </span>
+      </div>
+    </div>
 
-              <!-- Visual Progress Bar -->
-              <div class="relative h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div class="absolute inset-0 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full transform origin-left group-hover:scale-x-100 scale-x-75 transition-transform duration-500"></div>
-              </div>
+    <!-- Visual Progress Bar -->
+    <div class="relative h-2 bg-gray-100 rounded-full overflow-hidden dark:bg-gray-700">
+      <div class="absolute inset-0 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full transform origin-left group-hover:scale-x-100 scale-x-75 transition-transform duration-500"></div>
+    </div>
 
-              <p class="text-xs text-gray-500 mt-2 flex items-center">
-                <svg class="w-3.5 h-3.5 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-                Siap untuk dikelola
-              </p>
-            </div>
+    <p class="text-xs mt-2 flex items-center text-gray-500 dark:text-gray-400">
+      <svg class="w-3.5 h-3.5 mr-1 text-blue-500 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      Siap untuk dikelola
+    </p>
+  </div>
 
-            <!-- Action Button -->
-            <Link
-              :href="route('koleksi', { cabinet: cabinet.id })"
-              class="group/btn relative w-full inline-flex items-center justify-center px-5 py-3 text-sm font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 overflow-hidden"
-            >
-              <!-- Animated Background -->
-              <div class="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
+  <!-- Action Button -->
+  <Link
+    :href="route('koleksi', { cabinet: cabinet.id })"
+    class="group/btn relative w-full inline-flex items-center justify-center px-5 py-3 text-sm font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 overflow-hidden dark:shadow-gray-700 dark:from-blue-500 dark:via-indigo-500 dark:to-purple-500"
+  >
+    <!-- Animated Background -->
+    <div class="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300 dark:from-purple-500 dark:via-pink-500 dark:to-blue-500"></div>
 
-              <!-- Button Content -->
-              <span class="relative z-10 flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                Jelajahi Rak
-                <svg class="w-5 h-5 ml-2 transform group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </span>
+    <!-- Button Content -->
+    <span class="relative z-10 flex items-center">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+      </svg>
+      Jelajahi Rak
+      <svg class="w-5 h-5 ml-2 transform group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+      </svg>
+    </span>
 
-              <!-- Shine Effect -->
-              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 transform -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
-            </Link>
-          </div>
+    <!-- Shine Effect -->
+    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 transform -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
+  </Link>
+</div>
+
 
           <!-- Animated Bottom Border -->
           <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>

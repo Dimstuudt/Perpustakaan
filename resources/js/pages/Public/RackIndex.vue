@@ -139,91 +139,92 @@ const props = defineProps({
           </div>
 
           <!-- Card Content -->
-          <div class="relative p-6">
-            <!-- Rack Icon -->
-            <div class="w-16 h-16 mb-4 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300">
-              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18" />
-              </svg>
-            </div>
+         <div class="relative p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-gray-700">
+  <!-- Rack Icon -->
+  <div class="w-16 h-16 mb-4 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300 dark:shadow-gray-600">
+    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18" />
+    </svg>
+  </div>
 
-            <!-- Rack Name -->
-            <h2 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-emerald-700 transition-colors duration-300 pr-20">
-              {{ rack.name }}
-            </h2>
+  <!-- Rack Name -->
+  <h2 class="text-xl font-bold mb-3 line-clamp-2 group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-400 transition-colors duration-300 pr-20">
+    {{ rack.name }}
+  </h2>
 
-            <!-- Divider Line -->
-            <div class="h-px bg-gradient-to-r from-emerald-200 via-green-200 to-teal-200 mb-4"></div>
+  <!-- Divider Line -->
+  <div class="h-px bg-gradient-to-r from-emerald-200 via-green-200 to-teal-200 dark:from-gray-600 dark:via-gray-500 dark:to-gray-600 mb-4"></div>
 
-            <!-- Books Count Info -->
-            <div class="mb-5">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-sm text-gray-600 font-medium">Total Buku</span>
-                <div class="flex items-center space-x-1.5">
-                  <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                  <span class="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                    {{ rack.books_count }}
-                  </span>
-                </div>
-              </div>
+  <!-- Books Count Info -->
+  <div class="mb-5">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Total Buku</span>
+      <div class="flex items-center space-x-1.5">
+        <svg class="w-4 h-4 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+        <span class="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+          {{ rack.books_count }}
+        </span>
+      </div>
+    </div>
 
-              <!-- Book Stack Visualization -->
-              <div class="flex items-center space-x-1 mb-2">
-                <div
-                  v-for="i in Math.min(rack.books_count, 5)"
-                  :key="i"
-                  class="flex-1 h-2 rounded-full transition-all duration-300"
-                  :class="[
-                    i <= 1 ? 'bg-emerald-500' : '',
-                    i === 2 ? 'bg-emerald-400' : '',
-                    i === 3 ? 'bg-green-400' : '',
-                    i === 4 ? 'bg-teal-400' : '',
-                    i === 5 ? 'bg-teal-300' : ''
-                  ]"
-                  :style="{ transform: `scaleY(${1 + i * 0.2})` }"
-                ></div>
-                <span v-if="rack.books_count > 5" class="text-xs text-gray-500 font-semibold">+{{ rack.books_count - 5 }}</span>
-              </div>
+    <!-- Book Stack Visualization -->
+    <div class="flex items-center space-x-1 mb-2">
+      <div
+        v-for="i in Math.min(rack.books_count, 5)"
+        :key="i"
+        class="flex-1 h-2 rounded-full transition-all duration-300"
+        :class="[
+          i <= 1 ? 'bg-emerald-500 dark:bg-emerald-400' : '',
+          i === 2 ? 'bg-emerald-400 dark:bg-emerald-300' : '',
+          i === 3 ? 'bg-green-400 dark:bg-green-300' : '',
+          i === 4 ? 'bg-teal-400 dark:bg-teal-300' : '',
+          i === 5 ? 'bg-teal-300 dark:bg-teal-200' : ''
+        ]"
+        :style="{ transform: `scaleY(${1 + i * 0.2})` }"
+      ></div>
+      <span v-if="rack.books_count > 5" class="text-xs text-gray-500 dark:text-gray-400 font-semibold">+{{ rack.books_count - 5 }}</span>
+    </div>
 
-              <div class="flex items-center justify-between">
-                <p class="text-xs text-gray-500 flex items-center">
-                  <svg class="w-3.5 h-3.5 mr-1 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Tersedia
-                </p>
-                <div class="flex items-center space-x-1">
-                  <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                  <span class="text-xs text-emerald-600 font-semibold">Online</span>
-                </div>
-              </div>
-            </div>
+    <div class="flex items-center justify-between">
+      <p class="text-xs flex items-center text-gray-500 dark:text-gray-400">
+        <svg class="w-3.5 h-3.5 mr-1 text-emerald-500 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Tersedia
+      </p>
+      <div class="flex items-center space-x-1">
+        <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse dark:bg-emerald-400"></div>
+        <span class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Online</span>
+      </div>
+    </div>
+  </div>
 
-            <!-- Action Button -->
-            <Link
-              :href="route('koleksi', { rack: rack.id })"
-              class="group/btn relative w-full inline-flex items-center justify-center px-5 py-3 text-sm font-bold text-white bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 overflow-hidden"
-            >
-              <!-- Animated Background -->
-              <div class="absolute inset-0 bg-gradient-to-r from-teal-600 via-emerald-600 to-green-600 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
+  <!-- Action Button -->
+  <Link
+    :href="route('koleksi', { rack: rack.id })"
+    class="group/btn relative w-full inline-flex items-center justify-center px-5 py-3 text-sm font-bold text-white bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 overflow-hidden dark:from-emerald-500 dark:via-green-500 dark:to-teal-500 dark:shadow-gray-700"
+  >
+    <!-- Animated Background -->
+    <div class="absolute inset-0 bg-gradient-to-r from-teal-600 via-emerald-600 to-green-600 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300 dark:from-teal-500 dark:via-emerald-500 dark:to-green-500"></div>
 
-              <!-- Button Content -->
-              <span class="relative z-10 flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-                Lihat Buku
-                <svg class="w-5 h-5 ml-2 transform group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </span>
+    <!-- Button Content -->
+    <span class="relative z-10 flex items-center">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+      Lihat Buku
+      <svg class="w-5 h-5 ml-2 transform group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+      </svg>
+    </span>
 
-              <!-- Shine Effect -->
-              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 transform -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
-            </Link>
-          </div>
+    <!-- Shine Effect -->
+    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 transform -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
+  </Link>
+</div>
+
 
           <!-- Animated Bottom Border -->
           <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
