@@ -77,9 +77,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
 public function getAvatarAttribute($value)
 {
-    if (!$value) {
-        // kalau kosong, kasih avatar default (bisa gambar lokal)
-        return asset('images/default-avatar.png');
+    // kalau kosong/null → pakai default dari storage/avatar/default.jpg
+    if (!$value || $value === 'null' || $value === '') {
+        return asset('storage/avatar/default.png');
     }
 
     // kalau sudah URL penuh (http...), biarkan apa adanya
@@ -87,8 +87,9 @@ public function getAvatarAttribute($value)
         return $value;
     }
 
-    // kalau relatif path dari storage
-    return asset('storage/' . $value);
+    // kalau relatif path dari storage (misal 'avatar/hVOwMQL....jpg')
+    return asset('storage/' . ltrim($value, '/'));
 }
+
 
 }

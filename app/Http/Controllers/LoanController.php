@@ -12,11 +12,35 @@ use Inertia\Inertia;
 class LoanController extends Controller
 {
     // Admin lihat daftar peminjaman
-public function index()
+public function index(Request $request)
 {
-    $loans = Loan::with('user', 'book')
+    $query = Loan::with('user', 'book');
+
+    // Filter berdasarkan status jika ada
+    if ($request->has('status') && $request->status !== null) {
+        $query->where('status', $request->status);
+    }
+
+    // Hitung statistik untuk semua data (tidak terpengaruh filter)
+    $stats = [
+        'pending' => Loan::where('status', 'pending')->count(),
+        'dipinjam' => Loan::where('status', 'dipinjam')->count(),
+        'dikembalikan' => Loan::where('status', 'dikembalikan')->count(),
+        'ditolak' => Loan::where('status', 'ditolak')->count(),
+    ];
+
+    // Sorting berdasarkan prioritas status, kemudian created_at
+    $loans = $query
+        ->orderByRaw("
+            CASE status
+                WHEN 'pending' THEN 1
+                WHEN 'dipinjam' THEN 2
+                WHEN 'dikembalikan' THEN 3
+                WHEN 'ditolak' THEN 4
+            END
+        ")
         ->orderBy('created_at', 'desc')
-        ->paginate(6) // pagination
+        ->paginate(6)
         ->through(fn($loan) => [
             'id' => $loan->id,
             'status' => $loan->status,
@@ -34,10 +58,13 @@ public function index()
         ]);
 
     return Inertia::render('Admin/Loans/Index', [
-        'loans' => $loans
+        'loans' => $loans,
+        'filters' => [
+            'status' => $request->status
+        ],
+        'stats' => $stats
     ]);
 }
-
 
 
 
