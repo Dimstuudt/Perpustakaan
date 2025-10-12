@@ -28,7 +28,7 @@ Route::get('/book/{id}', [LandingController::class, 'preview'])->name('public.pr
 
 
 
-Auth::routes(['verify' => true]); // aktifkan verifikasi email
+// Auth::routes(['verify' => true]); // aktifkan verifikasi email
 
 // Google Login
 Route::get('/auth/google', fn () => Socialite::driver('google')->redirect())
