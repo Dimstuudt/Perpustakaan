@@ -75,4 +75,20 @@ class User extends Authenticatable implements MustVerifyEmail
     return $this->hasMany(Loan::class);
 }
 
+public function getAvatarAttribute($value)
+{
+    if (!$value) {
+        // kalau kosong, kasih avatar default (bisa gambar lokal)
+        return asset('images/default-avatar.png');
+    }
+
+    // kalau sudah URL penuh (http...), biarkan apa adanya
+    if (str_starts_with($value, 'http')) {
+        return $value;
+    }
+
+    // kalau relatif path dari storage
+    return asset('storage/' . $value);
+}
+
 }

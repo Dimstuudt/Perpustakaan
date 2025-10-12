@@ -126,9 +126,21 @@ const getUserInitials = (name: string) => {
                   <!-- Avatar -->
                   <div class="relative">
                     <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                    <div class="relative w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
-                      {{ getUserInitials(user.name) }}
-                    </div>
+<div class="relative w-9 h-9 rounded-full overflow-hidden shadow-lg">
+  <img
+    v-if="user.avatar"
+    :src="user.avatar"
+    alt="Avatar"
+    class="w-full h-full object-cover"
+  />
+  <div
+    v-else
+    class="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm"
+  >
+    {{ getUserInitials(user.name) }}
+  </div>
+</div>
+
                     <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900"></div>
                   </div>
                   <!-- Username -->
