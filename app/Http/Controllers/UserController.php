@@ -168,84 +168,83 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id,)
-    {
-        $user = User::findOrFail($id);
-        if ($user->hasRole('Super Admin') && !auth()->user()->hasRole('Super Admin')) {
-            abort(403, 'You are not allowed to edit a Super Admin.');
-        };
-        if ($user->hasRole('admin') && !auth()->user()->hasRole('Super Admin')) {
-            abort(403, 'Admin does not allowed to edit another Admin.');
-        }
-        $validated = $request->validate([
-            'name' => 'nullable|string|max:255',
-            'username' => [
-                'nullable',
-                'string',
-                'max:255',
-                'regex:/^[a-zA-Z0-9_]+$/',
-                Rule::unique('users')->ignore($id),
-            ],
-            'email' => [
-                'nullable',
-                'string',
-                'lowercase',
-                'email',
-                'max:255',
-                Rule::unique('users')->ignore($id),
-            ],
-            // 'password' => [
-            //     'required',
-            //     'confirmed',
-            //     Rules\Password::defaults(),
-            //     Password::min(8)->numbers()->symbols()->max(255)->mixedCase(),
-            //     'regex:/^[A-Za-z0-9_\-!@#$%^&*()+=\[\]{}]+$/',
-            // ],
-            'verified_email' => ['nullable', 'boolean'],
+  public function update(Request $request, string $id)
+{
+    $user = User::findOrFail($id);
 
-        ], [
-            'name.required' => 'Name is required.',
-            'username.unique' => 'Username is already taken.',
-            'username.regex' => 'Username can only contain letters, numbers, and underscores.',
-            'email.required' => 'Email is required.',
-            // 'password.required' => 'Password is required.',
-            'password.regex' => 'Password cant contain Space.',
-            'password.confirmed' => 'Passwords do not match'
-        ]);
-        if ($request->boolean('verified_email') && $request->verified_email) {
-            $user = User::findOrFail($id);
-            $user->email_verified_at = now();
-            $user->save();
-        } else {
-            $user = User::findOrFail($id);
-            $user->email_verified_at = null;
-            $user->save();
-        }
-        if ($request->filled('password')) {
-            $user = User::findOrFail($id);
-            $user->password = Hash::make($request->password);
-        }
-        $user = User::findOrFail($id); // cari user berdasarkan ID
-        $user->fill($validated);
-        $user->save();
-        // Cek kalau user login bukan super admin
-        if (!auth()->user()->hasRole('Super Admin')) {
-
-            // 1. Cek jika user target punya role admin/super admin
-            if ($user->hasAnyRole(['admin', 'Super Admin'])) {
-                abort(403, 'You are not allowed to edit another admin or super admin.');
-            }
-
-            // 2. Cek jika request ingin memberi role admin/super admin
-            if (in_array('admin', (array) $request->roles) || in_array('Super Admin', (array) $request->roles)) {
-                abort(403, 'You are not allowed to assign admin or super admin roles.');
-            }
-        }
-
-
-        $user->syncRoles($request->roles);
-        return to_route("users.index")->with("message", "Success Create User");
+    // Proteksi role
+    if ($user->hasRole('Super Admin') && !auth()->user()->hasRole('Super Admin')) {
+        abort(403, 'You are not allowed to edit a Super Admin.');
     }
+    if ($user->hasRole('admin') && !auth()->user()->hasRole('Super Admin')) {
+        abort(403, 'Admin does not allowed to edit another Admin.');
+    }
+
+    // Validasi
+    $validated = $request->validate([
+        'name' => 'nullable|string|max:255',
+        'username' => [
+            'nullable',
+            'string',
+            'max:255',
+            'regex:/^[a-zA-Z0-9_]+$/',
+            Rule::unique('users')->ignore($id),
+        ],
+        'email' => [
+            'nullable',
+            'string',
+            'lowercase',
+            'email',
+            'max:255',
+            Rule::unique('users')->ignore($id),
+        ],
+        'verified_email' => ['nullable', 'boolean'],
+        'password' => [
+            'nullable', // kalau kosong berarti tidak update password
+            'confirmed',
+            Password::min(8)->numbers()->symbols()->mixedCase(),
+            'regex:/^[A-Za-z0-9_\-!@#$%^&*()+=\[\]{}]+$/',
+        ],
+    ], [
+        'username.unique' => 'Username is already taken.',
+        'username.regex' => 'Username can only contain letters, numbers, and underscores.',
+        'email.unique' => 'Email is already taken.',
+        'password.confirmed' => 'Passwords do not match',
+        'password.regex' => 'Password cannot contain spaces',
+    ]);
+
+    // Update email_verified_at
+    if ($request->boolean('verified_email')) {
+        $user->email_verified_at = now();
+    } else {
+        $user->email_verified_at = null;
+    }
+
+    // Update field lain
+    $user->fill($validated);
+
+    // Update password jika diisi
+    if ($request->filled('password')) {
+        $user->password = Hash::make($request->password);
+    }
+
+    $user->save();
+
+    // Cek role assignment
+    if (!auth()->user()->hasRole('Super Admin')) {
+        if ($user->hasAnyRole(['admin', 'Super Admin'])) {
+            abort(403, 'You are not allowed to edit another admin or super admin.');
+        }
+        if (in_array('admin', (array) $request->roles) || in_array('Super Admin', (array) $request->roles)) {
+            abort(403, 'You are not allowed to assign admin or super admin roles.');
+        }
+    }
+
+    $user->syncRoles($request->roles);
+
+    return to_route("users.index")->with("message", "Success Update User");
+}
+
 
     /**
      * Remove the specified resource from storage.

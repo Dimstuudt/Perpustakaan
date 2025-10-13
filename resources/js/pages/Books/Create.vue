@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue'
-import { Head } from '@inertiajs/vue3'
+import { Head, Link } from '@inertiajs/vue3'
 import BookForm from '@/components/BookForm.vue'
 import useBookForms from '@/composables/useBookForms'
 import { type BreadcrumbItem } from '@/types'
@@ -42,9 +42,7 @@ async function openCamera() {
     const stream = await navigator.mediaDevices.getUserMedia({
       video: { facingMode: "environment" },
     })
-    if (video.value) {
-      video.value.srcObject = stream
-    }
+    if (video.value) video.value.srcObject = stream
   } catch (err) {
     console.error("Gagal akses kamera:", err)
     showCamera.value = false
@@ -60,9 +58,8 @@ function takePhoto() {
   canvas.value.toBlob(blob => {
     if (blob) {
       const file = new File([blob], `photo-${Date.now()}.png`, { type: "image/png" })
-      addFileToQueue(file) // ⬅ masukin ke OCR file, bukan cover
+      addFileToQueue(file) // masukin ke OCR file
       showCamera.value = false
-      // stop stream biar kamera mati
       const tracks = (video.value?.srcObject as MediaStream)?.getTracks()
       tracks?.forEach(t => t.stop())
     }
@@ -76,11 +73,18 @@ function takePhoto() {
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="p-6 max-w-5xl mx-auto space-y-6">
       <!-- Header -->
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between flex-wrap gap-4">
         <h1 class="text-3xl font-bold text-gray-800">📚 Tambah Buku</h1>
         <span v-if="forms.length" class="text-sm text-gray-500">
           Total Form: {{ forms.length }}/{{ MAX_FORMS }}
         </span>
+        <!-- Tombol Import Excel -->
+        <Link
+          href="/books/import"
+          class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg shadow"
+        >
+          📥 Import dari Excel
+        </Link>
       </div>
 
       <!-- Aksi Tambah -->
@@ -170,7 +174,6 @@ function takePhoto() {
 
       <!-- Form Aktif -->
       <div v-if="forms.length" class="bg-white shadow rounded-xl p-6">
-        <!-- BookForm handle cover, OCR hasil dari kamera/file -->
         <BookForm v-model="forms[activeIndex]" :categories="props.categories" />
       </div>
 
@@ -186,4 +189,3 @@ function takePhoto() {
     </div>
   </AppLayout>
 </template>
-

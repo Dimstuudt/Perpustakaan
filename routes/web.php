@@ -5,30 +5,31 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
-use App\Http\Controllers\LogController;
-use App\Http\Controllers\UserLoanController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\LandingController;
-use App\Http\Controllers\BookController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\PublicController;
-use App\Http\Controllers\Settings\ProfileController;
+
+use App\Http\Controllers\{
+    LogController,
+    UserLoanController,
+    CategoryController,
+    LandingController,
+    BookController,
+    PermissionController,
+    PublicController,
+    Settings\ProfileController,
+    LoanController,
+    BookImportController
+};
 
 // =================================
-// Default & Auth
+// Default Routes & Auth
 // =================================
 Route::get('/', fn () => redirect('welcome'))->name('home');
-
-Route::get('dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
 
 Route::get('/welcome', [LandingController::class, 'welcome'])->name('landing.welcome');
 Route::get('/book/{id}', [LandingController::class, 'preview'])->name('public.preview');
 
-
-
-// Auth::routes(['verify' => true]); // aktifkan verifikasi email
+Route::get('dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 // Google Login
 Route::get('/auth/google', fn () => Socialite::driver('google')->redirect())
@@ -37,25 +38,20 @@ Route::get('/auth/google', fn () => Socialite::driver('google')->redirect())
 Route::get('/auth/google/callback', function () {
     $googleUser = Socialite::driver('google')->stateless()->user();
 
-    $user = \App\Models\User::firstOrCreate(
-        ['email' => $googleUser->getEmail()]
-    );
-
+    $user = User::firstOrCreate(['email' => $googleUser->getEmail()]);
     $user->assignRole('user'); // default role
-    \Illuminate\Support\Facades\Auth::login($user);
 
+    Auth::login($user);
     return redirect('/dashboard')->with("message", "Selamat datang");
 });
-
 
 Route::get('/clear-message', fn () => redirect()->back()->without(['message']));
 Route::post('profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar.update');
 
 // =================================
-// Protected Routes
+// Protected Routes (Auth & Verified)
 // =================================
 Route::middleware(['auth', 'web', 'verified'])->group(function () {
-
 
     // -------------------------------
     // Permissions
@@ -98,11 +94,10 @@ Route::middleware(['auth', 'web', 'verified'])->group(function () {
         ->name('books.bulkForceDelete')
         ->middleware('permission:books.forceDelete');
 
-// Resource tanpa show
-Route::resource('books', BookController::class)
-    ->except(['show'])
-    ->middleware('permission:books.view|books.create|books.edit|books.delete');
-
+    // Resource tanpa show
+    Route::resource('books', BookController::class)
+        ->except(['show'])
+        ->middleware('permission:books.view|books.create|books.edit|books.delete');
 
     Route::get('/books/{book}/preview', [BookController::class, 'preview'])
         ->name('books.preview')
@@ -117,9 +112,9 @@ Route::resource('books', BookController::class)
         ->name('books.forceDelete')
         ->middleware('permission:books.forceDelete');
 
-        // routes/web.php
-Route::post('/books/multiple', [BookController::class, 'storeMultiple'])
-    ->name('books.storeMultiple');
+    // Multiple store
+    Route::post('/books/multiple', [BookController::class, 'storeMultiple'])
+        ->name('books.storeMultiple');
 
     // -------------------------------
     // Categories
@@ -145,7 +140,7 @@ Route::post('/books/multiple', [BookController::class, 'storeMultiple'])
         ->name('categories.forceDelete')
         ->middleware('permission:categories.forceDelete');
 
-    // Bulk
+    // Bulk Actions
     Route::post('categories/bulk-delete', [CategoryController::class, 'bulkDelete'])
         ->name('categories.bulkDelete')
         ->middleware('permission:categories.delete');
@@ -159,76 +154,58 @@ Route::post('/books/multiple', [BookController::class, 'storeMultiple'])
         ->middleware('permission:categories.forceDelete');
 });
 
+// =================================
+// Loan Routes
+// =================================
 
-//loans
-
-use App\Http\Controllers\LoanController;
-
-// User ajukan pinjam
+// User pinjam buku
 Route::post('loans', [LoanController::class, 'store'])
     ->name('loans.store')
     ->middleware(['auth', 'role:user']);
 
-    //user status
-    Route::get('/user/loans/status', [UserLoanController::class, 'status'])->name('user.loans.status');
-
-
+// User cek status pinjaman
+Route::get('/user/loans/status', [UserLoanController::class, 'status'])->name('user.loans.status');
 
 // Admin lihat daftar peminjaman
 Route::get('loans', [LoanController::class, 'index'])
     ->name('loans.index')
     ->middleware(['auth', 'permission:loans.view']);
 
-// Admin approve pinjam
+// Admin approve, reject, return
 Route::put('loans/{loan}/approve', [LoanController::class, 'approve'])
     ->name('loans.approve')
     ->middleware(['auth', 'permission:loans.approve']);
 
-// Admin reject pinjam
 Route::put('loans/{loan}/reject', [LoanController::class, 'reject'])
     ->name('loans.reject')
     ->middleware(['auth', 'permission:loans.reject']);
 
-// Admin terima pengembalian
 Route::put('loans/{loan}/return', [LoanController::class, 'return'])
     ->name('loans.return')
     ->middleware(['auth', 'permission:loans.return']);
 
 // User routes
 Route::middleware(['auth'])->prefix('user')->group(function () {
-    Route::get('/loansuser', [UserLoanController::class, 'index'])
-        ->name('user.loans.index');
-
-    Route::post('/loansuser', [UserLoanController::class, 'store'])
-        ->name('user.loans.store');
-
-    // ✅ Tambahkan ini untuk halaman detail
-    Route::get('/loansuser/{id}', [UserLoanController::class, 'show'])
-        ->name('user.loans.show');
+    Route::get('/loansuser', [UserLoanController::class, 'index'])->name('user.loans.index');
+    Route::post('/loansuser', [UserLoanController::class, 'store'])->name('user.loans.store');
+    Route::get('/loansuser/{id}', [UserLoanController::class, 'show'])->name('user.loans.show');
 });
 
-// Cancel tetap di luar (boleh kalau butuh)
-Route::delete('/user/loans/{id}/cancel', [UserLoanController::class, 'cancel'])
-    ->name('loans.cancel');
+// Cancel pinjaman
+Route::delete('/user/loans/{id}/cancel', [UserLoanController::class, 'cancel'])->name('loans.cancel');
 
-    //koleksi
-
-
+// =================================
+// Public Collections
+// =================================
 Route::get('/koleksi', [PublicController::class, 'koleksi'])->name('koleksi');
 
-
-use App\Http\Controllers\BookImportController;
-
+// =================================
+// Import Books
+// =================================
 Route::middleware(['auth'])->prefix('books')->group(function () {
-    // Halaman import buku
-    Route::get('/import', [BookImportController::class, 'index'])
-        ->name('books.import');
-
-    // Submit import
-    Route::post('/import', [BookImportController::class, 'store'])
-        ->name('books.import.store');
+    Route::get('/import', [BookImportController::class, 'index'])->name('books.import');
+    Route::post('/import', [BookImportController::class, 'store'])->name('books.import.store');
 });
-
 
 // =================================
 // Extra
@@ -239,4 +216,3 @@ require __DIR__ . '/users.php';
 require __DIR__ . '/roles.php';
 require __DIR__ . '/racks.php';
 require __DIR__ . '/cabinets.php';
-
