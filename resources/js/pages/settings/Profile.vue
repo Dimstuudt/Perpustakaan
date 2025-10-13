@@ -154,53 +154,53 @@ const { getInitials } = useInitials();
             title="Foto Profil"
             description="Unggah atau perbarui foto profil Anda"
           />
+<div class="flex flex-col items-center space-y-4">
+  <Avatar
+    class="w-32 h-32 rounded-full ring-2 ring-offset-2 ring-primary cursor-pointer hover:scale-105 transition-transform"
+    @click="openFileInput"
+  >
+    <AvatarImage
+      v-if="user.avatar || photoPreview"
+      :src="photoPreview || user.avatar"
+      alt="default.png"
+    />
+    <AvatarFallback
+      class="text-2xl font-semibold text-black dark:text-white"
+    >
+      {{ getInitials(user.username) }}
+    </AvatarFallback>
+  </Avatar>
 
-          <div class="flex flex-col items-center space-y-4">
-            <Avatar
-              class="w-32 h-32 rounded-full ring-2 ring-offset-2 ring-primary cursor-pointer hover:scale-105 transition-transform"
-              @click="openFileInput"
-            >
-              <AvatarImage
-                v-if="user.avatar || photoPreview"
-                :src="photoPreview || '/storage/' + user.avatar"
-                alt="Foto Profil"
-              />
-              <AvatarFallback
-                class="text-2xl font-semibold text-black dark:text-white"
-              >
-                {{ getInitials(user.username) }}
-              </AvatarFallback>
-            </Avatar>
+  <form
+    @submit.prevent="updateProfilePhoto"
+    class="flex flex-col items-center gap-3"
+  >
+    <input
+      ref="fileInput"
+      id="avatar"
+      type="file"
+      accept="image/*"
+      class="hidden"
+      @change="selectNewPhoto"
+    />
 
-            <form
-              @submit.prevent="updateProfilePhoto"
-              class="flex flex-col items-center gap-3"
-            >
-              <input
-                ref="fileInput"
-                id="avatar"
-                type="file"
-                accept="image/*"
-                class="hidden"
-                @change="selectNewPhoto"
-              />
+    <Button
+      :disabled="avatarForm.processing || !avatarForm.avatar"
+      class="w-fit"
+    >
+      Unggah Foto
+    </Button>
 
-              <Button
-                :disabled="avatarForm.processing || !avatarForm.avatar"
-                class="w-fit"
-              >
-                Unggah Foto
-              </Button>
+    <InputError :message="avatarForm.errors.avatar" />
+    <p
+      v-if="props.status === 'profile-photo-updated'"
+      class="text-sm font-medium text-green-600"
+    >
+      Foto profil berhasil diperbarui.
+    </p>
+  </form>
+</div>
 
-              <InputError :message="avatarForm.errors.avatar" />
-              <p
-                v-if="props.status === 'profile-photo-updated'"
-                class="text-sm font-medium text-green-600"
-              >
-                Foto profil berhasil diperbarui.
-              </p>
-            </form>
-          </div>
         </section>
 
         <!-- Profile Information -->
