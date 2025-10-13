@@ -17,6 +17,7 @@
         "laravel/tinker": "^2.10.1",
         "laravel/ui": "^4.6",
         "opcodesio/log-viewer": "^3.19",
+        "phpoffice/phpspreadsheet": "^5.1",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-permission": "^6.21",
         "sweetalert2/laravel": "^0.1.0",

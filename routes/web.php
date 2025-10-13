@@ -98,9 +98,11 @@ Route::middleware(['auth', 'web', 'verified'])->group(function () {
         ->name('books.bulkForceDelete')
         ->middleware('permission:books.forceDelete');
 
-    // Resource
-    Route::resource('books', BookController::class)
-        ->middleware('permission:books.view|books.create|books.edit|books.delete');
+// Resource tanpa show
+Route::resource('books', BookController::class)
+    ->except(['show'])
+    ->middleware('permission:books.view|books.create|books.edit|books.delete');
+
 
     Route::get('/books/{book}/preview', [BookController::class, 'preview'])
         ->name('books.preview')
@@ -215,6 +217,17 @@ Route::delete('/user/loans/{id}/cancel', [UserLoanController::class, 'cancel'])
 Route::get('/koleksi', [PublicController::class, 'koleksi'])->name('koleksi');
 
 
+use App\Http\Controllers\BookImportController;
+
+Route::middleware(['auth'])->prefix('books')->group(function () {
+    // Halaman import buku
+    Route::get('/import', [BookImportController::class, 'index'])
+        ->name('books.import');
+
+    // Submit import
+    Route::post('/import', [BookImportController::class, 'store'])
+        ->name('books.import.store');
+});
 
 
 // =================================
