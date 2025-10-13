@@ -177,15 +177,16 @@ function onPage(event: { first: number; rows: number; page: number }) {
       <Column header="Avatar & Name">
   <template #body="slotProps">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-        <img
-          class="w-full h-full object-cover"
-          :src="slotProps.data.avatar
-            ? `/storage/${slotProps.data.avatar}`
+     <div class="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+    <img
+        class="w-full h-full object-cover"
+        :src="slotProps.data.avatar
+            ? slotProps.data.avatar 
             : `https://ui-avatars.com/api/?name=${getInitials(slotProps.data.username)}&background=random`"
-          :alt="slotProps.data.name + ' avatar'"
-        />
-      </div>
+        :alt="slotProps.data.username + ' avatar'"
+    />
+</div>
+
       <span class="whitespace-nowrap overflow-hidden text-ellipsis block max-w-[200px]">
         {{ slotProps.data.name }}
       </span>

@@ -24,6 +24,7 @@ import {
   BookCopyIcon,
   Library,
   LibraryBig,
+  Layers,
 } from 'lucide-vue-next'
 import AppLogo from './AppLogo.vue'
 
@@ -34,6 +35,7 @@ import { computed } from 'vue'
 // semua menu diberi permission
 const mainNavItems: NavItem[] = [
   { title: 'Dashboard', href: '/dashboard', icon: LayoutGrid, permission: 'dashboard.view' },
+   { title: 'Landing', href: '/welcome', icon: Layers, permission: 'dashboard.view' },
   { title: 'Users', href: '/users', icon: Users, permission: 'users.view' },
   { title: 'Roles', href: '/roles', icon: UserRoundCog, permission: 'roles.view' },
   { title: 'Permissions', href: '/permissions', icon: ShieldCheck, permission: 'permissions.view' },
