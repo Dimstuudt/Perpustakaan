@@ -125,4 +125,29 @@ public function bulkForceDelete(Request $request)
     return back()->with('success', 'Kategori dihapus permanen.');
 }
 
+public function list()
+{
+    // Ambil semua kategori
+    $categories = Category::withCount('books') // 👉 hitung semua buku per kategori
+        ->with(['books' => function ($query) {
+            $query->latest()->take(1); // 👉 cuma ambil 1 buku terbaru buat tampilan
+        }])
+        ->get();
+
+    return Inertia::render('Categories/List', [
+        'categories' => $categories
+    ]);
+}
+
+
+    public function detail(Category $category)
+    {
+        $books = $category->books()->latest()->paginate(10);
+
+        return Inertia::render('Categories/Detail', [
+            'category' => $category,
+            'books' => $books
+        ]);
+    }
+
 }

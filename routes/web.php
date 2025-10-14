@@ -154,6 +154,11 @@ Route::middleware(['auth', 'web', 'verified'])->group(function () {
         ->middleware('permission:categories.forceDelete');
 });
 
+// routes/web.php
+Route::get('/categoried', [CategoryController::class, 'list'])->name('categories.list');
+Route::get('/categories/{category}', [CategoryController::class, 'detail'])->name('categories.detail');
+
+
 // =================================
 // Loan Routes
 // =================================
