@@ -135,10 +135,13 @@ function deleteUser(id) {
                 <div class="max-w-lg">
                     <div class="bg-white shadow-xl rounded-lg py-3">
                         <div class="photo-wrapper p-2">
-                    <img class="w-full h-56 object-cover object-center"
-                        :src="props.user.avatar ? `/storage/` + props.user.avatar : 'https://ui-avatars.com/api/?name=' + getInitials(props.user.username) + '&background=random'"
-                        :alt="props.user.name + `avatar`" alt="John Doe">
-          
+                   <img class="w-full h-56 object-cover object-center rounded-lg shadow"
+  :src="props.user.avatar
+    ? props.user.avatar
+    : 'https://ui-avatars.com/api/?name=' + getInitials(props.user.username) + '&background=random'"
+  :alt="props.user.name + ' avatar'">
+
+
                         </div>
                         <div class="p-2">
                             <h3 class="text-center text-xl text-gray-900 font-medium leading-8">{{ props.user.name }}
