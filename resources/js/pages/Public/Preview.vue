@@ -68,6 +68,16 @@ const pinjamBuku = (id: number) => {
   })
 }
 
+const pinjamBukus = (id: number) => {
+  if (!isLoggedIn) {
+    router.get('/login')
+    return
+  }
+
+  router.get(route('public.preview', id))
+}
+
+
 function goBack() {
   if (window.history.length > 1) {
     window.history.back()
@@ -276,7 +286,7 @@ function goBack() {
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div class="absolute bottom-0 left-0 right-0 p-4">
                     <button
-                      @click="pinjamBuku(rb.id)"
+                      @click="pinjamBukus(rb.id)"
                       class="w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-semibold py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200 flex items-center justify-center space-x-2"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
