@@ -16,20 +16,22 @@ public function welcome()
         'stats' => [
             'books'    => Book::count(),
             'members'  => User::count(),
-            'articles' => 0, // bisa diupdate kalau ada tabel artikel
-            'loans'    => Loan::count(), // kalau belum ada, bisa sementara 0
+            'articles' => 0,
+            'loans'    => Loan::count(),
         ],
-        'latestBooks' => Book::latest()->take(5)->get()->map(fn ($book) => [
+        'latestBooks' => Book::latest()->take(6)->get()->map(fn ($book) => [
             'id'          => $book->id,
             'title'       => $book->title,
             'author'      => $book->author,
-            'cover_url'   => $book->cover_url, // accessor dari model
+            'cover_url'   => $book->cover_url,
             'description' => $book->description,
             'category'    => $book->category?->name,
         ]),
-        'categories' => Category::select('id', 'name')->get(),
+        // batasi kategori 6
+        'categories' => Category::select('id', 'name')->take(6)->get(),
     ]);
 }
+
 
 public function preview($id)
 {

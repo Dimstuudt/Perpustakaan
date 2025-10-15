@@ -45,6 +45,13 @@ class RolePermissionSeeder extends Seeder
             "categories.edit",
             "categories.restore",
             "categories.forceDelete",
+            "loans.view",
+            "loans.user",
+            "loans.approve",
+            "loans.return",
+            "loans.reject",
+            "dashboard.view",
+
         ];
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
@@ -53,10 +60,8 @@ class RolePermissionSeeder extends Seeder
         // Buat role dan assign permission
         $adminRole = Role::firstOrCreate(['name' => 'Super Admin']);
         $adminRole->syncPermissions($permissions);
-        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
         $adminRole->syncPermissions(['users.view', 'roles.view', 'users.create', 'users.edit', 'users.delete',]);
-        $adminRole = Role::firstOrCreate(['name' => 'operator']);
-        $adminRole->syncPermissions(['']);
 
         $userRole = Role::firstOrCreate(['name' => 'user']);
         $userRole->givePermissionTo(['']);

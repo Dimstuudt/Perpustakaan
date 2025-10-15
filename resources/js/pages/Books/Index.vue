@@ -118,7 +118,7 @@ function bulkDeleteBooks() {
           >
             + Tambah Buku
           </Link>
-          
+
           <Link
             v-if="can('books.view')"
             :href="route('books.trashed')"

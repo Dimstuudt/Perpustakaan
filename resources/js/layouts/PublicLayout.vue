@@ -222,7 +222,7 @@ const getUserInitials = (name: string) => {
         <div v-if="mobileMenuOpen" class="md:hidden py-4 space-y-2 border-t border-gray-200 dark:border-gray-700">
           <Link href="/welcome" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Home</Link>
           <Link href="/koleksi" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Books</Link>
-          <Link href="/categories" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Categories</Link>
+          <Link href="/categoried" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Categories</Link>
           <Link href="/about" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">About</Link>
           <Link v-if="!user" href="/login" class="block px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg text-center font-semibold">Login / Register</Link>
         </div>
@@ -261,7 +261,7 @@ const getUserInitials = (name: string) => {
             <ul class="space-y-2 text-sm">
               <li><Link href="/welcome" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</Link></li>
               <li><Link href="/koleksi" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Books</Link></li>
-              <li><Link href="/categories" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Categories</Link></li>
+              <li><Link href="/categoried" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Categories</Link></li>
               <li><Link href="/about" class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</Link></li>
             </ul>
           </div>

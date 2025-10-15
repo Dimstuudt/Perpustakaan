@@ -227,18 +227,20 @@ const { getInitials } = useInitials();
             </div>
 
            <!-- Username -->
-<div class="grid gap-2">
-  <Label for="username">Username</Label>
-  <InputText
-    id="username"
-    class="w-full bg-gray-100 cursor-not-allowed"
-    v-model="profileForm.username"
-    disabled
-  />
-  <InputError
-    :message="profileForm.errors.username ?? usernameWarning"
-  />
-</div>
+    <!-- Username -->
+            <div class="grid gap-2">
+              <Label for="username">Username</Label>
+              <InputText
+                id="username"
+                class="w-full"
+                v-model="profileForm.username"
+                required
+                placeholder="Masukkan username"
+              />
+              <InputError
+                :message="profileForm.errors.username ?? usernameWarning"
+              />
+            </div>
 
 
             <!-- Email -->

@@ -83,104 +83,124 @@ const props = defineProps({
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                <span class="text-white font-semibold">{{ books.data.length }} Buku</span>
+                <span class="text-white font-semibold">{{ books.data?.length || 0 }} Buku</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Books Grid -->
-      <div
-  v-if="books.data && books.data.length > 0"
-  class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
->
+     <!-- Books Grid with 3D Effect - Fixed Layout -->
+<div v-if="books.data && books.data.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
   <Link
     v-for="book in books.data"
     :key="book.id"
     :href="route('public.preview', { id: book.id })"
-    class="group relative cursor-pointer block"
+    class="group block book-card"
   >
-    <!-- Book Card with 3D Effect -->
-    <div class="relative">
-      <!-- Book Cover Container -->
-      <div class="relative transform transition-all duration-500 group-hover:scale-105 group-hover:-translate-y-2">
-        <!-- Book Spine Shadow -->
-        <div class="absolute -left-2 top-2 bottom-2 w-2 bg-gradient-to-r from-gray-800 to-gray-700 rounded-l-sm opacity-60 dark:from-gray-700 dark:to-gray-600"></div>
-
-        <!-- Main Book Cover -->
-        <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl dark:shadow-gray-700 overflow-hidden group-hover:shadow-2xl transition-shadow duration-500 border-2 border-gray-200 dark:border-gray-700">
-          <!-- Cover Image -->
-          <div class="relative aspect-[2/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600">
+    <!-- 3D Book Container -->
+    <div class="book-3d-container">
+      <div class="book-3d">
+        <!-- Front Cover -->
+        <div class="book-front">
+          <div class="relative w-full h-full">
             <img
               v-if="book.cover_url"
               :src="book.cover_url"
               :alt="book.title"
-              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              loading="lazy"
+              class="w-full h-full object-cover"
             />
-            <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-600">
+            <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-400 to-orange-500">
               <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
             </div>
 
-            <!-- Overlay on Hover -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <!-- Gradient Overlay on Hover -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-            <!-- Shine Effect -->
-            <div class="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-0 group-hover:opacity-30 transition-opacity duration-500 dark:from-white/20"></div>
-          </div>
+            <!-- Quick View Badge -->
+            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 shadow-lg">
+              <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </div>
 
-          <!-- Book Pages Effect -->
-          <div class="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-gray-300 via-gray-200 to-gray-300 dark:from-gray-600 dark:via-gray-500 dark:to-gray-600">
-            <div class="absolute inset-y-0 right-0 w-px bg-white/50 dark:bg-white/30"></div>
+            <!-- Location Badge -->
+            <div class="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+              <div class="bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center justify-center gap-1 shadow-lg">
+                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span class="truncate">{{ rack.name }}</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Bottom Shadow -->
-        <div class="absolute -bottom-1 left-0 right-0 h-3 bg-gradient-to-b from-black/20 to-transparent blur-sm transform scale-95 group-hover:scale-100 transition-transform duration-500 dark:from-black/40"></div>
+        <!-- Book Spine -->
+        <div class="book-spine"></div>
+
+        <!-- Book Shadow -->
+        <div class="book-shadow"></div>
       </div>
     </div>
 
-    <!-- Book Info -->
-    <div class="mt-4 space-y-1">
-      <h3 class="font-bold line-clamp-2 text-sm leading-tight text-gray-900 dark:text-gray-100 group-hover:text-amber-600 transition-colors duration-300">
+    <!-- Book Info - Fixed Height Container -->
+    <div class="mt-4 px-1 flex flex-col" style="min-height: 88px;">
+      <!-- Title - Fixed 2 lines (40px) -->
+      <h3 class="text-sm font-bold text-gray-800 group-hover:text-amber-600 transition-colors line-clamp-2 mb-1.5 leading-snug" style="height: 40px; min-height: 40px;">
         {{ book.title }}
       </h3>
-      <p class="text-xs text-gray-600 dark:text-gray-300 truncate">
-        {{ book.author }}
-      </p>
-    </div>
 
-    <!-- Hover Indicator -->
-    <div class="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full"></div>
+      <!-- Author - Fixed 1 line (20px) -->
+      <p class="text-xs text-gray-500 line-clamp-1 mb-2" style="height: 20px; min-height: 20px;">
+        {{ book.author || 'Tidak diketahui' }}
+      </p>
+
+      <!-- Bottom Info - Fixed height (28px) -->
+      <div class="flex items-center justify-between gap-2 mt-auto" style="height: 28px; min-height: 28px;">
+        <!-- Category Badge - Always same size -->
+        <div class="flex-1 min-w-0">
+          <span v-if="book.category" class="inline-flex items-center text-xs bg-amber-50 text-amber-700 px-2 py-1 rounded-full font-medium w-full max-w-full">
+            <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+            <span class="truncate">
+              {{ typeof book.category === 'object' ? book.category.name : book.category }}
+            </span>
+          </span>
+          <span v-else class="inline-block text-xs text-gray-400 px-2 py-1">-</span>
+        </div>
+
+        <!-- Star Icon - Fixed position -->
+        <div class="flex items-center gap-0.5 text-amber-400 flex-shrink-0" style="width: 16px;">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
   </Link>
 </div>
 
 
-      <!-- Pagination (if needed) -->
-      <div v-if="books.links && books.links.length > 3" class="mt-8 flex justify-center">
-        <nav class="flex items-center space-x-2">
-          <template v-for="(link, index) in books.links" :key="index">
-            <Link
-              v-if="link.url"
-              :href="link.url"
-              class="px-4 py-2 rounded-lg transition-all duration-200"
-              :class="[
-                link.active
-                  ? 'bg-gradient-to-r from-amber-600 to-rose-600 text-white font-semibold shadow-lg'
-                  : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300'
-              ]"
-              v-html="link.label"
-            />
-            <span
-              v-else
-              class="px-4 py-2 text-gray-400 cursor-not-allowed"
-              v-html="link.label"
-            />
-          </template>
-        </nav>
+      <!-- Pagination -->
+      <div v-if="books.links && books.links.length > 3" class="mt-12 flex justify-center gap-2 flex-wrap">
+        <Link
+          v-for="link in books.links"
+          :key="link.label"
+          :href="link.url"
+          v-html="link.label"
+          :class="{
+            'bg-gradient-to-r from-amber-600 to-rose-600 text-white shadow-lg shadow-amber-500/30': link.active,
+            'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200': !link.active && link.url,
+            'bg-gray-100 text-gray-400 cursor-not-allowed': !link.url
+          }"
+          class="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
+        />
       </div>
 
       <!-- Empty State -->
@@ -210,10 +230,137 @@ const props = defineProps({
 </template>
 
 <style scoped>
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* 3D Book Card Styles */
+.book-card {
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.book-3d-container {
+  perspective: 1500px;
+  perspective-origin: center center;
+}
+
+.book-3d {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2/3;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.book-card:hover .book-3d {
+  transform: rotateY(-25deg) translateX(8px) translateZ(20px);
+}
+
+.book-front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+  transform: translateZ(20px);
+  transition: box-shadow 0.3s ease;
+}
+
+.book-card:hover .book-front {
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.15),
+    0 10px 10px -5px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.book-spine {
+  position: absolute;
+  width: 40px;
+  height: 100%;
+  right: -20px;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.08) 20%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(0, 0, 0, 0.08) 80%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  transform: rotateY(90deg);
+  transform-origin: left center;
+  border-radius: 0 8px 8px 0;
+  transition: opacity 0.3s ease;
+}
+
+.book-card:hover .book-spine {
+  opacity: 1;
+}
+
+.book-shadow {
+  position: absolute;
+  bottom: -10px;
+  left: 10%;
+  width: 80%;
+  height: 20px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
+  transform: translateZ(-20px);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.book-card:hover .book-shadow {
+  opacity: 1;
+  transform: translateZ(-20px) translateY(5px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .book-card:hover .book-3d {
+    transform: rotateY(-15deg) translateX(5px) translateZ(10px);
+  }
+
+  .book-spine {
+    width: 30px;
+    right: -15px;
+  }
+}
+
+/* Animation on load */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.book-card {
+  animation: fadeInUp 0.5s ease-out backwards;
+}
+
+.book-card:nth-child(1) { animation-delay: 0.05s; }
+.book-card:nth-child(2) { animation-delay: 0.1s; }
+.book-card:nth-child(3) { animation-delay: 0.15s; }
+.book-card:nth-child(4) { animation-delay: 0.2s; }
+.book-card:nth-child(5) { animation-delay: 0.25s; }
+.book-card:nth-child(6) { animation-delay: 0.3s; }
 </style>

@@ -111,7 +111,7 @@ onUnmounted(() => {
                 <Link href="/register" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all">
                   Daftar Sekarang
                 </Link>
-                <a href="#koleksi" class="px-6 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
+                <a href="/koleksi" class="px-6 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all">
                   Lihat Koleksi
                 </a>
               </div>
@@ -164,7 +164,7 @@ onUnmounted(() => {
         </div>
       </section>
 
-        <!-- WHY CHOOSE US -->
+      <!-- WHY CHOOSE US -->
       <section class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 text-white py-24">
         <div class="max-w-7xl mx-auto px-6">
           <div class="grid lg:grid-cols-2 gap-16 items-center">
@@ -256,9 +256,6 @@ onUnmounted(() => {
         </div>
       </section>
 
-
-
-
       <!-- HOW IT WORKS -->
       <section class="py-16 bg-white dark:bg-gray-950">
         <div class="max-w-6xl mx-auto px-6">
@@ -295,57 +292,109 @@ onUnmounted(() => {
         </div>
       </section>
 
-      <!-- BOOKS COLLECTION -->
-      <section id="koleksi" class="py-16 bg-gray-50 dark:bg-gray-900">
-        <div class="max-w-7xl mx-auto px-6">
-          <div class="flex justify-between items-end mb-8">
-            <div>
-              <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Koleksi Terbaru</h2>
-              <p class="text-gray-600 dark:text-gray-400">Buku berkualitas siap dipinjam</p>
-            </div>
-            <Link href="/koleksi" class="hidden md:flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm">
-              Lihat Semua
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-              </svg>
-            </Link>
-          </div>
+      <!-- BOOKS COLLECTION WITH 3D EFFECT -->
+<section id="koleksi" class="py-16 bg-gray-50 dark:bg-gray-900">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex justify-between items-end mb-8">
+      <div>
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Koleksi Terbaru</h2>
+        <p class="text-gray-600 dark:text-gray-400">Buku berkualitas siap dipinjam</p>
+      </div>
+      <Link
+        href="/koleksi"
+        class="hidden md:flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm"
+      >
+        Lihat Semua
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </Link>
+    </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            <Link
-              v-for="book in latestBooks"
-              :key="book.id"
-              :href="route('public.preview', book.id)"
-              class="group"
-            >
-              <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-xl border border-gray-200 dark:border-gray-700 transition-all duration-300 h-full flex flex-col">
-                <div class="aspect-[3/4] overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0">
-                  <img
-                    :src="book.cover_url ?? 'https://via.placeholder.com/300x400/6366f1/ffffff?text=No+Cover'"
-                    alt="cover"
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+      <Link
+        v-for="book in latestBooks"
+        :key="book.id"
+        :href="route('public.preview', book.id)"
+        class="group block book-card h-full"
+      >
+        <!-- 3D Book Container -->
+        <div class="book-3d-container">
+          <div class="book-3d">
+            <!-- Front Cover -->
+            <div class="book-front">
+              <div class="relative w-full h-full aspect-[3/4] overflow-hidden rounded-lg">
+                <img
+                  :src="book.cover_url ?? 'https://via.placeholder.com/300x400/6366f1/ffffff?text=No+Cover'"
+                  alt="cover"
+                  class="w-full h-full object-cover"
+                />
+                <!-- Gradient Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                <!-- Quick View -->
+                <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 shadow-lg">
+                  <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
                 </div>
 
-                <div class="p-3 flex flex-col flex-grow">
-                  <h3 class="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2 mb-1.5 group-hover:text-blue-600 transition-colors h-10">{{ book.title }}</h3>
-                  <p class="text-xs text-gray-600 dark:text-gray-400 mb-2.5 line-clamp-1 h-5">{{ book.author }}</p>
-                  <div class="flex items-center justify-between mt-auto gap-2">
-                    <span v-if="book.category" class="inline-block text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded font-medium truncate flex-1">
-                      {{ typeof book.category === 'object' ? book.category.name : book.category }}
-                    </span>
-                    <span class="inline-flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex-shrink-0">
-                      <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                      </svg>
-                    </span>
+                <!-- Badge -->
+                <div class="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                  <div class="bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center justify-center gap-1 shadow-lg">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    Tersedia
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
+
+            <div class="book-spine"></div>
+            <div class="book-shadow"></div>
           </div>
         </div>
-      </section>
+
+        <!-- Book Info -->
+        <div class="mt-4 px-1 flex flex-col justify-between min-h-[90px]">
+          <div>
+            <h3
+              class="text-sm font-bold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug mb-1.5">
+              {{ book.title }}
+            </h3>
+            <p class="text-xs text-gray-600 dark:text-gray-400 line-clamp-1 mb-2">
+              {{ book.author }}
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between gap-2 mt-auto">
+            <span v-if="book.category"
+              class="inline-flex items-center text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full font-medium truncate flex-1">
+              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+              {{ typeof book.category === 'object' ? book.category.name : book.category }}
+            </span>
+            <div class="flex items-center gap-0.5 text-amber-400 flex-shrink-0">
+              <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </div>
+  </div>
+</section>
+
 
       <!-- CATEGORIES -->
       <section class="py-16 bg-white dark:bg-gray-950">
@@ -356,25 +405,24 @@ onUnmounted(() => {
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            <div
+            <Link
               v-for="cat in categories"
               :key="cat.id"
-              class="group p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-700 hover:border-blue-500 cursor-pointer transition-all"
+              :href="`/categories/${cat.id}`"
+              class="group p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-all hover:scale-105"
             >
               <div class="text-center">
-                <div class="w-10 h-10 mx-auto mb-2 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-sm">
+                  <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                   </svg>
                 </div>
-                <h3 class="font-semibold text-xs text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors line-clamp-1">{{ cat.name }}</h3>
+                <h3 class="font-semibold text-sm text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">{{ cat.name }}</h3>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
-
-
 
       <!-- CTA -->
       <section class="py-16 bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
@@ -397,8 +445,6 @@ onUnmounted(() => {
         </div>
       </section>
 
-
-
     </div>
   </PublicLayout>
 </template>
@@ -417,4 +463,124 @@ onUnmounted(() => {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* 3D Book Card Styles */
+.book-card {
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.book-3d-container {
+  perspective: 1500px;
+  perspective-origin: center center;
+}
+
+.book-3d {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2/3;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.book-card:hover .book-3d {
+  transform: rotateY(-25deg) translateX(8px) translateZ(20px);
+}
+
+.book-front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+  transform: translateZ(20px);
+  transition: box-shadow 0.3s ease;
+}
+
+.book-card:hover .book-front {
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.15),
+    0 10px 10px -5px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.book-spine {
+  position: absolute;
+  width: 40px;
+  height: 100%;
+  right: -20px;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.08) 20%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(0, 0, 0, 0.08) 80%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  transform: rotateY(90deg);
+  transform-origin: left center;
+  border-radius: 0 8px 8px 0;
+  transition: opacity 0.3s ease;
+}
+
+.book-card:hover .book-spine {
+  opacity: 1;
+}
+
+.book-shadow {
+  position: absolute;
+  bottom: -10px;
+  left: 10%;
+  width: 80%;
+  height: 20px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
+  transform: translateZ(-20px);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.book-card:hover .book-shadow {
+  opacity: 1;
+  transform: translateZ(-20px) translateY(5px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .book-card:hover .book-3d {
+    transform: rotateY(-15deg) translateX(5px) translateZ(10px);
+  }
+
+  .book-spine {
+    width: 30px;
+    right: -15px;
+  }
+}
+
+/* Animation on load */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.book-card {
+  animation: fadeInUp 0.5s ease-out backwards;
+}
+
+.book-card:nth-child(1) { animation-delay: 0.05s; }
+.book-card:nth-child(2) { animation-delay: 0.1s; }
+.book-card:nth-child(3) { animation-delay: 0.15s; }
+.book-card:nth-child(4) { animation-delay: 0.2s; }
+.book-card:nth-child(5) { animation-delay: 0.25s; }
+.book-card:nth-child(6) { animation-delay: 0.3s; }
 </style>

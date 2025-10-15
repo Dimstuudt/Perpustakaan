@@ -176,7 +176,7 @@ class DashboardController extends Controller
                 'recommendedBooks' => Book::where('stock', '>', 0)
                     ->inRandomOrder()
                     ->take(6)
-                    ->get(['id', 'title', 'author', 'cover_image', 'stock']),
+                    ->get(['id', 'title', 'author', 'cover_path', 'stock']),
 
                 // Statistik user
                 'userStats' => [

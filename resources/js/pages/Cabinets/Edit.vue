@@ -7,29 +7,23 @@ import MultiSelect from 'primevue/multiselect'
 import Swal from 'sweetalert2'
 import { type BreadcrumbItem } from '@/types'
 
-// Props
 const props = defineProps<{
   cabinet: { id: number; code: string; name: string; description?: string; racks: any[] }
-  racks: any[] // racks that can be assigned
+  racks: any[]
 }>()
 
-// Breadcrumbs
 const breadcrumbs: BreadcrumbItem[] = [
   { title: 'Cabinets', href: route('cabinets.index') },
   { title: 'Edit Cabinet', href: route('cabinets.edit', props.cabinet.id) },
 ]
 
-// Form state
 const form = useForm({
   code: props.cabinet?.code || '',
   name: props.cabinet?.name || '',
   description: props.cabinet?.description || '',
-  rack_ids: props.cabinet?.racks?.map(r => r.id) || [] // <--- isi racks lama
+  rack_ids: [] as number[]
 })
 
-
-
-// Submit update
 function submit() {
   form.put(route('cabinets.update', props.cabinet.id), {
     preserveScroll: true,
@@ -52,7 +46,6 @@ function submit() {
   })
 }
 
-// Remove rack from cabinet
 function removeRack(id: number) {
   Swal.fire({
     title: 'Are you sure?',
@@ -97,29 +90,24 @@ function removeRack(id: number) {
   <Head title="Edit Cabinet" />
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="p-6 space-y-6" v-if="cabinet">
-      <!-- Header -->
       <h2 class="text-2xl font-semibold">Edit Cabinet</h2>
 
       <div class="grid gap-4 max-w-lg">
-        <!-- Code -->
         <div>
           <label for="code" class="block text-sm font-medium mb-1">Code</label>
           <InputText id="code" v-model="form.code" placeholder="Enter cabinet code" class="w-full" />
         </div>
 
-        <!-- Name -->
         <div>
           <label for="name" class="block text-sm font-medium mb-1">Name</label>
           <InputText id="name" v-model="form.name" placeholder="Enter cabinet name" class="w-full" />
         </div>
 
-        <!-- Description -->
         <div>
           <label for="description" class="block text-sm font-medium mb-1">Description</label>
           <InputText id="description" v-model="form.description" placeholder="Enter description" class="w-full" />
         </div>
 
-        <!-- Assign Racks -->
         <div>
           <label for="racks" class="block text-sm font-medium mb-1">Assign New Racks</label>
           <MultiSelect
@@ -133,7 +121,6 @@ function removeRack(id: number) {
           />
         </div>
 
-        <!-- Racks in this Cabinet -->
         <div>
           <h3 class="font-medium mb-2">Racks in this Cabinet</h3>
           <ul class="divide-y border rounded-md">
@@ -157,20 +144,9 @@ function removeRack(id: number) {
           </ul>
         </div>
 
-        <!-- Actions -->
         <div class="flex gap-2">
-          <Button
-            label="Save"
-            icon="pi pi-save"
-            severity="success"
-            @click="submit"
-          />
-          <Button
-            label="Back"
-            icon="pi pi-arrow-left"
-            severity="secondary"
-            @click="router.get(route('cabinets.index'))"
-          />
+          <Button label="Save" icon="pi pi-save" severity="success" @click="submit" />
+          <Button label="Back" icon="pi pi-arrow-left" severity="secondary" @click="router.get(route('cabinets.index'))" />
         </div>
       </div>
     </div>

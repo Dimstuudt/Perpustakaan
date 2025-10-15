@@ -208,7 +208,7 @@ const getProgressWidth = (daysRemaining: number, totalDays: number = 14) => {
                 <p class="text-xs text-slate-500">Buku tersedia untuk dipinjam</p>
               </div>
             </div>
-            <Link href="/books" class="text-sm font-semibold text-violet-600 hover:text-violet-700">
+            <Link href="/user/loansuser" class="text-sm font-semibold text-violet-600 hover:text-violet-700">
               Lihat Semua →
             </Link>
           </div>
