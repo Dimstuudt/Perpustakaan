@@ -71,102 +71,178 @@ watch(showModal, (value) => {
         </div>
       </div>
 
-      <!-- Category Grid -->
-      <div v-if="categories && categories.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div
-          v-for="category in categories"
-          :key="category.id"
-          class="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100"
+ <!-- Category Grid -->
+<div
+  v-if="categories && categories.length > 0"
+  class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+>
+  <div
+    v-for="category in categories"
+    :key="category.id"
+    class="group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 dark:border-gray-700"
+  >
+    <!-- Category Header -->
+    <div class="p-5 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-700 border-b border-gray-100 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+          {{ category.name }}
+        </h2>
+        <Link
+          :href="`/categories/${category.id}`"
+          class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-semibold transition-colors flex items-center space-x-1"
         >
-          <!-- Category Header -->
-          <div class="p-5 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
-            <div class="flex items-center justify-between">
-              <h2 class="text-xl font-bold text-gray-800 group-hover:text-blue-600 transition-colors">
-                {{ category.name }}
-              </h2>
-              <Link
-                :href="`/categories/${category.id}`"
-                class="text-blue-600 hover:text-blue-800 text-sm font-semibold transition-colors flex items-center space-x-1"
-              >
-                <span>Lihat semua</span>
-                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-            </div>
-          </div>
-
-          <!-- Book Preview -->
-          <div class="p-6">
-            <div v-if="category.books && category.books.length > 0" class="flex items-start space-x-4">
-              <!-- Book Cover with 3D Effect -->
-              <Link
-                :href="`/book/${category.books[0].id}`"
-                class="book-cover-container flex-shrink-0"
-              >
-                <div class="book-3d">
-                  <div class="book-front">
-                    <img
-                      :src="category.books[0].cover_url || '/images/default-book.png'"
-                      :alt="`Cover ${category.books[0].title}`"
-                      class="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div class="book-spine"></div>
-                </div>
-              </Link>
-
-              <!-- Book Info -->
-              <div class="flex-1 min-w-0">
-                <Link
-                  :href="`/book/${category.books[0].id}`"
-                  class="block group/title"
-                >
-                  <h3 class="text-base font-semibold text-gray-800 group-hover/title:text-blue-600 transition-colors line-clamp-2 mb-2">
-                    {{ category.books[0].title }}
-                  </h3>
-                </Link>
-                <p v-if="category.books[0].author" class="text-sm text-gray-500 mb-3">
-                  {{ category.books[0].author }}
-                </p>
-                <div class="flex items-center text-xs text-gray-400">
-                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                  <span>Buku Terbaru</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Empty State -->
-            <div v-else class="text-center py-8">
-              <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
-              <p class="text-gray-500 text-sm">Belum ada buku</p>
-            </div>
-          </div>
-        </div>
+          <span>Lihat semua</span>
+          <svg
+            class="w-4 h-4 group-hover:translate-x-1 transition-transform"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </Link>
       </div>
+    </div>
 
-      <!-- Empty State for No Categories -->
+    <!-- Book Preview -->
+    <div class="p-6">
       <div
-        v-else
-        class="text-center py-20 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border-2 border-dashed border-gray-300"
+        v-if="category.books && category.books.length > 0"
+        class="flex items-start space-x-4"
       >
-        <div class="relative inline-block mb-6">
-          <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl blur-xl opacity-20"></div>
-          <div class="relative w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center">
-            <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+        <!-- Book Cover -->
+        <Link
+          :href="`/book/${category.books[0].id}`"
+          class="book-cover-container flex-shrink-0"
+        >
+          <div class="book-3d">
+            <div class="book-front">
+              <img
+                :src="category.books[0].cover_url || '/images/default-book.png'"
+                :alt="`Cover ${category.books[0].title}`"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="book-spine"></div>
+          </div>
+        </Link>
+
+        <!-- Book Info -->
+        <div class="flex-1 min-w-0">
+          <Link
+            :href="`/book/${category.books[0].id}`"
+            class="block group/title"
+          >
+            <h3
+              class="text-base font-semibold text-gray-800 dark:text-gray-100 group-hover/title:text-blue-600 dark:group-hover/title:text-blue-400 transition-colors line-clamp-2 mb-2"
+            >
+              {{ category.books[0].title }}
+            </h3>
+          </Link>
+          <p
+            v-if="category.books[0].author"
+            class="text-sm text-gray-500 dark:text-gray-400 mb-3"
+          >
+            {{ category.books[0].author }}
+          </p>
+          <div class="flex items-center text-xs text-gray-400 dark:text-gray-500">
+            <svg
+              class="w-4 h-4 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+              />
             </svg>
+            <span>Buku Terbaru</span>
           </div>
         </div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-2">Belum Ada Kategori</h3>
-        <p class="text-gray-600 max-w-md mx-auto">Mulai tambahkan kategori untuk mengelompokkan koleksi buku Anda.</p>
       </div>
+
+      <!-- Empty State -->
+      <div v-else class="text-center py-8">
+        <div
+          class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3"
+        >
+          <svg
+            class="w-8 h-8 text-gray-400 dark:text-gray-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+            />
+          </svg>
+        </div>
+        <p class="text-gray-500 dark:text-gray-400 text-sm">Belum ada buku</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Empty State for No Categories -->
+<div
+  v-else
+  class="text-center py-20 rounded-2xl border-2 border-dashed transition-all duration-300
+         border-gray-300 dark:border-gray-700
+         bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800"
+>
+  <div class="relative inline-block mb-6">
+    <!-- Glow background -->
+    <div
+      class="absolute inset-0 rounded-2xl blur-xl opacity-20
+             bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-500"
+    ></div>
+
+    <!-- Icon container -->
+    <div
+      class="relative w-20 h-20 rounded-2xl flex items-center justify-center
+             bg-gradient-to-br from-blue-100 to-purple-100 dark:from-gray-800 dark:to-gray-700"
+    >
+      <svg
+        class="w-10 h-10 text-blue-600 dark:text-blue-400"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 10h16M4 14h16M4 18h16"
+        />
+      </svg>
+    </div>
+  </div>
+
+  <h3
+    class="text-2xl font-bold mb-2
+           text-gray-900 dark:text-gray-100 transition-colors"
+  >
+    Belum Ada Kategori
+  </h3>
+
+  <p
+    class="max-w-md mx-auto text-gray-600 dark:text-gray-400 transition-colors"
+  >
+    Mulai tambahkan kategori untuk mengelompokkan koleksi buku Anda.
+  </p>
+</div>
+
     </div>
 
     <!-- Modal Overlay -->

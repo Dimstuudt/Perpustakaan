@@ -69,84 +69,119 @@ defineProps({
         </div>
       </div>
 
-      <!-- Grid Buku dengan 3D Effect -->
-      <div v-if="books.data.length" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-        <Link
-          v-for="book in books.data"
-          :key="book.id"
-          :href="`/book/${book.id}`"
-          class="group block"
-        >
-          <div class="book-card">
-            <!-- Book Container with 3D -->
-            <div class="book-3d-container">
-              <div class="book-3d">
-                <!-- Front Cover -->
-                <div class="book-front">
-                  <div class="relative w-full h-full">
-                    <img
-                      :src="book.cover_url || '/images/default-book.png'"
-                      :alt="book.title"
-                      class="w-full h-full object-cover"
-                    />
-                    <!-- Gradient Overlay on Hover -->
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <!-- Grid Buku dengan 3D Effect -->
+<div v-if="books.data.length" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+  <Link
+    v-for="book in books.data"
+    :key="book.id"
+    :href="`/book/${book.id}`"
+    class="group block"
+  >
+    <div class="book-card">
+      <!-- Book Container with 3D -->
+      <div class="book-3d-container">
+        <div class="book-3d">
+          <!-- Front Cover -->
+          <div class="book-front">
+            <div class="relative w-full h-full">
+              <img
+                :src="book.cover_url || '/images/default-book.png'"
+                :alt="book.title"
+                class="w-full h-full object-cover"
+              />
+              <!-- Gradient Overlay on Hover -->
+              <div
+                class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300
+                       bg-gradient-to-t from-black/60 via-transparent to-transparent dark:from-black/40"
+              ></div>
 
-                    <!-- Quick View Badge -->
-                    <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                      <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Book Spine -->
-                <div class="book-spine"></div>
-
-                <!-- Book Shadow -->
-                <div class="book-shadow"></div>
-              </div>
-            </div>
-
-            <!-- Book Info -->
-            <div class="mt-4 px-1">
-              <h3 class="text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2 mb-1.5 leading-snug">
-                {{ book.title }}
-              </h3>
-              <p class="text-xs text-gray-500 line-clamp-1 mb-2">
-                {{ book.author || 'Tidak diketahui' }}
-              </p>
-
-              <!-- Rating or Category Badge (optional) -->
-              <div class="flex items-center justify-between">
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 group-hover:bg-blue-100 transition-colors">
-                  <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                  Buku
-                </span>
+              <!-- Quick View Badge -->
+              <div
+                class="absolute top-3 right-3 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0
+                       bg-white/90 backdrop-blur-sm dark:bg-gray-800/80"
+              >
+                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
               </div>
             </div>
           </div>
-        </Link>
-      </div>
 
-      <!-- Jika Tidak Ada Buku -->
-      <div v-else class="text-center py-20 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border-2 border-dashed border-gray-300">
-        <div class="relative inline-block mb-6">
-          <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl blur-xl opacity-20"></div>
-          <div class="relative w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center">
-            <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          </div>
+          <!-- Book Spine -->
+          <div class="book-spine"></div>
+
+          <!-- Book Shadow -->
+          <div class="book-shadow"></div>
         </div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-2">Belum Ada Buku</h3>
-        <p class="text-gray-600 max-w-md mx-auto">Belum ada buku dalam kategori <span class="font-semibold text-gray-900">{{ category.name }}</span>.</p>
       </div>
+
+      <!-- Book Info -->
+      <div class="mt-4 px-1">
+        <h3 class="text-sm font-bold line-clamp-2 mb-1.5 leading-snug
+                   text-gray-800 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+          {{ book.title }}
+        </h3>
+        <p class="text-xs line-clamp-1 mb-2
+                  text-gray-500 dark:text-gray-400">
+          {{ book.author || 'Tidak diketahui' }}
+        </p>
+
+        <!-- Rating or Category Badge -->
+        <div class="flex items-center justify-between">
+          <span
+            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                   bg-blue-50 text-blue-700 dark:bg-blue-800 dark:text-blue-200
+                   group-hover:bg-blue-100 dark:group-hover:bg-blue-700 transition-colors"
+          >
+            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+            Buku
+          </span>
+        </div>
+      </div>
+    </div>
+  </Link>
+</div>
+
+
+     <!-- Jika Tidak Ada Buku -->
+<div
+  v-else
+  class="text-center py-20 rounded-2xl border-2 border-dashed border-gray-300
+         bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900"
+>
+  <div class="relative inline-block mb-6">
+    <!-- Background Glow -->
+    <div
+      class="absolute inset-0 rounded-2xl blur-xl opacity-20
+             bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-700 dark:to-purple-900"
+    ></div>
+
+    <!-- Icon Container -->
+    <div
+      class="relative w-20 h-20 rounded-2xl flex items-center justify-center
+             bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-800 dark:to-purple-800"
+    >
+      <svg class="w-10 h-10 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- Heading -->
+  <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Belum Ada Buku</h3>
+
+  <!-- Description -->
+  <p class="text-gray-600 dark:text-gray-300 max-w-md mx-auto">
+    Belum ada buku dalam kategori
+    <span class="font-semibold text-gray-900 dark:text-gray-100">{{ category.name }}</span>.
+    Mulai tambahkan buku untuk mengisi kategori ini dan mempermudah pengelolaan koleksi.
+  </p>
+</div>
+
 
       <!-- Pagination -->
       <div v-if="books.links && books.links.length > 3" class="mt-12 flex justify-center gap-2 flex-wrap">
