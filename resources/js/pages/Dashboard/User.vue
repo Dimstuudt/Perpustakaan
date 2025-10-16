@@ -305,28 +305,28 @@ const getProgressWidth = (daysRemaining: number, totalDays: number = 14) => {
 
       <!-- Quick Actions -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Link href="/books" class="group bg-white hover:bg-gradient-to-br hover:from-violet-500 hover:to-violet-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
+        <Link href="/user/loansuser" class="group bg-white hover:bg-gradient-to-br hover:from-violet-500 hover:to-violet-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
           <div class="w-14 h-14 bg-violet-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md">
             🔍
           </div>
           <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300 text-center">Cari Buku</span>
         </Link>
 
-        <Link href="/my-loans" class="group bg-white hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
+        <Link href="/user/loans/status" class="group bg-white hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
           <div class="w-14 h-14 bg-blue-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md">
             📚
           </div>
           <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300 text-center">Pinjaman Saya</span>
         </Link>
 
-        <Link href="/history" class="group bg-white hover:bg-gradient-to-br hover:from-pink-500 hover:to-pink-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
+        <Link href="/welcome" class="group bg-white hover:bg-gradient-to-br hover:from-pink-500 hover:to-pink-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
           <div class="w-14 h-14 bg-pink-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md">
-            📋
+            📱
           </div>
-          <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300 text-center">Riwayat</span>
+          <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300 text-center">Landing</span>
         </Link>
 
-        <Link href="/profile" class="group bg-white hover:bg-gradient-to-br hover:from-indigo-500 hover:to-indigo-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
+        <Link href="/settings/profile" class="group bg-white hover:bg-gradient-to-br hover:from-indigo-500 hover:to-indigo-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
           <div class="w-14 h-14 bg-indigo-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md">
             👤
           </div>

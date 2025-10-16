@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue'
-import { Head } from '@inertiajs/vue3'
+import { Head, router } from '@inertiajs/vue3'
 import {
   Chart as ChartJS,
   Title,
@@ -76,6 +76,12 @@ const chartOptions = {
     }
   }
 }
+
+
+const goTo = (url) => {
+  router.visit(url)
+}
+
 </script>
 
 <template>
@@ -149,7 +155,7 @@ const chartOptions = {
               <span class="text-xs font-semibold text-white bg-white/20 backdrop-blur px-3 py-1 rounded-full">Revenue</span>
             </div>
             <h3 class="text-white/90 text-sm font-medium mb-1">Total Pendapatan</h3>
-            <p class="text-3xl font-bold text-white">Rp {{ props.stats.totalFee.toLocaleString() }}</p>
+            <p class="text-1xl font-bold text-white">Rp {{ props.stats.totalFee.toLocaleString() }}</p>
           </div>
         </div>
       </div>
@@ -211,32 +217,69 @@ const chartOptions = {
       </div>
 
       <!-- Quick Actions -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <button class="group bg-white hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
-          <div class="w-14 h-14 bg-blue-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md">
-            📕
-          </div>
-          <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300">Tambah Buku</span>
-        </button>
-        <button class="group bg-white hover:bg-gradient-to-br hover:from-emerald-500 hover:to-emerald-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
-          <div class="w-14 h-14 bg-emerald-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md">
-            👥
-          </div>
-          <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300">Kelola User</span>
-        </button>
-        <button class="group bg-white hover:bg-gradient-to-br hover:from-purple-500 hover:to-purple-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
-          <div class="w-14 h-14 bg-purple-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md">
-            📑
-          </div>
-          <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300">Lihat Laporan</span>
-        </button>
-        <button class="group bg-white hover:bg-gradient-to-br hover:from-slate-600 hover:to-slate-700 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
-          <div class="w-14 h-14 bg-slate-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md">
-            ⚙️
-          </div>
-          <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300">Pengaturan</span>
-        </button>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Tambah Buku -->
+    <button
+      @click="goTo('/books')"
+      class="group bg-white hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-600 active:scale-95 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3"
+    >
+      <div
+        class="w-14 h-14 bg-blue-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md"
+      >
+        📕
       </div>
+      <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300">
+     Buku
+      </span>
+    </button>
+
+    <!-- Kelola User -->
+    <button
+      @click="goTo('/users')"
+      class="group bg-white hover:bg-gradient-to-br hover:from-emerald-500 hover:to-emerald-600 active:scale-95 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3"
+    >
+      <div
+        class="w-14 h-14 bg-emerald-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md"
+      >
+        👥
+      </div>
+      <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300">
+        Kelola User
+      </span>
+    </button>
+
+    <!-- Lihat Laporan -->
+    <button
+      @click="goTo('/loans')"
+      class="group bg-white hover:bg-gradient-to-br hover:from-purple-500 hover:to-purple-600 active:scale-95 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3"
+    >
+      <div
+        class="w-14 h-14 bg-purple-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md"
+      >
+        📑
+      </div>
+      <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300">
+        Lihat Peminjam
+      </span>
+    </button>
+
+    <!-- Pengaturan -->
+    <button
+      @click="goTo('/permissions')"
+      class="group bg-white hover:bg-gradient-to-br hover:from-slate-600 hover:to-slate-700 active:scale-95 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3"
+    >
+      <div
+        class="w-14 h-14 bg-slate-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md"
+      >
+        ⚙️
+      </div>
+      <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300">
+        Permission
+      </span>
+    </button>
+  </div>
+
+
     </div>
   </AppLayout>
 </template>

@@ -295,9 +295,7 @@ const formatDate = (date: string) => {
                     Kembali: {{ formatDate(loan.due_date) }}
                   </span>
                 </div>
-                <button class="text-blue-600 hover:text-blue-700 font-semibold">
-                  Proses →
-                </button>
+
               </div>
             </div>
 
@@ -370,11 +368,11 @@ const formatDate = (date: string) => {
           <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300">Data Member</span>
         </Link>
 
-        <Link href="/reports" class="group bg-white hover:bg-gradient-to-br hover:from-orange-500 hover:to-red-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
+        <Link href="/categories" class="group bg-white hover:bg-gradient-to-br hover:from-orange-500 hover:to-red-600 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center gap-3">
           <div class="w-14 h-14 bg-orange-50 group-hover:bg-white/20 rounded-2xl flex items-center justify-center text-3xl transition-colors duration-300 shadow-md">
-            📊
+            🔬
           </div>
-          <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300">Laporan</span>
+          <span class="font-semibold text-slate-800 group-hover:text-white transition-colors duration-300">Kategori</span>
         </Link>
       </div>
     </div>

@@ -13,7 +13,7 @@ class BookController extends Controller
     // Menampilkan daftar buku aktif (non-deleted)
     public function index()
     {
-        $books = Book::with('category')->latest()->paginate(10);
+        $books = Book::with('category')->latest()->paginate(8);
 
         return Inertia::render('Books/Index', [
             'books' => $books->through(fn($book) => [

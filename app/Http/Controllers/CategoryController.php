@@ -10,17 +10,27 @@ class CategoryController extends Controller
 {
     // Menampilkan daftar kategori (hanya yang aktif / belum dihapus)
     // CategoryController.php
-public function index()
-{
-    $categories = Category::withCount('books')
-        ->latest()
-        ->paginate(10);
+    public function index(Request $request)
+    {
+        $query = Category::withCount('books');
 
-    return Inertia::render('Categories/Index', [
-        'categories' => $categories,
-    ]);
-}
+        // Search filter
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
 
+        // Get per_page from request or use default
+        $perPage = $request->get('per_page', 10);
+
+        // Paginate with query params preserved
+        $categories = $query->latest()
+            ->paginate($perPage)
+            ->appends($request->query());
+
+        return Inertia::render('Categories/Index', [
+            'categories' => $categories,
+        ]);
+    }
 
     // Menampilkan form tambah kategori
     public function create()

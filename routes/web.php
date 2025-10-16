@@ -104,7 +104,7 @@ Route::middleware(['auth', 'web', 'verified'])->group(function () {
         ->middleware('permission:books.view');
 
     // Restore & Force Delete
-    Route::post('/books/{id}/restore', [BookController::class, 'restore'])
+    Route::put('/books/{id}/restore', [BookController::class, 'restore'])
         ->name('books.restore')
         ->middleware('permission:books.restore');
 
