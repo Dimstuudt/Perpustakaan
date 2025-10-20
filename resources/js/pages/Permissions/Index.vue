@@ -257,7 +257,6 @@ const truncateRole = (roleName: string) => {
             :first="first"
             :rows="rows"
             :totalRecords="permissions.total"
-            :rowsPerPageOptions="[5,10,20,50]"
             :lazy="true"
             @page="onPage"
             class="custom-datatable"

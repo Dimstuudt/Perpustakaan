@@ -1,81 +1,88 @@
 <script setup lang="ts">
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue'
 import { ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
 import Swal from 'sweetalert2'
 
+// === Tambahan: defineProps untuk categories ===
+const props = defineProps({
+  categories: {
+    type: Array,
+    default: () => []
+  }
+})
+
 const form = useForm({
-    file: null,
+  file: null,
 })
 
 const previewBooks = ref([]) // data dari Excel preview
 
 function selectFile(event: Event) {
-    const target = event.target as HTMLInputElement
-    if (target.files?.length) {
-        form.file = target.files[0]
-        previewExcel(form.file)
-    }
+  const target = event.target as HTMLInputElement
+  if (target.files?.length) {
+    form.file = target.files[0]
+    previewExcel(form.file)
+  }
 }
 
 // Preview Excel (client-side read)
 function previewExcel(file: File) {
-    const reader = new FileReader()
-    reader.onload = async (e) => {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer)
-        const workbook = await import('xlsx').then(xlsx => xlsx.read(data, { type: 'array' }))
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]]
-        const jsonData = await import('xlsx').then(xlsx => xlsx.utils.sheet_to_json(firstSheet, { header: 1 }))
+  const reader = new FileReader()
+  reader.onload = async (e) => {
+    const data = new Uint8Array(e.target?.result as ArrayBuffer)
+    const workbook = await import('xlsx').then(xlsx => xlsx.read(data, { type: 'array' }))
+    const firstSheet = workbook.Sheets[workbook.SheetNames[0]]
+    const jsonData = await import('xlsx').then(xlsx => xlsx.utils.sheet_to_json(firstSheet, { header: 1 }))
 
-        // Skip header row
-        previewBooks.value = jsonData.slice(1).map(row => ({
-            isbn: row[0] || '',
-            title: row[1] || '',
-            author: row[2] || '',
-            publisher: row[3] || '',
-            year: row[4] || '',
-            pages: row[5] || '',
-            description: row[6] || '',
-            category_id: row[7] || '',
-            type: row[8] || 'physical',
-            stock: row[9] || 0,
-            fee: row[10] || 0,
-        }))
-    }
-    reader.readAsArrayBuffer(file)
+    // Skip header row
+    previewBooks.value = jsonData.slice(1).map(row => ({
+      isbn: row[0] || '',
+      title: row[1] || '',
+      author: row[2] || '',
+      publisher: row[3] || '',
+      year: row[4] || '',
+      pages: row[5] || '',
+      description: row[6] || '',
+      category_id: row[7] || '',
+      type: row[8] || 'physical',
+      stock: row[9] || 0,
+      fee: row[10] || 0,
+    }))
+  }
+  reader.readAsArrayBuffer(file)
 }
 
 function submit() {
-    form.post(route('books.import.store'), {
-        onSuccess: (page) => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: page.props.flash.success || 'Data berhasil diimport',
-            })
-            form.reset()
-            previewBooks.value = []
-        },
-        onError: (errors) => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal!',
-                text: errors.file || 'Terjadi kesalahan saat mengimport',
-            })
-        }
-    })
+  form.post(route('books.import.store'), {
+    onSuccess: (page) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: page.props.flash.success || 'Data berhasil diimport',
+      })
+      form.reset()
+      previewBooks.value = []
+    },
+    onError: (errors) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: errors.file || 'Terjadi kesalahan saat mengimport',
+      })
+    }
+  })
 }
 
 // Tombol download template
 function downloadTemplate() {
-    const link = document.createElement('a')
-    link.href = '/TemplateBooksEmpty.xlsx'   // pastikan file ada di folder public
-    link.download = 'TemplateBooksEmpty.xlsx' // nama file saat di-download
-    document.body.appendChild(link)          // perlu append dulu
-    link.click()                             // trigger click
-    document.body.removeChild(link)          // hapus elemen setelah klik
+  const link = document.createElement('a')
+  link.href = '/TemplateBooksEmpty.xlsx'   // pastikan file ada di folder public
+  link.download = 'TemplateBooksEmpty.xlsx'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
-
 </script>
 
 <template>
@@ -106,7 +113,28 @@ function downloadTemplate() {
         Import
       </button>
 
-      <div v-if="previewBooks.length" class="overflow-x-auto mt-4">
+      <!-- === Tambahan: Daftar kategori dengan ID === -->
+      <div v-if="props.categories.length" class="mt-6">
+        <h2 class="text-lg font-semibold mb-2">📚 Daftar Kategori & ID</h2>
+        <table class="table-auto border border-gray-300 text-sm w-full md:w-1/2">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="border px-2 py-1 text-left">ID</th>
+              <th class="border px-2 py-1 text-left">Nama Kategori</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="cat in props.categories" :key="cat.id" class="hover:bg-gray-50">
+              <td class="border px-2 py-1">{{ cat.id }}</td>
+              <td class="border px-2 py-1">{{ cat.name }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- === Preview Excel === -->
+      <div v-if="previewBooks.length" class="overflow-x-auto mt-6">
+        <h2 class="text-lg font-semibold mb-2">📄 Preview Data dari Excel</h2>
         <table class="table-auto border border-gray-300 w-full text-sm">
           <thead>
             <tr class="bg-gray-100">

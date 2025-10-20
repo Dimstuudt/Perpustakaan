@@ -35,7 +35,6 @@ import { computed } from 'vue'
 // semua menu diberi permission
 const mainNavItems: NavItem[] = [
   { title: 'Dashboard', href: '/dashboard', icon: LayoutGrid, permission: 'dashboard.view' },
-   { title: 'Landing', href: '/welcome', icon: Layers, permission: 'dashboard.view' },
   { title: 'Users', href: '/users', icon: Users, permission: 'users.view' },
   { title: 'Roles', href: '/roles', icon: UserRoundCog, permission: 'roles.view' },
   { title: 'Permissions', href: '/permissions', icon: ShieldCheck, permission: 'permissions.view' },
@@ -49,8 +48,8 @@ const mainNavItems: NavItem[] = [
 
 // footer menu bebas (tanpa permission)
 const footerNavItems: NavItem[] = [
-  { title: 'Github Repo', href: 'https://github.com/laravel/vue-starter-kit', icon: Folder },
-  { title: 'Documentation', href: 'https://laravel.com/docs/starter-kits#vue', icon: BookOpen },
+  { title: 'Landing', href: '/welcome', icon: Layers },
+  { title: 'Documentation', href: 'https://github.com/Dimstuudt/Perpustakaan', icon: BookOpen },
 ]
 
 // filter menu sesuai permission

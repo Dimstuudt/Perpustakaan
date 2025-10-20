@@ -39,10 +39,8 @@ const breadcrumbs = [
   { title: 'Loans', href: '/loans' },
 ]
 
-// Filter dengan nilai dari backend
 const selectedStatus = ref(props.filters?.status || 'all')
 
-// Watch untuk perubahan filter dan reload data dari backend
 watch(selectedStatus, (newStatus) => {
   router.get('/loans',
     { status: newStatus === 'all' ? undefined : newStatus },
@@ -54,7 +52,6 @@ watch(selectedStatus, (newStatus) => {
   )
 })
 
-// Actions
 const approve = (loan: Loan) => {
   Swal.fire({
     title: 'Approve peminjaman?',
@@ -119,6 +116,17 @@ const formatDate = (date: string | null) => {
     month: 'short',
     year: 'numeric',
   })
+}
+
+// Format harga tanpa desimal (1000 bukan 1000,00)
+const formatPrice = (price: any) => {
+  const numPrice = Number(price) || 0
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(numPrice)
 }
 
 const getStatusIcon = (status: string) => {
@@ -314,16 +322,16 @@ const getStatusIcon = (status: string) => {
                 <div class="flex gap-6">
                   <div>
                     <p class="text-xs text-gray-600 mb-1">Biaya Pinjam</p>
-                    <p class="text-lg font-bold text-indigo-600">Rp {{ loan.fee.toLocaleString('id-ID') }}</p>
+                    <p class="text-lg font-bold text-indigo-600">{{ formatPrice(loan.fee) }}</p>
                   </div>
                   <div>
                     <p class="text-xs text-gray-600 mb-1">Denda</p>
-                    <p class="text-lg font-bold text-red-600">Rp {{ loan.fine.toLocaleString('id-ID') }}</p>
+                    <p class="text-lg font-bold text-red-600">{{ formatPrice(loan.fine) }}</p>
                   </div>
                 </div>
                 <div class="text-right">
                   <p class="text-xs text-gray-600 mb-1">Total Bayar</p>
-                  <p class="text-2xl font-bold text-purple-600">Rp {{ (loan.fee + loan.fine).toLocaleString('id-ID') }}</p>
+                  <p class="text-2xl font-bold text-purple-600">{{ formatPrice((Number(loan.fee) || 0) + (Number(loan.fine) || 0)) }}</p>
                 </div>
               </div>
 
@@ -395,7 +403,6 @@ const getStatusIcon = (status: string) => {
 </template>
 
 <style scoped>
-/* Custom animations */
 .group:hover .group-hover\:text-indigo-600 {
   transition: color 0.3s ease;
 }

@@ -9,10 +9,15 @@ use Inertia\Inertia;
 
 class BookImportController extends Controller
 {
-    public function index()
-    {
-        return Inertia::render('Import/Books'); // halaman Vue
-    }
+  public function index()
+{
+    $categories = \App\Models\Category::select('id', 'name')->get();
+
+    return Inertia::render('Import/Books', [
+        'categories' => $categories
+    ]);
+}
+
 
     public function store(Request $request)
     {

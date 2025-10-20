@@ -212,6 +212,11 @@ Route::middleware(['auth'])->prefix('books')->group(function () {
     Route::post('/import', [BookImportController::class, 'store'])->name('books.import.store');
 });
 
+
+Route::get('/about', function () {
+    return Inertia::render('About');
+})->name('about');
+
 // =================================
 // Extra
 // =================================

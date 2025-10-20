@@ -52,6 +52,14 @@ function toggleSelect(id: number) {
   }
 }
 
+function toggleSelectAll() {
+  if (selected.value.length === filteredBooks.value.length) {
+    selected.value = []
+  } else {
+    selected.value = filteredBooks.value.map((b) => b.id)
+  }
+}
+
 function deleteBook(id: number) {
   Swal.fire({
     title: 'Yakin hapus?',
@@ -107,9 +115,6 @@ function bulkDeleteBooks() {
       <!-- Header -->
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold">📚 Daftar Buku</h1>
-      <i style="color: grey;">#NambahCoverLewatEdit/Preview</i>
-
-
         <div class="flex gap-2">
           <Link
             v-if="can('books.create')"
@@ -129,7 +134,12 @@ function bulkDeleteBooks() {
         </div>
       </div>
 
-      <!-- Search & Bulk Action -->
+      <!-- Info Alert -->
+      <div class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+        <p class="text-sm text-blue-800">
+          <span class="font-semibold">📖 Catatan:</span> Tambahkan atau ubah cover buku melalui halaman Edit
+        </p>
+      </div>
       <div class="mb-6 flex items-center gap-3">
         <input
           v-model="search"
@@ -139,78 +149,112 @@ function bulkDeleteBooks() {
         <button
           v-if="selected.length && can('books.delete')"
           @click="bulkDeleteBooks"
-          class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600"
+          class="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 whitespace-nowrap"
         >
-          Hapus Terpilih ({{ selected.length }})
+          Hapus ({{ selected.length }})
         </button>
       </div>
 
-      <!-- Card Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <div
-          v-for="book in filteredBooks"
-          :key="book.id"
-          class="bg-white shadow-md rounded-lg overflow-hidden flex flex-col relative"
-        >
-          <!-- Checkbox Select -->
-          <input
-            type="checkbox"
-            class="absolute top-2 left-2 w-4 h-4 accent-red-500"
-            :checked="selected.includes(book.id)"
-            @change="toggleSelect(book.id)"
-          />
-
-          <!-- Cover -->
- <!-- Cover -->
-<div
-  class="h-56 w-full flex items-center justify-center bg-gray-200 text-center px-2"
->
-  <img
-    v-if="book.cover_path"
-    :src="book.cover_path"
-    alt="Cover"
-    class="h-56 w-full object-cover"
-  />
-  <span
-    v-else
-    class="text-gray-700 font-semibold text-sm line-clamp-3"
-  >
-    {{ book.title }}
-  </span>
-</div>
-
-
-          <!-- Info -->
-          <div class="p-4 flex flex-col flex-1">
-            <h2 class="text-lg font-semibold truncate">{{ book.title }}</h2>
-            <p class="text-sm text-gray-600">✍️ {{ book.author ?? '-' }}</p>
-            <p class="text-xs text-gray-500 mt-1">🏷️ {{ book.category ?? '-' }}</p>
-
-            <div class="mt-auto flex gap-2 pt-3">
-              <button
-                v-if="can('books.preview')"
-                @click="router.get(route('books.preview', book.id))"
-                class="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
-              >
-                Preview
-              </button>
-              <button
-                v-if="can('books.edit')"
-                @click="router.get(route('books.edit', book.id))"
-                class="px-3 py-1 bg-yellow-500 text-white rounded text-xs hover:bg-yellow-600"
-              >
-                Edit
-              </button>
-              <button
-                v-if="can('books.delete')"
-                @click="deleteBook(book.id)"
-                class="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600"
-              >
-                Hapus
-              </button>
-            </div>
-          </div>
-        </div>
+      <!-- Table -->
+      <div class="overflow-x-auto shadow-md rounded-lg">
+        <table class="w-full border-collapse bg-white">
+          <thead class="bg-gradient-to-r from-blue-600 to-blue-700 border-b-2 border-gray-300">
+            <tr>
+              <th class="px-4 py-3 text-left">
+                <input
+                  type="checkbox"
+                  class="w-4 h-4 accent-yellow-400"
+                  :checked="selected.length === filteredBooks.length && filteredBooks.length > 0"
+                  @change="toggleSelectAll"
+                />
+              </th>
+              <th class="px-4 py-3 text-left text-sm font-semibold text-white">Cover</th>
+              <th class="px-4 py-3 text-left text-sm font-semibold text-white">Judul</th>
+              <th class="px-4 py-3 text-left text-sm font-semibold text-white">Penulis</th>
+              <th class="px-4 py-3 text-left text-sm font-semibold text-white">ISBN</th>
+              <th class="px-4 py-3 text-left text-sm font-semibold text-white">Kategori</th>
+              <th class="px-4 py-3 text-left text-sm font-semibold text-white">Penerbit</th>
+              <th class="px-4 py-3 text-left text-sm font-semibold text-white">Tahun</th>
+              <th class="px-4 py-3 text-center text-sm font-semibold text-white">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="book in filteredBooks"
+              :key="book.id"
+              class="border-b border-gray-200 hover:bg-blue-50 transition duration-150"
+            >
+              <td class="px-4 py-3">
+                <input
+                  type="checkbox"
+                  class="w-4 h-4 accent-blue-500"
+                  :checked="selected.includes(book.id)"
+                  @change="toggleSelect(book.id)"
+                />
+              </td>
+              <td class="px-4 py-3">
+                <div class="w-12 h-16 rounded-md overflow-hidden bg-gray-200 flex items-center justify-center shadow-md">
+                  <img
+                    v-if="book.cover_path"
+                    :src="book.cover_path"
+                    alt="Cover"
+                    class="w-full h-full object-cover"
+                  />
+                  <span v-else class="text-2xl">📖</span>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                {{ book.title }}
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-600">
+                {{ book.author ?? '-' }}
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-600">
+                {{ book.isbn ?? '-' }}
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-600">
+                {{ book.category ?? '-' }}
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-600">
+                {{ book.publisher ?? '-' }}
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-600">
+                {{ book.year ?? '-' }}
+              </td>
+              <td class="px-4 py-3 text-center">
+                <div class="flex gap-2 justify-center">
+                  <button
+                    v-if="can('books.preview')"
+                    @click="router.get(route('books.preview', book.id))"
+                    class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition"
+                  >
+                    Preview
+                  </button>
+                  <!-- #NambahCoverLewatEdit/Preview -->
+                  <button
+                    v-if="can('books.edit')"
+                    @click="router.get(route('books.edit', book.id))"
+                    class="px-2 py-1 bg-yellow-500 text-white rounded text-xs hover:bg-yellow-600 transition"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    v-if="can('books.delete')"
+                    @click="deleteBook(book.id)"
+                    class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition"
+                  >
+                    Hapus
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr v-if="filteredBooks.length === 0">
+              <td colspan="9" class="px-4 py-6 text-center text-gray-500">
+                Tidak ada data buku
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <!-- Pagination -->
@@ -232,14 +276,14 @@ function bulkDeleteBooks() {
           <button
             @click="router.get(props.books.prev_page_url)"
             :disabled="!props.books.prev_page_url"
-            class="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l"
+            class="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l disabled:opacity-50"
           >
             Prev
           </button>
           <button
             @click="router.get(props.books.next_page_url)"
             :disabled="!props.books.next_page_url"
-            class="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r"
+            class="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r disabled:opacity-50"
           >
             Next
           </button>

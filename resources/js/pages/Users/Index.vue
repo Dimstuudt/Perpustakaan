@@ -236,7 +236,7 @@ const truncateRole = (roleName) => {
 
               <Dropdown
                 v-model="perPage"
-                :options="[5,10,20,50]"
+                :options="[ 5,10,20,50]"
                 placeholder="Per page"
                 class="w-28"
               />
@@ -280,7 +280,6 @@ const truncateRole = (roleName) => {
             :first="first"
             :rows="rows"
             :totalRecords="users.total"
-            :rowsPerPageOptions="[5,10,20,50]"
             :lazy="true"
             @page="onPage"
             class="custom-datatable"

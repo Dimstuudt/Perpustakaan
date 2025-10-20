@@ -208,7 +208,7 @@ const truncatePermission = (permissionName: string) => {
 
               <Dropdown
                 v-model="perPage"
-                :options="[5,10,20,50]"
+                :options="[1, 5,10,20,50]"
                 placeholder="Per page"
                 class="w-28"
               />
@@ -252,7 +252,6 @@ const truncatePermission = (permissionName: string) => {
             :first="first"
             :rows="rows"
             :totalRecords="roles.total"
-            :rowsPerPageOptions="[5,10,20,50]"
             :lazy="true"
             @page="onPage"
             class="custom-datatable"
