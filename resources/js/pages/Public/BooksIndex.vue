@@ -5,7 +5,7 @@ import { Head, Link } from '@inertiajs/vue3'
 const props = defineProps({
   cabinet: Object,
   rack: Object,
-  books: Object,
+  books: Array,
   categories: Array
 })
 </script>
@@ -83,7 +83,7 @@ const props = defineProps({
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                <span class="text-white font-semibold">{{ books.data?.length || 0 }} Buku</span>
+                <span class="text-white font-semibold">{{ books?.length || 0 }} Buku</span>
               </div>
             </div>
           </div>
@@ -91,9 +91,9 @@ const props = defineProps({
       </div>
 
      <!-- Books Grid with 3D Effect - Fixed Layout -->
-<div v-if="books.data && books.data.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+<div v-if="books && books.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
   <Link
-    v-for="book in books.data"
+    v-for="book in books"
     :key="book.id"
     :href="route('public.preview', { id: book.id })"
     class="group block book-card"
@@ -186,25 +186,8 @@ const props = defineProps({
   </Link>
 </div>
 
-
-      <!-- Pagination -->
-      <div v-if="books.links && books.links.length > 3" class="mt-12 flex justify-center gap-2 flex-wrap">
-        <Link
-          v-for="link in books.links"
-          :key="link.label"
-          :href="link.url"
-          v-html="link.label"
-          :class="{
-            'bg-gradient-to-r from-amber-600 to-rose-600 text-white shadow-lg shadow-amber-500/30': link.active,
-            'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200': !link.active && link.url,
-            'bg-gray-100 text-gray-400 cursor-not-allowed': !link.url
-          }"
-          class="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
-        />
-      </div>
-
       <!-- Empty State -->
-      <div v-if="!books.data || books.data.length === 0" class="text-center py-20 bg-gradient-to-br from-gray-50 to-amber-50 rounded-3xl border-2 border-dashed border-gray-300">
+      <div v-if="!books || books.length === 0" class="text-center py-20 bg-gradient-to-br from-gray-50 to-amber-50 rounded-3xl border-2 border-dashed border-gray-300">
         <div class="relative inline-block mb-6">
           <div class="absolute inset-0 bg-gradient-to-br from-amber-500 to-rose-600 rounded-2xl blur-xl opacity-20"></div>
           <div class="relative w-24 h-24 bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl flex items-center justify-center">

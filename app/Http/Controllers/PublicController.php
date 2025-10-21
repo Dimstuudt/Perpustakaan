@@ -36,39 +36,38 @@ class PublicController extends Controller
             ]);
         }
 
-        // Level 3: Buku dalam Rack
-        if ($request->rack) {
-            $rack = Rack::with(['cabinet', 'books.category'])->findOrFail($request->rack);
+     // Level 3: Buku dalam Rack
+if ($request->rack) {
+    $rack = Rack::with(['cabinet', 'books.category'])->findOrFail($request->rack);
 
-            $books = Book::where('rack_id', $rack->id)
-                ->with(['category', 'rack.cabinet'])
-                ->latest()
-                ->paginate(12)
-                ->withQueryString()
-                ->through(fn($book) => [
-                    'id' => $book->id,
-                    'title' => $book->title,
-                    'author' => $book->author,
-                    'publisher' => $book->publisher,
-                    'description' => $book->description,
-                    'cover_url' => $book->cover_url,
-                    'category' => $book->category?->only(['id', 'name']),
-                ]);
+    $books = Book::where('rack_id', $rack->id)
+        ->with(['category', 'rack.cabinet'])
+        ->latest()
+        ->get()
+        ->map(fn($book) => [
+            'id' => $book->id,
+            'title' => $book->title,
+            'author' => $book->author,
+            'publisher' => $book->publisher,
+            'description' => $book->description,
+            'cover_url' => $book->cover_url,
+            'category' => $book->category?->only(['id', 'name']),
+        ]);
 
-            $categories = Category::select('id', 'name')->get();
+    $categories = Category::select('id', 'name')->get();
 
-            return Inertia::render('Public/BooksIndex', [
-                'rack' => [
-                    'id' => $rack->id,
-                    'name' => $rack->name,
-                ],
-                'cabinet' => [
-                    'id' => $rack->cabinet->id,
-                    'name' => $rack->cabinet->name,
-                ],
-                'books' => $books,
-                'categories' => $categories,
-            ]);
-        }
+    return Inertia::render('Public/BooksIndex', [
+        'rack' => [
+            'id' => $rack->id,
+            'name' => $rack->name,
+        ],
+        'cabinet' => [
+            'id' => $rack->cabinet->id,
+            'name' => $rack->cabinet->name,
+        ],
+        'books' => $books,
+        'categories' => $categories,
+    ]);
+}
     }
 }
