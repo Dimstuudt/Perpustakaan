@@ -149,15 +149,30 @@ public function list()
     ]);
 }
 
-
-    public function detail(Category $category)
-    {
-        $books = $category->books()->latest()->paginate(10);
-
-        return Inertia::render('Categories/Detail', [
-            'category' => $category,
-            'books' => $books
+public function detail(Category $category)
+{
+    $books = $category->books()
+        ->with(['category', 'rack.cabinet'])
+        ->latest()
+        ->get()
+        ->map(fn($book) => [
+            'id' => $book->id,
+            'title' => $book->title,
+            'author' => $book->author,
+            'publisher' => $book->publisher,
+            'description' => $book->description,
+            'cover_url' => $book->cover_url,
+            'category' => $book->category?->only(['id', 'name']),
+            'rack' => $book->rack?->only(['id', 'name']),
         ]);
-    }
+
+    return Inertia::render('Categories/Detail', [
+        'category' => [
+            'id' => $category->id,
+            'name' => $category->name,
+        ],
+        'books' => $books
+    ]);
+}
 
 }

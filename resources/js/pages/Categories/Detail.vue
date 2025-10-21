@@ -4,7 +4,7 @@ import { Head, Link } from '@inertiajs/vue3'
 
 defineProps({
   category: Object,
-  books: Object
+  books: Array
 })
 </script>
 
@@ -53,7 +53,7 @@ defineProps({
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
-              <span class="text-base font-medium">{{ books.total || 0 }} buku tersedia</span>
+              <span class="text-base font-medium">{{ books?.length || 0 }} buku tersedia</span>
             </div>
           </div>
 
@@ -70,9 +70,9 @@ defineProps({
       </div>
 
     <!-- Grid Buku dengan 3D Effect -->
-<div v-if="books.data.length" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+<div v-if="books && books.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
   <Link
-    v-for="book in books.data"
+    v-for="book in books"
     :key="book.id"
     :href="`/book/${book.id}`"
     class="group block"
@@ -182,22 +182,6 @@ defineProps({
   </p>
 </div>
 
-
-      <!-- Pagination -->
-      <div v-if="books.links && books.links.length > 3" class="mt-12 flex justify-center gap-2 flex-wrap">
-        <Link
-          v-for="link in books.links"
-          :key="link.label"
-          :href="link.url"
-          v-html="link.label"
-          :class="{
-            'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/30': link.active,
-            'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200': !link.active && link.url,
-            'bg-gray-100 text-gray-400 cursor-not-allowed': !link.url
-          }"
-          class="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
-        />
-      </div>
     </div>
   </PublicLayout>
 </template>
