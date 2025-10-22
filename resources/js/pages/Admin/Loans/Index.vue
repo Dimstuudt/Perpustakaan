@@ -55,7 +55,10 @@ watch(selectedStatus, (newStatus) => {
 const approve = (loan: Loan) => {
   Swal.fire({
     title: 'Approve peminjaman?',
-    html: `<div class="text-left"><strong>Buku:</strong> ${loan.book.title}<br><strong>User:</strong> ${loan.user.username}</div>`,
+    html: `<div class="text-left">
+      <strong>Buku:</strong> ${loan.book.title}<br>
+      <strong>User:</strong> ${loan.user.username}
+    </div>`,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Ya, approve!',
@@ -63,7 +66,7 @@ const approve = (loan: Loan) => {
     confirmButtonColor: '#10b981',
   }).then((result) => {
     if (result.isConfirmed) {
-      router.put(`/loans/${loan.id}/approve`, {}, {
+      router.post(`/loans/${loan.id}/approve`, {}, {
         onSuccess: () => Swal.fire('Berhasil', 'Peminjaman disetujui.', 'success'),
         onError: () => Swal.fire('Gagal', 'Terjadi kesalahan.', 'error')
       })
@@ -74,7 +77,10 @@ const approve = (loan: Loan) => {
 const reject = (loan: Loan) => {
   Swal.fire({
     title: 'Tolak peminjaman?',
-    html: `<div class="text-left"><strong>Buku:</strong> ${loan.book.title}<br><strong>User:</strong> ${loan.user.username}</div>`,
+    html: `<div class="text-left">
+      <strong>Buku:</strong> ${loan.book.title}<br>
+      <strong>User:</strong> ${loan.user.username}
+    </div>`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Ya, tolak!',
@@ -82,7 +88,7 @@ const reject = (loan: Loan) => {
     confirmButtonColor: '#ef4444',
   }).then((result) => {
     if (result.isConfirmed) {
-      router.put(`/loans/${loan.id}/reject`, {}, {
+      router.post(`/loans/${loan.id}/reject`, {}, {
         onSuccess: () => Swal.fire('Berhasil', 'Peminjaman ditolak.', 'success'),
         onError: () => Swal.fire('Gagal', 'Terjadi kesalahan.', 'error')
       })
@@ -93,7 +99,10 @@ const reject = (loan: Loan) => {
 const returned = (loan: Loan) => {
   Swal.fire({
     title: 'Konfirmasi pengembalian?',
-    html: `<div class="text-left"><strong>Buku:</strong> ${loan.book.title}<br><strong>User:</strong> ${loan.user.username}</div>`,
+    html: `<div class="text-left">
+      <strong>Buku:</strong> ${loan.book.title}<br>
+      <strong>User:</strong> ${loan.user.username}
+    </div>`,
     icon: 'info',
     showCancelButton: true,
     confirmButtonText: 'Ya, terima!',
@@ -101,13 +110,14 @@ const returned = (loan: Loan) => {
     confirmButtonColor: '#3b82f6',
   }).then((result) => {
     if (result.isConfirmed) {
-      router.put(`/loans/${loan.id}/return`, {}, {
+      router.post(`/loans/${loan.id}/return`, {}, {
         onSuccess: () => Swal.fire('Berhasil', 'Buku dikembalikan.', 'success'),
         onError: () => Swal.fire('Gagal', 'Terjadi kesalahan.', 'error')
       })
     }
   })
 }
+
 
 const formatDate = (date: string | null) => {
   if (!date) return '-'

@@ -88,14 +88,18 @@ const cancelLoan = (id: number, title: string) => {
     confirmButtonColor: '#ef4444',
   }).then(result => {
     if (result.isConfirmed) {
-      router.delete(`/user/loans/${id}/cancel`, {
+      router.post(`/user/loans/${id}/cancel`, {}, {
         onSuccess: () => {
           Swal.fire('Berhasil!', 'Peminjaman telah dibatalkan.', 'success')
+        },
+        onError: () => {
+          Swal.fire('Gagal', 'Terjadi kesalahan saat membatalkan.', 'error')
         }
       })
     }
   })
 }
+
 
 const formatDate = (date: string | null) => {
   if (!date) return '-'
@@ -110,6 +114,16 @@ const isOverdue = (dueDate: string | null, status: string) => {
   if (!dueDate || status !== 'dipinjam') return false
   return new Date(dueDate) < new Date()
 }
+
+const formatRupiah = (value: any) => {
+  const num = parseFloat(value)
+  if (isNaN(num)) return '0' // kalau null/string kosong
+  return num.toLocaleString('id-ID', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
+}
+
 </script>
 
 <template>
@@ -273,20 +287,25 @@ const isOverdue = (dueDate: string | null, status: string) => {
                         <span class="font-semibold text-gray-900">Rp {{ loan.fee.toLocaleString('id-ID') }}</span>
                       </div>
 
-                      <div v-if="loan.fine > 0" class="flex items-center justify-between text-sm">
-                        <span class="text-red-600 flex items-center gap-1">
-                          <i class="pi pi-exclamation-circle text-xs"></i>
-                          Denda
-                        </span>
-                        <span class="font-semibold text-red-600">Rp {{ loan.fine.toLocaleString('id-ID') }}</span>
-                      </div>
+                 <div v-if="parseFloat(loan.fine) > 0" class="flex items-center justify-between text-sm">
+  <span class="text-red-600 flex items-center gap-1">
+    <i class="pi pi-exclamation-circle text-xs"></i>
+    Denda
+  </span>
+  <span class="font-semibold text-red-600">
+    Rp {{ formatRupiah(loan.fine) }}
+  </span>
+</div>
 
-                      <div class="h-px bg-indigo-200/50"></div>
+<div class="h-px bg-indigo-200/50"></div>
 
-                      <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-gray-700">Total</span>
-                        <span class="text-lg font-bold text-indigo-600">Rp {{ calculateTotal(loan).toLocaleString('id-ID') }}</span>
-                      </div>
+<div class="flex items-center justify-between">
+  <span class="text-sm font-medium text-gray-700">Total</span>
+  <span class="text-lg font-bold text-indigo-600">
+    Rp {{ formatRupiah(calculateTotal(loan)) }}
+  </span>
+</div>
+
                     </div>
                   </div>
 

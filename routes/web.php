@@ -53,9 +53,8 @@ Route::post('profile/avatar', [ProfileController::class, 'updateAvatar'])->name(
 // =================================
 Route::middleware(['auth', 'web', 'verified'])->group(function () {
 
-    //permissions crea
-
- Route::get('/permissions/create', [PermissionController::class, 'create'])
+    // Permissions create
+    Route::get('/permissions/create', [PermissionController::class, 'create'])
         ->name('permissions.create')
         ->middleware('permission:permissions.create');
 
@@ -66,9 +65,8 @@ Route::middleware(['auth', 'web', 'verified'])->group(function () {
         ->middleware('permission:logs.view');
 });
 
-
 // =================================
-// Loan Routes
+// Loan Routes (GET & POST only)
 // =================================
 
 // User pinjam buku
@@ -77,35 +75,39 @@ Route::post('loans', [LoanController::class, 'store'])
     ->middleware(['auth', 'role:user']);
 
 // User cek status pinjaman
-Route::get('/user/loans/status', [UserLoanController::class, 'status'])->name('user.loans.status');
+Route::get('/user/loans/status', [UserLoanController::class, 'status'])
+    ->name('user.loans.status');
 
 // Admin lihat daftar peminjaman
 Route::get('loans', [LoanController::class, 'index'])
     ->name('loans.index')
     ->middleware(['auth', 'permission:loans.view']);
 
-// Admin approve, reject, return
-Route::put('loans/{loan}/approve', [LoanController::class, 'approve'])
+// Admin approve, reject, return (POST)
+Route::post('loans/{loan}/approve', [LoanController::class, 'approve'])
     ->name('loans.approve')
     ->middleware(['auth', 'permission:loans.approve']);
 
-Route::put('loans/{loan}/reject', [LoanController::class, 'reject'])
+Route::post('loans/{loan}/reject', [LoanController::class, 'reject'])
     ->name('loans.reject')
     ->middleware(['auth', 'permission:loans.reject']);
 
-Route::put('loans/{loan}/return', [LoanController::class, 'return'])
+Route::post('loans/{loan}/return', [LoanController::class, 'return'])
     ->name('loans.return')
     ->middleware(['auth', 'permission:loans.return']);
 
-// User routes
+// =================================
+// User Loan Routes
+// =================================
 Route::middleware(['auth'])->prefix('user')->group(function () {
     Route::get('/loansuser', [UserLoanController::class, 'index'])->name('user.loans.index');
     Route::post('/loansuser', [UserLoanController::class, 'store'])->name('user.loans.store');
     Route::get('/loansuser/{id}', [UserLoanController::class, 'show'])->name('user.loans.show');
 });
 
-// Cancel pinjaman
-Route::delete('/user/loans/{id}/cancel', [UserLoanController::class, 'cancel'])->name('loans.cancel');
+// Cancel pinjaman (POST)
+Route::post('/user/loans/{id}/cancel', [UserLoanController::class, 'cancel'])
+    ->name('loans.cancel');
 
 // =================================
 // Public Collections
@@ -119,7 +121,6 @@ Route::middleware(['auth'])->prefix('books')->group(function () {
     Route::get('/import', [BookImportController::class, 'index'])->name('books.import');
     Route::post('/import', [BookImportController::class, 'store'])->name('books.import.store');
 });
-
 
 Route::get('/about', function () {
     return Inertia::render('About');
