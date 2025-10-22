@@ -76,10 +76,26 @@ function deleteUser(id: number) {
 
 // Toggle status
 function toggleStatus(id: number) {
-router.post(route('users.toggleStatus', id), {}, {
-  onError: (errors) => console.error(errors)
-})
+  router.post(route('users.toggleStatus', id), {}, {
+    onSuccess: () => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: 'Status pengguna berhasil diperbarui.',
+        timer: 1500,
+        showConfirmButton: false,
+      }).then(() => router.reload()) // ✅ reload setelah swal ditutup
+    },
+    onError: () => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: 'Terjadi kesalahan saat memperbarui status.',
+      })
+    },
+  })
 }
+
 
 // Show roles (popup)
 function showRoles(user: any) {

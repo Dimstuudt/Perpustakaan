@@ -27,7 +27,7 @@ const form = useForm({
 
 // Submit update nama + assign baru
 function submit() {
-  form.put(route('racks.update', props.rack.id), {
+  form.post(route('racks.update', props.rack.id), {
     preserveScroll: true,
     onSuccess: () => {
       Swal.fire({
@@ -60,7 +60,7 @@ function removeBook(id: number) {
     confirmButtonText: 'Yes, remove it!'
   }).then((result) => {
     if (result.isConfirmed) {
-      router.put(route('racks.update', props.rack.id), {
+      router.post(route('racks.update', props.rack.id), {
         name: form.name,
         remove_id: id
       }, {

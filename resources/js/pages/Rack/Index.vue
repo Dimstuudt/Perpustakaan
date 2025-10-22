@@ -16,7 +16,7 @@ const props = defineProps<{
     last_page: number,
     per_page: number,
     total: number,
-    
+
   },
   filters: {
     search?: string,
@@ -40,34 +40,34 @@ watch(() => form.search, () => {
 })
 
 // delete rack
-// delete rack
 function deleteRack(id: number) {
   Swal.fire({
-    title: 'Are you sure?',
-    text: 'This rack will be deleted!',
+    title: 'Yakin ingin menghapus?',
+    text: 'Rak ini akan dihapus secara permanen!',
     icon: 'warning',
     showCancelButton: true,
+    confirmButtonText: 'Ya, hapus!',
+    cancelButtonText: 'Batal',
     confirmButtonColor: '#3085d6',
     cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
   }).then((result) => {
     if (result.isConfirmed) {
-      router.delete(route('racks.destroy', id), {
+      router.post(route('racks.destroy', id), {}, {
         preserveScroll: true,
         onSuccess: () => {
           Swal.fire({
             icon: 'success',
-            title: 'Deleted!',
-            text: 'Rack berhasil dihapus.',
-            timer: 2000,
+            title: 'Berhasil!',
+            text: 'Rak berhasil dihapus.',
+            timer: 1500,
             showConfirmButton: false,
-          })
+          }).then(() => router.reload()) // 🔁 reload halaman setelah swal ditutup
         },
         onError: () => {
           Swal.fire({
             icon: 'error',
-            title: 'Failed!',
-            text: 'Gagal menghapus rack. Silakan coba lagi.',
+            title: 'Gagal!',
+            text: 'Terjadi kesalahan saat menghapus rak.',
           })
         },
       })
