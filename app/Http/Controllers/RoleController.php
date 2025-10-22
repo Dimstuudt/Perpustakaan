@@ -101,7 +101,7 @@ class RoleController extends Controller
         $role->save();
         $role->syncPermissions($request->permissions);
 
-        return to_route("roles.index")->with("message", "Success Create Role");
+        return to_route("roles.index")->with("message", "Success Edited Role");
     }
 
     /**

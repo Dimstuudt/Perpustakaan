@@ -63,10 +63,11 @@ function deleteRole(id: number, roleName: string) {
     cancelButtonText: 'Cancel'
   }).then(result => {
     if (result.isConfirmed) {
-      router.delete(route('roles.destroy', id), {
-        onSuccess: () => Swal.fire('Deleted!', 'Role has been deleted.', 'success'),
-        onError: () => Swal.fire('Failed!', 'Something went wrong.', 'error')
-      })
+     router.post(route('roles.destroy', id), {
+  onSuccess: () => Swal.fire('Deleted!', 'Role has been deleted.', 'success'),
+  onError: () => Swal.fire('Failed!', 'Something went wrong.', 'error')
+})
+
     }
   })
 }
