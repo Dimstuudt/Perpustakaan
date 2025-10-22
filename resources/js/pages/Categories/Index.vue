@@ -82,16 +82,19 @@ function deleteCategory(id: number, name: string) {
     cancelButtonText: 'Cancel'
   }).then((result) => {
     if (result.isConfirmed) {
-      router.delete(route('categories.destroy', id), {
+      router.post(route('categories.destroy', id), {}, {
         onSuccess: () => {
           Swal.fire('Deleted!', 'Category has been deleted.', 'success')
           router.reload()
         },
-        onError: () => Swal.fire('Failed!', 'Something went wrong.', 'error')
+        onError: () => {
+          Swal.fire('Failed!', 'Something went wrong.', 'error')
+        }
       })
     }
   })
 }
+
 
 function bulkDelete() {
   if (!selected.value.length) return

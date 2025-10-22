@@ -18,7 +18,7 @@ const form = useForm({
 })
 
 const submit = () => {
-  form.put(route('categories.update', props.category.id), {
+  form.post(route('categories.update', props.category.id), {
     onSuccess: () => {
       Swal.fire({
         icon: 'success',

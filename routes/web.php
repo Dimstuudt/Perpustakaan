@@ -64,49 +64,7 @@ Route::middleware(['auth', 'web', 'verified'])->group(function () {
     // -------------------------------
     Route::resource('logs', LogController::class)->only(['index', 'show'])
         ->middleware('permission:logs.view');
-
-
-    // -------------------------------
-    // Categories
-    // -------------------------------
-    Route::resource('categories', CategoryController::class)->except(['show'])->middleware([
-        'index'   => 'permission:categories.view',
-        'create'  => 'permission:categories.create',
-        'store'   => 'permission:categories.create',
-        'edit'    => 'permission:categories.edit',
-        'update'  => 'permission:categories.edit',
-        'destroy' => 'permission:categories.delete',
-    ]);
-
-    Route::get('categories/trashed', [CategoryController::class, 'trashed'])
-        ->name('categories.trashed')
-        ->middleware('permission:categories.view');
-
-    Route::put('categories/{id}/restore', [CategoryController::class, 'restore'])
-        ->name('categories.restore')
-        ->middleware('permission:categories.restore');
-
-    Route::delete('categories/{id}/force-delete', [CategoryController::class, 'forceDelete'])
-        ->name('categories.forceDelete')
-        ->middleware('permission:categories.forceDelete');
-
-    // Bulk Actions
-    Route::post('categories/bulk-delete', [CategoryController::class, 'bulkDelete'])
-        ->name('categories.bulkDelete')
-        ->middleware('permission:categories.delete');
-
-    Route::post('categories/bulk-restore', [CategoryController::class, 'bulkRestore'])
-        ->name('categories.bulkRestore')
-        ->middleware('permission:categories.restore');
-
-    Route::post('categories/bulk-force-delete', [CategoryController::class, 'bulkForceDelete'])
-        ->name('categories.bulkForceDelete')
-        ->middleware('permission:categories.forceDelete');
 });
-
-// routes/web.php
-Route::get('/categoried', [CategoryController::class, 'list'])->name('categories.list');
-Route::get('/categories/{category}', [CategoryController::class, 'detail'])->name('categories.detail');
 
 
 // =================================
@@ -178,3 +136,4 @@ require __DIR__ . '/racks.php';
 require __DIR__ . '/cabinets.php';
 require __DIR__ . '/permissions.php';
 require __DIR__ . '/Books.php';
+require __DIR__ . '/categories.php';

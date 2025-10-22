@@ -95,7 +95,7 @@ function bulkForceDelete() {
 
 // Single Actions
 function restoreCategory(id: number) {
-  router.put(route('categories.restore', id), {}, {
+  router.post(route('categories.restore', id), {}, {
     onSuccess: () => {
       Swal.fire('Berhasil!', 'Kategori berhasil direstore.', 'success')
       router.reload()
@@ -111,15 +111,34 @@ function forceDeleteCategory(id: number) {
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Ya, hapus permanen!',
+    cancelButtonText: 'Batal',
     confirmButtonColor: '#d33',
+    cancelButtonColor: '#6b7280',
   }).then((result) => {
     if (result.isConfirmed) {
-      router.delete(route('categories.forceDelete', id), {
-        onSuccess: () => Swal.fire('Terhapus!', 'Kategori dihapus permanen.', 'success')
+      router.post(route('categories.forceDelete', id), {}, {
+        onSuccess: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Terhapus!',
+            text: 'Kategori berhasil dihapus permanen.',
+            timer: 2000,
+            showConfirmButton: false,
+          })
+          router.reload()
+        },
+        onError: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: 'Terjadi kesalahan saat menghapus kategori.',
+          })
+        },
       })
     }
   })
 }
+
 </script>
 
 <template>
