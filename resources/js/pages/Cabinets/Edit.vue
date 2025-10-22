@@ -25,7 +25,7 @@ const form = useForm({
 })
 
 function submit() {
-  form.put(route('cabinets.update', props.cabinet.id), {
+  form.post(route('cabinets.update', props.cabinet.id), {
     preserveScroll: true,
     onSuccess: () => {
       Swal.fire({
@@ -57,7 +57,7 @@ function removeRack(id: number) {
     confirmButtonText: 'Yes, remove it!'
   }).then((result) => {
     if (result.isConfirmed) {
-      router.put(route('cabinets.update', props.cabinet.id), {
+      router.post(route('cabinets.update', props.cabinet.id), {
         code: form.code,
         name: form.name,
         description: form.description,

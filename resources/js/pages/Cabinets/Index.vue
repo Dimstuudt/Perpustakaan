@@ -39,37 +39,39 @@ watch(() => form.search, () => {
 // Delete cabinet
 function deleteCabinet(id: number) {
   Swal.fire({
-    title: 'Are you sure?',
-    text: 'This cabinet will be deleted!',
+    title: 'Yakin ingin menghapus?',
+    text: 'Semua rak di dalam cabinet ini akan dilepaskan!',
     icon: 'warning',
     showCancelButton: true,
+    confirmButtonText: 'Ya, hapus!',
+    cancelButtonText: 'Batal',
     confirmButtonColor: '#3085d6',
     cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
   }).then((result) => {
     if (result.isConfirmed) {
-      router.delete(route('cabinets.destroy', id), {
+      router.post(route('cabinets.destroy', id), {}, {
         preserveScroll: true,
         onSuccess: () => {
           Swal.fire({
             icon: 'success',
-            title: 'Deleted!',
-            text: 'Cabinet deleted successfully.',
-            timer: 2000,
+            title: 'Berhasil!',
+            text: 'Cabinet berhasil dihapus.',
+            timer: 1500,
             showConfirmButton: false,
-          })
+          }).then(() => router.reload())
         },
         onError: () => {
           Swal.fire({
             icon: 'error',
-            title: 'Failed!',
-            text: 'Could not delete cabinet. Please try again.',
+            title: 'Gagal!',
+            text: 'Terjadi kesalahan saat menghapus cabinet.',
           })
         },
       })
     }
   })
 }
+
 </script>
 
 <template>
