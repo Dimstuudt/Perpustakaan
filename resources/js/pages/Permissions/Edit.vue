@@ -34,7 +34,7 @@ const form = useForm({
 })
 
 const submit = () => {
-  form.put(route('permissions.update', props.permission.id), {
+  form.post(route('permissions.update', props.permission.id), {
     onError: (errors) => {
       console.log(errors)
     },

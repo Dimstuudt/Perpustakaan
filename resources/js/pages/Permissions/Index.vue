@@ -63,7 +63,7 @@ function deletePermission(id: number, permissionName: string) {
     cancelButtonText: 'Cancel'
   }).then(result => {
     if (result.isConfirmed) {
-      router.delete(route('permissions.destroy', id), {
+      router.post(route('permissions.destroy', id), {
         onSuccess: () => Swal.fire('Deleted!', 'Permission has been deleted.', 'success'),
         onError: () => Swal.fire('Failed!', 'Something went wrong.', 'error')
       })

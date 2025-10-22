@@ -53,20 +53,11 @@ Route::post('profile/avatar', [ProfileController::class, 'updateAvatar'])->name(
 // =================================
 Route::middleware(['auth', 'web', 'verified'])->group(function () {
 
-    // -------------------------------
-    // Permissions
-    // -------------------------------
-    Route::resource('permissions', PermissionController::class)->only(['create', 'store'])
+    //permissions crea
+
+ Route::get('/permissions/create', [PermissionController::class, 'create'])
+        ->name('permissions.create')
         ->middleware('permission:permissions.create');
-
-    Route::resource('permissions', PermissionController::class)->only(['edit', 'update'])
-        ->middleware('permission:permissions.edit');
-
-    Route::resource('permissions', PermissionController::class)->only(['destroy'])
-        ->middleware('permission:permissions.delete');
-
-    Route::resource('permissions', PermissionController::class)->only(['index', 'show'])
-        ->middleware('permission:permissions.view');
 
     // -------------------------------
     // Logs
@@ -226,3 +217,4 @@ require __DIR__ . '/users.php';
 require __DIR__ . '/roles.php';
 require __DIR__ . '/racks.php';
 require __DIR__ . '/cabinets.php';
+require __DIR__ . '/permissions.php';
