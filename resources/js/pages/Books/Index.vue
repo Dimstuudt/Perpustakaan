@@ -71,10 +71,11 @@ function deleteBook(id: number) {
     confirmButtonText: 'Ya, hapus!',
   }).then((result) => {
     if (result.isConfirmed) {
-      router.delete(route('books.destroy', id), {
-        onSuccess: () => Swal.fire('Terhapus!', 'Buku berhasil dihapus.', 'success'),
-        onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error'),
-      })
+     router.post(route('books.destroy', id), {}, {
+  onSuccess: () => Swal.fire('Terhapus!', 'Buku berhasil dihapus.', 'success'),
+  onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error'),
+})
+
     }
   })
 }

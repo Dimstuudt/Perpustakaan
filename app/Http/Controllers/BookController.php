@@ -206,11 +206,13 @@ public function update(Request $request, Book $book)
 
 
     // Soft delete buku
-    public function destroy(Book $book)
-    {
-        $book->delete(); // ✅ soft delete
-        return redirect()->route('books.index')->with('success', 'Buku berhasil dihapus');
-    }
+    public function destroy($id)
+{
+    $book = Book::findOrFail($id);
+    $book->delete();
+
+    return redirect()->back()->with('success', 'Buku berhasil dihapus.');
+}
 
     // Restore buku dari trash
     public function restore($id)

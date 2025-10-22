@@ -32,7 +32,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 // Form state
 const form = useForm({
-  _method: 'PUT',
+  _method: 'POST',
   isbn: props.book.isbn,
   title: props.book.title,
   author: props.book.author,

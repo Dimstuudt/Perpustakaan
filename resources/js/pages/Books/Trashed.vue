@@ -63,7 +63,7 @@ function restoreBook(id: number) {
     cancelButtonText: 'Batal',
   }).then((result) => {
     if (result.isConfirmed) {
-      router.put(route('books.restore', id), {}, {
+      router.post(route('books.restore', id), {}, {
         onSuccess: () => Swal.fire('Berhasil!', 'Buku dikembalikan.', 'success'),
         onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error'),
       })
@@ -81,13 +81,28 @@ function forceDeleteBook(id: number) {
     cancelButtonText: 'Batal',
   }).then((result) => {
     if (result.isConfirmed) {
-      router.delete(route('books.forceDelete', id), {
-        onSuccess: () => Swal.fire('Terhapus!', 'Buku dihapus permanen.', 'success'),
-        onError: () => Swal.fire('Gagal!', 'Terjadi kesalahan.', 'error'),
+      router.post(route('books.forceDelete', id), {}, {
+        onSuccess: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Terhapus!',
+            text: 'Buku dihapus permanen.',
+            timer: 1500,
+            showConfirmButton: false,
+          }).then(() => router.reload()) // ✅ reload setelah swal ditutup
+        },
+        onError: () => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: 'Terjadi kesalahan.',
+          })
+        },
       })
     }
   })
 }
+
 
 // === Bulk Actions ===
 function bulkRestore() {

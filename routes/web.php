@@ -65,47 +65,6 @@ Route::middleware(['auth', 'web', 'verified'])->group(function () {
     Route::resource('logs', LogController::class)->only(['index', 'show'])
         ->middleware('permission:logs.view');
 
-    // -------------------------------
-    // Books
-    // -------------------------------
-    Route::get('/books/trashed', [BookController::class, 'trashed'])
-        ->name('books.trashed')
-        ->middleware('permission:books.view');
-
-    // Bulk Actions
-    Route::post('/books/bulk-delete', [BookController::class, 'bulkDelete'])
-        ->name('books.bulkDelete')
-        ->middleware('permission:books.delete');
-
-    Route::post('/books/bulk-restore', [BookController::class, 'bulkRestore'])
-        ->name('books.bulkRestore')
-        ->middleware('permission:books.restore');
-
-    Route::post('/books/bulk-force-delete', [BookController::class, 'bulkForceDelete'])
-        ->name('books.bulkForceDelete')
-        ->middleware('permission:books.forceDelete');
-
-    // Resource tanpa show
-    Route::resource('books', BookController::class)
-        ->except(['show'])
-        ->middleware('permission:books.view|books.create|books.edit|books.delete');
-
-    Route::get('/books/{book}/preview', [BookController::class, 'preview'])
-        ->name('books.preview')
-        ->middleware('permission:books.view');
-
-    // Restore & Force Delete
-    Route::put('/books/{id}/restore', [BookController::class, 'restore'])
-        ->name('books.restore')
-        ->middleware('permission:books.restore');
-
-    Route::delete('/books/{id}/force-delete', [BookController::class, 'forceDelete'])
-        ->name('books.forceDelete')
-        ->middleware('permission:books.forceDelete');
-
-    // Multiple store
-    Route::post('/books/multiple', [BookController::class, 'storeMultiple'])
-        ->name('books.storeMultiple');
 
     // -------------------------------
     // Categories
@@ -218,3 +177,4 @@ require __DIR__ . '/roles.php';
 require __DIR__ . '/racks.php';
 require __DIR__ . '/cabinets.php';
 require __DIR__ . '/permissions.php';
+require __DIR__ . '/Books.php';
