@@ -65,19 +65,20 @@ function deleteUser(id: number) {
     cancelButtonText: 'Cancel'
   }).then(result => {
     if (result.isConfirmed) {
-      router.delete(route('users.destroy', id), {
-        onSuccess: () => Swal.fire('Deleted!', 'User has been deleted.', 'success'),
-        onError: () => Swal.fire('Failed!', 'Something went wrong.', 'error')
-      })
+    router.post(route('users.destroy', id), {}, {
+  onSuccess: () => Swal.fire('Deleted!', 'User has been deleted.', 'success'),
+  onError: () => Swal.fire('Failed!', 'Something went wrong.', 'error')
+})
+
     }
   })
 }
 
 // Toggle status
 function toggleStatus(id: number) {
-  router.put(route('users.toggleStatus', id), {}, {
-    onError: (errors) => console.error(errors)
-  })
+router.post(route('users.toggleStatus', id), {}, {
+  onError: (errors) => console.error(errors)
+})
 }
 
 // Show roles (popup)
