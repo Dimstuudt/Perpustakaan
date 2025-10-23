@@ -23,11 +23,10 @@ const passwordInput = ref<HTMLInputElement | null>(null);
 const form = useForm({
     password: '',
 });
-
 const deleteUser = (e: Event) => {
     e.preventDefault();
 
-    form.delete(route('profile.destroy'), {
+    form.post(route('profile.destroy'), {   // ⬅️ ganti delete() → post()
         preserveScroll: true,
         onSuccess: () => closeModal(),
         onError: () => passwordInput.value?.focus(),

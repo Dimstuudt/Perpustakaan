@@ -29,7 +29,7 @@ const form = useForm({
 });
 
 const updatePassword = () => {
-    form.put(route('setting.password.update'), {
+    form.post(route('setting.password.update'), {  // ⬅️ ganti put() → post()
         preserveScroll: true,
         onSuccess: () => {
             form.reset()
@@ -47,6 +47,7 @@ const updatePassword = () => {
                 icon: "error",
                 confirmButtonColor: "#dc2626"
             });
+
             if (errors.password) {
                 form.reset('password', 'password_confirmation');
                 if (passwordInput.value instanceof HTMLInputElement) {
@@ -63,6 +64,7 @@ const updatePassword = () => {
         },
     });
 };
+
 
 const IsNewUser = ref(false);
 const flash = page.props?.flash?.message;

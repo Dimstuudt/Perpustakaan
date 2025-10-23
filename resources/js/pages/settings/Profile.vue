@@ -42,8 +42,12 @@ const avatarForm = useForm({
 // --------------------
 // Update Profile Info
 // --------------------
+// --------------------
+// Update Profile Info
+// --------------------
 const submit = () => {
-  profileForm.patch(route('profile.update'), {
+  // 🔹 Ganti patch() → post()
+  profileForm.post(route('profile.update'), {
     preserveScroll: true,
     onSuccess: () => {
       Swal.fire({
@@ -64,6 +68,7 @@ const submit = () => {
     },
   });
 };
+
 
 // --------------------
 // Update Avatar
