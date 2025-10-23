@@ -9,21 +9,23 @@ use Inertia\Inertia;
 
 class CabinetController extends Controller
 {
-    public function index(Request $request)
-    {
-        $cabinets = Cabinet::withCount('racks')
-            ->when($request->search, fn($q, $search) =>
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('code', 'like', "%{$search}%")
-            )
-            ->paginate(10)
-            ->withQueryString();
+  public function index(Request $request)
+{
+    $perPage = $request->get('per_page', 10);
 
-        return Inertia::render('Cabinets/Index', [
-            'cabinets' => $cabinets,
-            'filters' => $request->only('search'),
-        ]);
-    }
+    $cabinets = Cabinet::withCount('racks')
+        ->when($request->search, fn($q, $search) =>
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('code', 'like', "%{$search}%")
+        )
+        ->paginate($perPage)
+        ->withQueryString();
+
+    return Inertia::render('Cabinets/Index', [
+        'cabinets' => $cabinets,
+        'filters' => $request->only('search'),
+    ]);
+}
 
     public function create()
     {

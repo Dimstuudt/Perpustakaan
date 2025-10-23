@@ -8,11 +8,13 @@ use Inertia\Inertia;
 
 class RackController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
 {
+    $perPage = $request->get('per_page', 1000);
+
     $racks = Rack::with('books')
         ->when($request->search, fn($q) => $q->where('name', 'like', '%'.$request->search.'%'))
-        ->paginate(10)
+        ->paginate($perPage)
         ->withQueryString();
 
     return Inertia::render('Rack/Index', [
