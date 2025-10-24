@@ -17,7 +17,7 @@ class VerifyEmailController extends Controller
     {
         // Jika sudah diverifikasi sebelumnya
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect('/login')->with('status', 'Email kamu sudah diverifikasi, silakan login.');
+            return redirect()->route('login')->with('success', 'Email kamu sudah diverifikasi, silakan login.');
         }
 
         // Tandai email sebagai terverifikasi
@@ -31,6 +31,6 @@ class VerifyEmailController extends Controller
         $request->session()->regenerateToken();
 
         // Redirect ke halaman login dengan pesan sukses
-        return redirect('/login')->with('status', 'Email berhasil diverifikasi, silakan login ulang.');
+        return redirect()->route('login')->with('success', 'Verifikasi berhasil! Silakan login kembali.');
     }
 }

@@ -36,42 +36,46 @@ class HandleInertiaRequests extends Middleware
      *
      * @return array<string, mixed>
      */
-    public function share(Request $request): array
-    {
-        [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
+   public function share(Request $request): array
+{
+    [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
-        return [
-            ...parent::share($request),
-            'name' => config('app.name'),
-            'flash' => [
-                'message' => session('message')
-            ],
-            'session' => [
-                'message' => session('message')
-            ],
-            'quote' => ['message' => trim($message), 'author' => trim($author)],
-         'auth' => [
-    'user' => function () use ($request) {
-        $user = $request->user();
-        return $user ? [
-            'id' => $user->id,
-            'name' => $user->name,
-            'username' => $user->username,
-            'email' => $user->email,
-            'avatar' => $user->avatar,
-            'email_verified_at' => $user->email_verified_at,
-            'has_password' => !is_null($user->password),
-            'roles' => $user->getRoleNames(),
-            'permissions' => $user->getAllPermissions()->pluck('name'),
-        ] : null;
-    },
-],
-
-            'ziggy' => [
-                ...(new Ziggy)->toArray(),
-                'location' => $request->url(),
-            ],
-            'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
-        ];
-    }
+    return [
+        ...parent::share($request),
+        'name' => config('app.name'),
+        'flash' => [
+            'success' => fn () => $request->session()->get('success'),
+            'error' => fn () => $request->session()->get('error'),
+            'message' => fn () => $request->session()->get('message'),
+        ],
+        'session' => [
+            'message' => session('message')
+        ],
+        'quote' => [
+            'message' => trim($message),
+            'author' => trim($author)
+        ],
+        'auth' => [
+            'user' => function () use ($request) {
+                $user = $request->user();
+                return $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'username' => $user->username,
+                    'email' => $user->email,
+                    'avatar' => $user->avatar,
+                    'email_verified_at' => $user->email_verified_at,
+                    'has_password' => !is_null($user->password),
+                    'roles' => $user->getRoleNames(),
+                    'permissions' => $user->getAllPermissions()->pluck('name'),
+                ] : null;
+            },
+        ],
+        'ziggy' => [
+            ...(new Ziggy)->toArray(),
+            'location' => $request->url(),
+        ],
+        'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+    ];
+}
 }
