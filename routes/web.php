@@ -16,7 +16,8 @@ use App\Http\Controllers\{
     PublicController,
     Settings\ProfileController,
     LoanController,
-    BookImportController
+    BookImportController,
+    PopulerController
 };
 
 // =================================
@@ -125,6 +126,7 @@ Route::middleware(['auth'])->prefix('books')->group(function () {
 Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
+
 
 // =================================
 // Extra

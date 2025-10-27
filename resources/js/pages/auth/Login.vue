@@ -203,15 +203,7 @@ const submit = () => {
 
             <div class="w-full max-w-md relative z-10" :class="{'fade-in-scale': isVisible}">
 
-                <!-- Mobile Header with Icon -->
-                <div class="lg:hidden flex items-center justify-center mb-8 bounce-in">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg pulse-animation">
-                            <BookOpen class="w-6 h-6 text-white" />
-                        </div>
-                        <span class="text-2xl font-bold text-gray-900">Perpustakaan</span>
-                    </div>
-                </div>
+
 
                 <!-- Header -->
                 <div class="text-center mb-8 fade-in delay-100">
@@ -221,6 +213,20 @@ const submit = () => {
                     <h2 class="text-3xl font-bold text-gray-900 mb-2">Selamat Datang</h2>
                     <p class="text-gray-600">Masuk untuk mulai meminjam buku</p>
                 </div>
+
+                <!-- Tombol Kembali -->
+<a
+  href="/welcome"
+  class="group inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-blue-700 transition-all duration-300 mb-8"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600 transition-transform duration-300 group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+  </svg>
+  <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+    Kembali ke Halaman Utama
+  </span>
+</a>
+
 
                 <!-- Status Message -->
                 <div v-if="status" class="mb-6 p-4 rounded-xl bg-green-50 border border-green-200 fade-in shake">

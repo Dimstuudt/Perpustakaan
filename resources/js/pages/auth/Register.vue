@@ -206,6 +206,14 @@ const sitekey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
                         </div>
                     </div>
                 </div>
+
+                <!-- CTA -->
+                <div class="slide-in-left delay-600 pt-4 border-t border-white/20">
+<p class="text-blue-100 text-base">
+  ✨ Bergabung untuk mendapatkan rekomendasi buku dan riwayat pinjaman pribadi.
+</p>
+
+                </div>
             </div>
         </div>
 
@@ -214,15 +222,7 @@ const sitekey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
             <div class="w-full max-w-md relative z-10 my-8" :class="{'fade-in-scale': isVisible}">
 
-                <!-- Mobile Header -->
-                <div class="lg:hidden flex items-center justify-center mb-6 bounce-in">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg pulse-animation">
-                            <BookOpen class="w-6 h-6 text-white" />
-                        </div>
-                        <span class="text-2xl font-bold text-gray-900">Perpustakaan</span>
-                    </div>
-                </div>
+
 
                 <!-- Header -->
                 <div class="text-center mb-8 fade-in delay-100">
@@ -232,6 +232,20 @@ const sitekey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
                     <h2 class="text-3xl font-bold text-gray-900 mb-2">Buat Akun Baru</h2>
                     <p class="text-gray-600">Isi formulir untuk memulai</p>
                 </div>
+
+                <!-- Tombol Kembali -->
+<a
+  href="/welcome"
+  class="group inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-blue-700 transition-all duration-300 mb-8"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600 transition-transform duration-300 group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+  </svg>
+  <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+    Kembali ke Halaman Login
+  </span>
+</a>
+
 
                 <!-- Register Form -->
                 <form @submit.prevent="submit" class="space-y-4">
@@ -389,7 +403,7 @@ const sitekey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
                 <!-- Footer -->
                 <div class="mt-8 pt-6 border-t border-gray-200 text-center fade-in delay-1000">
-                    <p class="text-xs text-gray-500">&copy; 2025 Sistem Perpustakaan Digital</p>
+                    <p class="text-xs text-gray-500">&copy; 2024 Sistem Perpustakaan Digital</p>
                 </div>
             </div>
         </div>
