@@ -37,10 +37,12 @@ public function preview($id)
 {
     $book = Book::with('category')->findOrFail($id);
 
-    $relatedBooks = Book::where('id', '!=', $book->id)
-        ->where('category_id', $book->category_id)
-        ->limit(6)
-        ->get(['id', 'title', 'author', 'cover_path']); // ambil cover_path saja
+ $relatedBooks = Book::where('id', '!=', $book->id)
+    ->where('category_id', $book->category_id)
+    ->inRandomOrder() // 🔥 ambil urutan acak
+    ->limit(5)
+    ->get(['id', 'title', 'author', 'cover_path']);
+
 
     // mapping biar ada cover_url juga
     $relatedBooks->transform(function ($rb) {

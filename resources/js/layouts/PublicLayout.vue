@@ -90,7 +90,7 @@ const getUserInitials = (name: string) => {
               </svg>
               <span class="font-medium">Categories</span>
             </Link>
-            <Link
+            <!-- <Link
               href="/about"
               class="group px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2"
             >
@@ -98,7 +98,7 @@ const getUserInitials = (name: string) => {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span class="font-medium">About</span>
-            </Link>
+            </Link> -->
           </div>
 
           <!-- Right Section -->
@@ -224,7 +224,7 @@ const getUserInitials = (name: string) => {
           <Link href="/welcome" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Home</Link>
           <Link href="/koleksi" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Books</Link>
           <Link href="/categoried" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Categories</Link>
-          <Link href="/about" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">About</Link>
+          <!-- <Link href="/about" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">About</Link> -->
           <Link v-if="!user" href="/login" class="block px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg text-center font-semibold">Login / Register</Link>
         </div>
       </div>

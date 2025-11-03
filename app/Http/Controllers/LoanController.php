@@ -53,7 +53,7 @@ public function index(Request $request)
                 'username' => $loan->user->username,
             ],
             'book' => [
-                'title' => $loan->book->title,
+                'title' => $loan->book?->title ?? '-',
             ],
         ]);
 
@@ -107,7 +107,7 @@ public function approve(Loan $loan)
     }
 
     // Terima pengembalian
-    public function return(Loan $loan)
+public function return(Loan $loan)
 {
     if ($loan->status !== 'dipinjam') {
         return back()->with('error', 'Peminjaman ini belum dipinjam atau sudah dikembalikan.');
@@ -116,23 +116,26 @@ public function approve(Loan $loan)
     $now = Carbon::now();
     $fine = 0;
 
-    // ✅ cek keterlambatan
-    if ($loan->due_date && $now->greaterThan($loan->due_date)) {
-        $daysLate = $now->diffInDays($loan->due_date);
-        $fine = $daysLate * 1000; // contoh tarif: 1000/hari
+    // Pastikan due_date dalam format Carbon
+    $dueDate = Carbon::parse($loan->due_date);
+
+    // ✅ Logika yang lebih aman
+    if ($now->gt($dueDate)) {
+        $daysLate = $dueDate->diffInDays($now); // arah: due_date → now
+        $fine = $daysLate * 1000; // 1000 per hari
     }
 
     $loan->update([
         'status' => 'dikembalikan',
         'returned_at' => $now,
-        'fine' => $fine, // ✅ simpan denda
+        'fine' => $fine,
     ]);
 
-    // tambah stok
     $loan->book->increment('stock');
 
     return back()->with('success', 'Pengembalian buku diterima. Denda: Rp ' . number_format($fine));
 }
+
 
     // User create loan
     // public function store(Request $request)

@@ -191,7 +191,17 @@ const sitekey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
                     </div>
                 </div>
 
-                <!-- Back Button -->
+
+                <!-- Header -->
+                <div class="text-center mb-8 fade-in delay-100">
+                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-xl mb-3 pulse-slow">
+                        <KeyRound class="w-7 h-7 text-white" />
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Lupa Password?</h2>
+                    <p class="text-gray-600">Masukkan email untuk reset password</p>
+                </div>
+
+                   <!-- Back Button -->
                 <div class="mb-6 fade-in">
                     <a
                         href="/welcome"
@@ -204,14 +214,6 @@ const sitekey = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
                     </a>
                 </div>
 
-                <!-- Header -->
-                <div class="text-center mb-8 fade-in delay-100">
-                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-xl mb-3 pulse-slow">
-                        <KeyRound class="w-7 h-7 text-white" />
-                    </div>
-                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Lupa Password?</h2>
-                    <p class="text-gray-600">Masukkan email untuk reset password</p>
-                </div>
 
                 <!-- Status Message dari props -->
                 <div v-if="status" class="mb-6 p-4 rounded-xl bg-green-50 border border-green-200 fade-in shake">
