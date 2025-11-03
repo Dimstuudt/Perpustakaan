@@ -77,7 +77,8 @@ Route::post('loans', [LoanController::class, 'store'])
 
 // User cek status pinjaman
 Route::get('/user/loans/status', [UserLoanController::class, 'status'])
-    ->name('user.loans.status');
+    ->name('user.loans.status')
+    ->middleware(['auth']);
 
 // Admin lihat daftar peminjaman
 Route::get('loans', [LoanController::class, 'index'])
@@ -127,6 +128,9 @@ Route::get('/about', function () {
     return Inertia::render('About');
 })->name('about');
 
+Route::get('/contact', function () {
+    return Inertia::render('Contact');
+})->name('contact');
 
 // =================================
 // Extra

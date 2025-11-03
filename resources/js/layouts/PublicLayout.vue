@@ -90,6 +90,29 @@ const getUserInitials = (name: string) => {
               </svg>
               <span class="font-medium">Categories</span>
             </Link>
+            <Link
+  :href="route('user.loans.status')"
+  class="group px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2"
+>
+  <svg
+  class="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors"
+  fill="none"
+  stroke="currentColor"
+  viewBox="0 0 24 24"
+>
+  <path
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="2"
+    d="M9 5h12M9 12h12M9 19h12M5 5h.01M5 12h.01M5 19h.01"
+  />
+</svg>
+
+  <span class="font-medium">Loans</span>
+</Link>
+
+
+
             <!-- <Link
               href="/about"
               class="group px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2"
