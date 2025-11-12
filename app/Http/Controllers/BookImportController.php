@@ -20,7 +20,7 @@ class BookImportController extends Controller
 }
 
 
-    public function store(Request $request)
+  public function store(Request $request)
 {
     $request->validate([
         'file' => 'required|mimes:xlsx,xls,csv',
@@ -41,10 +41,13 @@ class BookImportController extends Controller
             // Pastikan category_id valid
             $categoryId = $bookData['category_id'];
             if (!Category::where('id', $categoryId)->exists()) {
-                // Cari kategori "Tidak Berkategori"
+                // Cari kategori "default"
                 $defaultCategory = Category::where('name', 'default')->first();
                 $categoryId = $defaultCategory ? $defaultCategory->id : null;
             }
+
+            // Normalize type
+            $type = $this->normalizeType($bookData['type'] ?? 'physical');
 
             $savedBooks[] = Book::create([
                 'isbn'        => $bookData['isbn'] ?? null,
@@ -55,7 +58,7 @@ class BookImportController extends Controller
                 'pages'       => $bookData['pages'] ?? null,
                 'description' => $bookData['description'] ?? null,
                 'category_id' => $categoryId,
-                'type'        => $bookData['type'] ?? 'physical',
+                'type'        => $type, // ✅ Normalized
                 'stock'       => $bookData['stock'] ?? 0,
                 'fee'         => $bookData['fee'] ?? 0,
                 'cover_path'  => 'images/dummy-cover.png',
@@ -87,6 +90,9 @@ class BookImportController extends Controller
                 $categoryId = $defaultCategory ? $defaultCategory->id : null;
             }
 
+            // Normalize type
+            $type = $this->normalizeType($row[8] ?? 'physical');
+
             // Map Excel kolom ke field Book
             $bookData = [
                 'isbn'        => $row[0] ?? null,
@@ -97,7 +103,7 @@ class BookImportController extends Controller
                 'pages'       => $row[5] ?? null,
                 'description' => $row[6] ?? null,
                 'category_id' => $categoryId,
-                'type'        => $row[8] ?? 'physical',
+                'type'        => $type, // ✅ Normalized
                 'stock'       => $row[9] ?? 0,
                 'fee'         => $row[10] ?? 0,
                 'cover_path'  => 'images/dummy-cover.png',
@@ -110,5 +116,32 @@ class BookImportController extends Controller
 
     return redirect()->back()
         ->with('success', count($savedBooks) . ' buku berhasil diimport!');
+}
+
+/**
+ * Normalize book type to valid values
+ *
+ * @param string $type
+ * @return string
+ */
+private function normalizeType($type)
+{
+    // Convert to lowercase and trim
+    $normalized = strtolower(trim($type));
+
+    // Map common variations to 'physical'
+    $physicalVariations = ['physical', 'phy', 'fisik', 'p', 'buku fisik'];
+    if (in_array($normalized, $physicalVariations)) {
+        return 'physical';
+    }
+
+    // Map common variations to 'digital'
+    $digitalVariations = ['digital', 'dig', 'e-book', 'ebook', 'd', 'elektronik'];
+    if (in_array($normalized, $digitalVariations)) {
+        return 'digital';
+    }
+
+    // Default fallback
+    return 'physical';
 }
 }

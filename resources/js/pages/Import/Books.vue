@@ -23,7 +23,7 @@ const validCategoryIds = computed(() => {
   return props.categories.map(cat => cat.id)
 })
 
-// Computed: Uncategorized category ID (cari kategori dengan nama "Tidak Berkategori")
+// Computed: Uncategorized category ID (cari kategori dengan nama "default")
 const uncategorizedId = computed(() => {
   const uncatCategory = props.categories.find(cat =>
     cat.name.toLowerCase() === 'default'
@@ -31,12 +31,20 @@ const uncategorizedId = computed(() => {
   return uncatCategory?.id || null
 })
 
+// Valid book types
+const validTypes = ['physical', 'digital']
+
 // Check if category is valid
 function isCategoryValid(categoryId) {
   return validCategoryIds.value.includes(Number(categoryId))
 }
 
-// Auto-fix invalid categories to uncategorized
+// Check if type is valid
+function isTypeValid(type) {
+  return validTypes.includes(String(type).toLowerCase())
+}
+
+// Auto-fix invalid categories and types
 function normalizeBooks() {
   if (!uncategorizedId.value) {
     Swal.fire({
@@ -47,20 +55,40 @@ function normalizeBooks() {
     return
   }
 
-  let fixedCount = 0
+  let fixedCategoryCount = 0
+  let fixedTypeCount = 0
+
   previewBooks.value = previewBooks.value.map(book => {
+    let updatedBook = { ...book }
+
+    // Fix invalid category
     if (!isCategoryValid(book.category_id)) {
-      fixedCount++
-      return { ...book, category_id: uncategorizedId.value }
+      fixedCategoryCount++
+      updatedBook.category_id = uncategorizedId.value
     }
-    return book
+
+    // Fix invalid type
+    if (!isTypeValid(book.type)) {
+      fixedTypeCount++
+      updatedBook.type = 'physical'
+    }
+
+    return updatedBook
   })
 
-  if (fixedCount > 0) {
+  const messages = []
+  if (fixedCategoryCount > 0) {
+    messages.push(`${fixedCategoryCount} buku dengan kategori invalid → kategori default`)
+  }
+  if (fixedTypeCount > 0) {
+    messages.push(`${fixedTypeCount} buku dengan tipe invalid → physical`)
+  }
+
+  if (messages.length > 0) {
     Swal.fire({
       icon: 'success',
-      title: 'Kategori Diperbaiki!',
-      text: `${fixedCount} buku dengan kategori invalid telah dipindahkan ke kategori default.`,
+      title: 'Data Diperbaiki!',
+      html: messages.join('<br>'),
     })
   }
 }
@@ -68,6 +96,16 @@ function normalizeBooks() {
 // Count invalid categories
 const invalidCategoriesCount = computed(() => {
   return previewBooks.value.filter(book => !isCategoryValid(book.category_id)).length
+})
+
+// Count invalid types
+const invalidTypesCount = computed(() => {
+  return previewBooks.value.filter(book => !isTypeValid(book.type)).length
+})
+
+// Total invalid count
+const totalInvalidCount = computed(() => {
+  return invalidCategoriesCount.value + invalidTypesCount.value
 })
 
 function selectFile(event: Event) {
@@ -128,14 +166,22 @@ function previewExcel(file: File) {
 }
 
 function submit() {
-  if (invalidCategoriesCount.value > 0 && uncategorizedId.value) {
+  if (totalInvalidCount.value > 0 && uncategorizedId.value) {
+    const messages = []
+    if (invalidCategoriesCount.value > 0) {
+      messages.push(`<strong>${invalidCategoriesCount.value}</strong> buku dengan kategori tidak valid`)
+    }
+    if (invalidTypesCount.value > 0) {
+      messages.push(`<strong>${invalidTypesCount.value}</strong> buku dengan tipe tidak valid`)
+    }
+
     Swal.fire({
       icon: 'warning',
-      title: 'Kategori Tidak Valid Ditemukan!',
-      html: `Terdapat <strong>${invalidCategoriesCount.value}</strong> buku dengan kategori tidak valid.<br><br>Pilih tindakan:`,
+      title: 'Data Tidak Valid Ditemukan!',
+      html: `Terdapat:<br>${messages.join('<br>')}<br><br>Pilih tindakan:`,
       showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: 'Pindahkan ke Default',
+      confirmButtonText: 'Perbaiki Otomatis',
       denyButtonText: 'Import Apa Adanya',
       cancelButtonText: 'Batal',
       confirmButtonColor: '#3085d6',
@@ -148,11 +194,11 @@ function submit() {
         processImport()
       }
     })
-  } else if (invalidCategoriesCount.value > 0 && !uncategorizedId.value) {
+  } else if (totalInvalidCount.value > 0 && !uncategorizedId.value) {
     Swal.fire({
       icon: 'error',
       title: 'Kategori Default Tidak Ada',
-      html: 'Tidak dapat melanjutkan import karena:<br>• Ada kategori invalid<br>• Tidak ada kategori default "default"',
+      html: 'Tidak dapat melanjutkan import karena:<br>• Ada data invalid<br>• Tidak ada kategori default "default"',
     })
   } else {
     processImport()
