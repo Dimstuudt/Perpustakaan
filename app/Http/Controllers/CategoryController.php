@@ -137,8 +137,9 @@ public function bulkForceDelete(Request $request)
 
 public function list()
 {
-    // Ambil semua kategori
-    $categories = Category::withCount('books') // 👉 hitung semua buku per kategori
+    // Ambil semua kategori kecuali yang bernama 'default'
+    $categories = Category::where('name', '!=', 'default')
+        ->withCount('books') // 👉 hitung semua buku per kategori
         ->with(['books' => function ($query) {
             $query->latest()->take(1); // 👉 cuma ambil 1 buku terbaru buat tampilan
         }])
@@ -148,6 +149,7 @@ public function list()
         'categories' => $categories
     ]);
 }
+
 
 public function detail(Category $category)
 {
