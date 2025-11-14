@@ -83,4 +83,10 @@ Route::middleware(['auth', 'web', 'verified'])->group(function () {
     Route::get('/books/need', [BookController::class, 'need'])
         ->name('books.needCategories')
         ->middleware('permission:books.view');
+
+
 });
+// routes/web.php
+use App\Http\Controllers\AllBooksController;
+
+Route::get('/all-books', [AllBooksController::class, 'index'])->name('all.books');

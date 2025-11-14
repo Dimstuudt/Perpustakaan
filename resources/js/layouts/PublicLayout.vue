@@ -94,15 +94,18 @@ const getUserInitials = (name: string) => {
               </svg>
               <span class="font-medium">Home</span>
             </Link>
+
             <Link
-              href="/koleksi"
-              class="group px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2"
-            >
-              <svg class="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-              <span class="font-medium">Books</span>
-            </Link>
+  href="/koleksi"
+  class="group px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2"
+>
+  <svg class="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M4 3h16v18H4zM12 3v18M9 10h.01M9 14h.01M15 10h.01M15 14h.01" />
+  </svg>
+  <span class="font-medium">Cabinets</span>
+</Link>
+
             <Link
               href="/categoried"
               class="group px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2"
@@ -113,23 +116,13 @@ const getUserInitials = (name: string) => {
               <span class="font-medium">Categories</span>
             </Link>
             <Link
-              :href="route('user.loans.status')"
+              :href="route('all.books')"
               class="group px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2"
             >
-              <svg
-                class="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5h12M9 12h12M9 19h12M5 5h.01M5 12h.01M5 19h.01"
-                />
+           <svg class="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
-              <span class="font-medium">Loans</span>
+              <span class="font-medium">Books</span>
             </Link>
           </div>
 
@@ -253,7 +246,8 @@ const getUserInitials = (name: string) => {
         <!-- Mobile Menu -->
         <div v-if="mobileMenuOpen" class="md:hidden py-4 space-y-2 border-t border-gray-200 dark:border-gray-700">
           <Link href="/welcome" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Home</Link>
-          <Link href="/koleksi" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Books</Link>
+          <Link href="/koleksi" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Cabinets</Link>
+          <Link href="/all-books" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Books</Link>
           <Link href="/categoried" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Categories</Link>
           <Link v-if="!user" href="/login" class="block px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg text-center font-semibold">Login / Register</Link>
         </div>
