@@ -19,19 +19,29 @@ public function welcome()
             'articles' => 0,
             'loans'    => Loan::count(),
         ],
-        'latestBooks' => Book::latest()->take(6)->get()->map(fn ($book) => [
-            'id'          => $book->id,
-            'title'       => $book->title,
-            'author'      => $book->author,
-            'cover_url'   => $book->cover_url,
-            'description' => $book->description,
-            'category'    => $book->category?->name,
-        ]),
-        // batasi kategori 6
-        'categories' => Category::select('id', 'name')->take(6)->get(),
+        'latestBooks' => Book::with('category')
+            ->whereHas('category', function($query) {
+                $query->where('name', '!=', 'default');
+            })
+            ->orWhereDoesntHave('category')
+            ->latest()
+            ->take(6)
+            ->get()
+            ->map(fn ($book) => [
+                'id'          => $book->id,
+                'title'       => $book->title,
+                'author'      => $book->author,
+                'cover_url'   => $book->cover_url,
+                'description' => $book->description,
+                'category'    => $book->category?->name,
+            ]),
+        // batasi kategori 6 dan exclude "default"
+        'categories' => Category::select('id', 'name')
+            ->where('name', '!=', 'default')
+            ->take(6)
+            ->get(),
     ]);
 }
-
 
 public function preview($id)
 {

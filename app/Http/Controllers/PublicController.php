@@ -17,8 +17,12 @@ class PublicController extends Controller
         if (!$request->cabinet && !$request->rack) {
             $cabinets = Cabinet::withCount('racks')->get();
 
-            // Tambahkan query latest books
+            // Tambahkan query latest books (exclude category "default")
             $latestBooks = Book::with('category')
+                ->whereHas('category', function($query) {
+                    $query->where('name', '!=', 'default');
+                })
+                ->orWhereDoesntHave('category') // Jika ada buku tanpa category
                 ->latest()
                 ->take(18)
                 ->get()
@@ -33,7 +37,7 @@ class PublicController extends Controller
 
             return Inertia::render('Public/CabinetIndex', [
                 'cabinets' => $cabinets,
-                'latestBooks' => $latestBooks, // ← Tambah ini
+                'latestBooks' => $latestBooks,
             ]);
         }
 
