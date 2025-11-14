@@ -7,8 +7,8 @@ import { can } from '@/lib/can'
 import { ref, computed } from 'vue'
 
 const breadcrumbs: BreadcrumbItem[] = [
-  { title: 'Books', href: '/books' },
-  
+    { title: 'Books', href: '/books' },
+  { title: 'UnCategoried', href: '/books/need' },
 ]
 
 const props = defineProps<{
@@ -116,7 +116,7 @@ function bulkDeleteBooks() {
     <div class="p-6">
       <!-- Header -->
       <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-semibold">📚 Daftar Buku</h1>
+        <h1 class="text-2xl font-semibold">📚 Daftar Buku Yang Membutuhkan Category</h1>
         <div class="flex gap-2">
           <Link
             v-if="can('books.create')"

@@ -40,6 +40,7 @@ const mainNavItems: NavItem[] = [
   { title: 'Roles', href: '/roles', icon: UserRoundCog, permission: 'roles.view' },
   { title: 'Permissions', href: '/permissions', icon: ShieldCheck, permission: 'permissions.view' },
   { title: 'Books', href: '/books', icon: BookOpen, permission: 'books.view' },
+  { title: 'UnCategoried', href: '/books/need', icon: BookOpen, permission: 'books.view' },
   { title: 'Racks', href: '/racks', icon: Library, permission: 'racks.manage' },
   { title: 'Cabinets', href: '/cabinets', icon: LibraryBig, permission: 'cabinets.manage' },
   { title: 'Categories', href: '/categories', icon: Folder, permission: 'categories.view' },

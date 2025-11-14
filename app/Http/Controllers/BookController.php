@@ -12,27 +12,33 @@ use Inertia\Inertia;
 class BookController extends Controller
 {
     // Menampilkan daftar buku aktif (non-deleted)
-    public function index()
-    {
-        $books = Book::with('category')->latest()->paginate(10);
+public function index()
+{
+    $books = Book::with('category')
+        ->whereHas('category', function ($q) {
+            $q->where('name', '!=', 'Default');  // ← exclude kategori Default
+        })
+        ->latest()
+        ->paginate(10);
 
-        return Inertia::render('Books/Index', [
-            'books' => $books->through(fn($book) => [
-                'id'          => $book->id,
-                'isbn'        => $book->isbn,
-                'title'       => $book->title,
-                'author'      => $book->author,
-                'publisher'   => $book->publisher,
-                'year'        => $book->year,
-                'pages'       => $book->pages,
-                'category'    => $book->category ? $book->category->name : null,
-                'type'        => $book->type,
-                'description' => $book->description,
-                'cover_path'  => $book->cover_path ? asset('storage/' . $book->cover_path) : null,
-                'file_path'   => $book->file_path ? asset('storage/' . $book->file_path) : null,
-            ]),
-        ]);
-    }
+    return Inertia::render('Books/Index', [
+        'books' => $books->through(fn($book) => [
+            'id'          => $book->id,
+            'isbn'        => $book->isbn,
+            'title'       => $book->title,
+            'author'      => $book->author,
+            'publisher'   => $book->publisher,
+            'year'        => $book->year,
+            'pages'       => $book->pages,
+            'category'    => $book->category?->name,
+            'type'        => $book->type,
+            'description' => $book->description,
+            'cover_path'  => $book->cover_path ? asset('storage/' . $book->cover_path) : null,
+            'file_path'   => $book->file_path ? asset('storage/' . $book->file_path) : null,
+        ]),
+    ]);
+}
+
 
     // Menampilkan daftar buku yang dihapus (trashed)
     public function trashed()
@@ -316,6 +322,37 @@ public function bulkForceDelete(Request $request)
         'categories' => $categories,
     ]);
 
+//need categories
 
-}}
+}
+ public function need()
+{
+    $books = Book::with('category')
+        ->whereHas('category', function ($q) {
+            $q->where('name', 'Default');   // ← filter by name
+        })
+        ->latest()
+        ->paginate(10);
+
+    return Inertia::render('Books/NeedCategories', [
+        'books' => $books->through(fn($book) => [
+            'id'          => $book->id,
+            'isbn'        => $book->isbn,
+            'title'       => $book->title,
+            'author'      => $book->author,
+            'publisher'   => $book->publisher,
+            'year'        => $book->year,
+            'pages'       => $book->pages,
+            'category'    => $book->category?->name,
+            'type'        => $book->type,
+            'description' => $book->description,
+            'cover_path'  => $book->cover_path ? asset('storage/' . $book->cover_path) : null,
+            'file_path'   => $book->file_path ? asset('storage/' . $book->file_path) : null,
+        ]),
+    ]);
+}
+
+
+
+}
 

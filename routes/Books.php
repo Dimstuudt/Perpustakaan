@@ -77,4 +77,10 @@ Route::middleware(['auth', 'web', 'verified'])->group(function () {
     Route::post('/books/multiple', [BookController::class, 'storeMultiple'])
         ->name('books.storeMultiple')
         ->middleware('permission:books.create');
+
+        // need categories
+            // Daftar buku (index)
+    Route::get('/books/need', [BookController::class, 'need'])
+        ->name('books.needCategories')
+        ->middleware('permission:books.view');
 });
