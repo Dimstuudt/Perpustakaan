@@ -24,6 +24,7 @@ class Book extends Model
         'cover_path',
         'stock',
         'fee',
+        'rack_id',
     ];
 
     // ✅ relasi ke category

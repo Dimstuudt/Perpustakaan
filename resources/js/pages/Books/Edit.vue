@@ -4,6 +4,8 @@ import { type BreadcrumbItem } from '@/types'
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import { ref, watch } from 'vue'
 import Swal from 'sweetalert2' // 🔥 Import SweetAlert2
+import { computed } from 'vue'
+
 
 const props = defineProps<{
   book: {
@@ -20,8 +22,14 @@ const props = defineProps<{
     file_url?: string | null
     type?: string | null
     stock?: number | null
+
+    // 🔥 WAJIB ADA (fix masalah rak & fee)
+    rack_id: number | null
+    fee: number | null
   }
+
   categories: { id: number; name: string }[]
+  racks: { id: number; name: string; cabinet: { id: number; name: string } }[]
 }>()
 
 // Breadcrumbs
@@ -46,6 +54,8 @@ const form = useForm({
   type: (props.book.type ?? 'physical') as BookType, // default fallback
   stock: props.book.stock ?? 0,
   fee: props.book.fee ?? 0,
+  rack_id: props.book.rack_id ?? null,
+
 })
 
 // Cover preview
@@ -172,6 +182,13 @@ const parseToForm = (text: string) => {
     form.description = descMatch[1].trim()
   }
 }
+
+// rack assignment
+const selectedCabinet = computed(() => {
+  const rack = props.racks.find(r => r.id === form.rack_id)
+  return rack ? rack.cabinet : null
+})
+
 </script>
 
 
@@ -281,6 +298,28 @@ const parseToForm = (text: string) => {
             {{ form.errors.category_id }}
           </p>
         </div>
+<!-- Pilih Rak -->
+<div>
+  <label class="block text-sm font-medium">Rak Buku</label>
+
+  <select v-model="form.rack_id" class="w-full border rounded p-2">
+    <option disabled value="">-- Pilih Rak --</option>
+
+    <option v-for="rack in props.racks" :key="rack.id" :value="rack.id">
+      {{ rack.name }} - Cabinet: {{ rack.cabinet.name }}
+    </option>
+  </select>
+
+  <p v-if="form.errors.rack_id" class="text-red-500 text-sm">
+    {{ form.errors.rack_id }}
+  </p>
+</div>
+
+<!-- Info cabinet kecil, ga perlu card -->
+<p v-if="selectedCabinet" class="text-xs text-gray-500 mt-1">
+  Cabinet otomatis: <strong>{{ selectedCabinet.name }}</strong>
+</p>
+
 
         <!-- Stok Buku -->
 <div>

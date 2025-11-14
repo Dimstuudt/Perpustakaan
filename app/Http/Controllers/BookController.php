@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Category;
+use App\Models\Rack;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -149,17 +150,26 @@ public function storeMultiple(Request $request)
 
     // Menampilkan form edit buku
     public function edit(Book $book)
-    {
-        $categories = Category::all();
+{
+    $categories = Category::all();
 
-        $book->cover_url = $book->cover_path ? asset('storage/' . $book->cover_path) : null;
-        $book->file_url  = $book->file_path ? asset('storage/' . $book->file_path) : null;
+    // Tambahkan data rack & cabinet untuk form
+    $racks = Rack::with('cabinet')->get();
 
-        return Inertia::render('Books/Edit', [
-            'book'       => $book,
-            'categories' => $categories,
-        ]);
-    }
+    // Tambahkan URL cover & file untuk preview
+    $book->cover_url = $book->cover_path ? asset('storage/' . $book->cover_path) : null;
+    $book->file_url  = $book->file_path ? asset('storage/' . $book->file_path) : null;
+
+    // Muat relasi rack -> cabinet dari buku saat ini
+    $book->load('rack.cabinet');
+
+    return Inertia::render('Books/Edit', [
+        'book'       => $book,
+        'categories' => $categories,
+        'racks'      => $racks,        // ← penting untuk dropdown
+    ]);
+}
+
 
     // Update data buku
 public function update(Request $request, Book $book)
@@ -178,6 +188,8 @@ public function update(Request $request, Book $book)
         'file'        => 'nullable|file|mimes:pdf,epub|max:20480',
         'cover'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         'stock'       => 'required|integer|min:1',
+        'rack_id'     => 'nullable|exists:racks,id',
+
     ]);
 
     // Simpan file buku
