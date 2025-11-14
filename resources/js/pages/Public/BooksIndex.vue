@@ -128,154 +128,155 @@ const handleKeypress = (e) => {
       </div>
 
       <!-- Search Bar - Above Grid -->
-      <div class="mb-6">
-        <div class="flex gap-2">
-          <div class="relative flex-1 max-w-md">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <svg class="w-5 h-5 text-gray-400" :class="{ 'animate-pulse': isSearching }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <input
-              v-model="searchQuery"
-              @keypress="handleKeypress"
-              type="text"
-              placeholder="Cari judul atau penulis..."
-              class="w-full pl-12 pr-4 py-3 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm"
-              :disabled="isSearching"
-            />
-            <div v-if="searchQuery && !isSearching" class="absolute inset-y-0 right-0 pr-4 flex items-center">
-              <button
-                @click="handleClear"
-                class="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div v-if="isSearching" class="absolute inset-y-0 right-0 pr-4 flex items-center">
-              <svg class="w-5 h-5 text-amber-500 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            </div>
-          </div>
-          <button
-            @click="handleSearch"
-            :disabled="isSearching || !searchQuery.trim()"
-            class="px-6 py-3 bg-gradient-to-r from-amber-600 to-rose-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200 flex items-center gap-2"
-          >
-            <svg v-if="!isSearching" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>{{ isSearching ? 'Mencari...' : 'Cari' }}</span>
-          </button>
-        </div>
-        <p v-if="activeSearch" class="mt-2 text-sm text-gray-600">
-          Menampilkan {{ filteredBooks.length }} dari {{ books?.length || 0 }} buku
-        </p>
+    <!-- Search Bar - Above Grid -->
+<div class="mb-6">
+  <div class="flex gap-2">
+    <div class="relative flex-1 max-w-md">
+      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <svg class="w-5 h-5 text-gray-400 dark:text-gray-500" :class="{ 'animate-pulse': isSearching }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
       </div>
-
-      <!-- Books Grid with 3D Effect - Fixed Layout -->
-      <div v-if="filteredBooks && filteredBooks.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
-        <Link
-          v-for="book in filteredBooks"
-          :key="book.id"
-          :href="route('public.preview', { id: book.id })"
-          class="group block book-card"
+      <input
+        v-model="searchQuery"
+        @keypress="handleKeypress"
+        type="text"
+        placeholder="Cari judul atau penulis..."
+        class="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-xl focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:border-transparent transition-all duration-200 shadow-sm"
+        :disabled="isSearching"
+      />
+      <div v-if="searchQuery && !isSearching" class="absolute inset-y-0 right-0 pr-4 flex items-center">
+        <button
+          @click="handleClear"
+          class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors"
         >
-          <!-- 3D Book Container -->
-          <div class="book-3d-container">
-            <div class="book-3d">
-              <!-- Front Cover -->
-              <div class="book-front">
-                <div class="relative w-full h-full">
-                  <img
-                    v-if="book.cover_url"
-                    :src="book.cover_url"
-                    :alt="book.title"
-                    class="w-full h-full object-cover"
-                  />
-                  <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-400 to-orange-500">
-                    <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                  </div>
-
-                  <!-- Gradient Overlay on Hover -->
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                  <!-- Quick View Badge -->
-                  <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 shadow-lg">
-                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  </div>
-
-                  <!-- Location Badge -->
-                  <div class="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                    <div class="bg-amber-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center justify-center gap-1 shadow-lg">
-                      <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span class="truncate">{{ rack.name }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Book Spine -->
-              <div class="book-spine"></div>
-
-              <!-- Book Shadow -->
-              <div class="book-shadow"></div>
-            </div>
-          </div>
-
-          <!-- Book Info - Fixed Height Container -->
-          <div class="mt-4 px-1 flex flex-col" style="min-height: 88px;">
-            <!-- Title - Fixed 2 lines (40px) -->
-            <h3 class="text-sm font-bold text-gray-800 group-hover:text-amber-600 transition-colors line-clamp-2 mb-1.5 leading-snug" style="height: 40px; min-height: 40px;">
-              {{ book.title }}
-            </h3>
-
-            <!-- Author - Fixed 1 line (20px) -->
-            <p class="text-xs text-gray-500 line-clamp-1 mb-2" style="height: 20px; min-height: 20px;">
-              {{ book.author || 'Tidak diketahui' }}
-            </p>
-
-            <!-- Bottom Info - Fixed height (28px) -->
-            <div class="flex items-center justify-between gap-2 mt-auto" style="height: 28px; min-height: 28px;">
-              <!-- Category Badge - Always same size -->
-              <div class="flex-1 min-w-0">
-                <span v-if="book.category" class="inline-flex items-center text-xs bg-amber-50 text-amber-700 px-2 py-1 rounded-full font-medium w-full max-w-full">
-                  <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                  </svg>
-                  <span class="truncate">
-                    {{ typeof book.category === 'object' ? book.category.name : book.category }}
-                  </span>
-                </span>
-                <span v-else class="inline-block text-xs text-gray-400 px-2 py-1">-</span>
-              </div>
-
-              <!-- Star Icon - Fixed position -->
-              <div class="flex items-center gap-0.5 text-amber-400 flex-shrink-0" style="width: 16px;">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </Link>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
+      <div v-if="isSearching" class="absolute inset-y-0 right-0 pr-4 flex items-center">
+        <svg class="w-5 h-5 text-amber-500 dark:text-amber-400 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+    </div>
+    <button
+      @click="handleSearch"
+      :disabled="isSearching || !searchQuery.trim()"
+      class="px-6 py-3 bg-gradient-to-r from-amber-600 to-rose-600 dark:from-amber-500 dark:to-rose-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all duration-200 flex items-center gap-2"
+    >
+      <svg v-if="!isSearching" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span>{{ isSearching ? 'Mencari...' : 'Cari' }}</span>
+    </button>
+  </div>
+  <p v-if="activeSearch" class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+    Menampilkan {{ filteredBooks.length }} dari {{ books?.length || 0 }} buku
+  </p>
+</div>
+
+  <!-- Books Grid with 3D Effect - Fixed Layout -->
+<div v-if="filteredBooks && filteredBooks.length > 0" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+  <Link
+    v-for="book in filteredBooks"
+    :key="book.id"
+    :href="route('public.preview', { id: book.id })"
+    class="group block book-card"
+  >
+    <!-- 3D Book Container -->
+    <div class="book-3d-container">
+      <div class="book-3d">
+        <!-- Front Cover -->
+        <div class="book-front">
+          <div class="relative w-full h-full">
+            <img
+              v-if="book.cover_url"
+              :src="book.cover_url"
+              :alt="book.title"
+              class="w-full h-full object-cover"
+            />
+            <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-400 to-orange-500 dark:from-amber-500 dark:to-orange-600">
+              <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+
+            <!-- Gradient Overlay on Hover -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+            <!-- Quick View Badge -->
+            <div class="absolute top-3 right-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 shadow-lg">
+              <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </div>
+
+            <!-- Location Badge -->
+            <div class="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+              <div class="bg-amber-500 dark:bg-amber-600 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center justify-center gap-1 shadow-lg">
+                <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span class="truncate">{{ rack.name }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Book Spine -->
+        <div class="book-spine"></div>
+
+        <!-- Book Shadow -->
+        <div class="book-shadow"></div>
+      </div>
+    </div>
+
+    <!-- Book Info - Fixed Height Container -->
+    <div class="mt-4 px-1 flex flex-col" style="min-height: 88px;">
+      <!-- Title - Fixed 2 lines (40px) -->
+      <h3 class="text-sm font-bold text-gray-800 dark:text-gray-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors line-clamp-2 mb-1.5 leading-snug" style="height: 40px; min-height: 40px;">
+        {{ book.title }}
+      </h3>
+
+      <!-- Author - Fixed 1 line (20px) -->
+      <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-2" style="height: 20px; min-height: 20px;">
+        {{ book.author || 'Tidak diketahui' }}
+      </p>
+
+      <!-- Bottom Info - Fixed height (28px) -->
+      <div class="flex items-center justify-between gap-2 mt-auto" style="height: 28px; min-height: 28px;">
+        <!-- Category Badge - Always same size -->
+        <div class="flex-1 min-w-0">
+          <span v-if="book.category" class="inline-flex items-center text-xs bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-2 py-1 rounded-full font-medium w-full max-w-full">
+            <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+            </svg>
+            <span class="truncate">
+              {{ typeof book.category === 'object' ? book.category.name : book.category }}
+            </span>
+          </span>
+          <span v-else class="inline-block text-xs text-gray-400 dark:text-gray-500 px-2 py-1">-</span>
+        </div>
+
+        <!-- Star Icon - Fixed position -->
+        <div class="flex items-center gap-0.5 text-amber-400 dark:text-amber-500 flex-shrink-0" style="width: 16px;">
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </Link>
+</div>
 
       <!-- Empty State -->
       <div v-if="!filteredBooks || filteredBooks.length === 0" class="text-center py-20 bg-gradient-to-br from-gray-50 to-amber-50 rounded-3xl border-2 border-dashed border-gray-300">

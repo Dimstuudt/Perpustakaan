@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue"
+import { ref, watch, onMounted, onUnmounted } from "vue"
 import { Link, usePage } from "@inertiajs/vue3"
 import WelcomePopup from "@/Components/WelcomePopup.vue"
 
@@ -24,6 +24,28 @@ watch(isDark, (val) => {
     document.documentElement.classList.remove("dark")
     localStorage.setItem("theme", "light")
   }
+})
+
+// ===== Scroll to Top Button =====
+const showScrollTop = ref(false)
+
+const handleScroll = () => {
+  showScrollTop.value = window.scrollY > 300
+}
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 
 // Get user initials for avatar
@@ -91,37 +113,24 @@ const getUserInitials = (name: string) => {
               <span class="font-medium">Categories</span>
             </Link>
             <Link
-  :href="route('user.loans.status')"
-  class="group px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2"
->
-  <svg
-  class="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors"
-  fill="none"
-  stroke="currentColor"
-  viewBox="0 0 24 24"
->
-  <path
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="2"
-    d="M9 5h12M9 12h12M9 19h12M5 5h.01M5 12h.01M5 19h.01"
-  />
-</svg>
-
-  <span class="font-medium">Loans</span>
-</Link>
-
-
-
-            <!-- <Link
-              href="/about"
+              :href="route('user.loans.status')"
               class="group px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2"
             >
-              <svg class="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                class="w-5 h-5 text-gray-500 group-hover:text-blue-600 transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5h12M9 12h12M9 19h12M5 5h.01M5 12h.01M5 19h.01"
+                />
               </svg>
-              <span class="font-medium">About</span>
-            </Link> -->
+              <span class="font-medium">Loans</span>
+            </Link>
           </div>
 
           <!-- Right Section -->
@@ -150,21 +159,20 @@ const getUserInitials = (name: string) => {
                   <!-- Avatar -->
                   <div class="relative">
                     <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
-<div class="relative w-9 h-9 rounded-full overflow-hidden shadow-lg">
-  <img
-    v-if="user.avatar"
-    :src="user.avatar"
-    alt="Avatar"
-    class="w-full h-full object-cover"
-  />
-  <div
-    v-else
-    class="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm"
-  >
-    {{ getUserInitials(user.name) }}
-  </div>
-</div>
-
+                    <div class="relative w-9 h-9 rounded-full overflow-hidden shadow-lg">
+                      <img
+                        v-if="user.avatar"
+                        :src="user.avatar"
+                        alt="Avatar"
+                        class="w-full h-full object-cover"
+                      />
+                      <div
+                        v-else
+                        class="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm"
+                      >
+                        {{ getUserInitials(user.name) }}
+                      </div>
+                    </div>
                     <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900"></div>
                   </div>
                   <!-- Username -->
@@ -247,7 +255,6 @@ const getUserInitials = (name: string) => {
           <Link href="/welcome" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Home</Link>
           <Link href="/koleksi" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Books</Link>
           <Link href="/categoried" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">Categories</Link>
-          <!-- <Link href="/about" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors">About</Link> -->
           <Link v-if="!user" href="/login" class="block px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg text-center font-semibold">Login / Register</Link>
         </div>
       </div>
@@ -258,6 +265,36 @@ const getUserInitials = (name: string) => {
       <slot />
       <WelcomePopup />
     </main>
+
+    <!-- Scroll to Top Button -->
+    <Transition name="scroll-top">
+      <button
+        v-if="showScrollTop"
+        @click="scrollToTop"
+        class="fixed bottom-8 right-8 z-40 group"
+        aria-label="Scroll to top"
+      >
+        <!-- Glow Effect -->
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+
+        <!-- Button -->
+        <div class="relative w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl shadow-2xl flex items-center justify-center transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-300">
+          <!-- Icon -->
+          <svg class="w-6 h-6 text-white transform group-hover:-translate-y-0.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+
+          <!-- Ripple Effect -->
+          <div class="absolute inset-0 rounded-2xl bg-white opacity-0 group-hover:opacity-20 group-hover:animate-ping"></div>
+        </div>
+
+        <!-- Tooltip -->
+        <div class="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-gray-900 dark:bg-gray-700 text-white text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
+          Back to top
+          <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 rotate-45 w-2 h-2 bg-gray-900 dark:bg-gray-700"></div>
+        </div>
+      </button>
+    </Transition>
 
     <!-- Premium Footer -->
     <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 mt-auto">
@@ -305,13 +342,12 @@ const getUserInitials = (name: string) => {
                   <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                 </svg>
               </a>
-<!-- TikTok -->
-<a href="https://www.tiktok.com/@dimstuud" class="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 group">
-  <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-white" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12.9 2c.3 1.9 1.7 3.4 3.6 3.7v2.4c-1.1 0-2.2-.3-3.1-.9v6.5c0 3-2.4 5.3-5.3 5.3S2.8 16.7 2.8 13.8s2.4-5.3 5.3-5.3c.5 0 1 .1 1.4.2v2.5c-.4-.2-.9-.3-1.4-.3-1.5 0-2.8 1.2-2.8 2.8s1.2 2.8 2.8 2.8 2.8-1.2 2.8-2.8V2h2z"/>
-  </svg>
-</a>
-
+              <!-- TikTok -->
+              <a href="https://www.tiktok.com/@dimstuud" class="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 group">
+                <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12.9 2c.3 1.9 1.7 3.4 3.6 3.7v2.4c-1.1 0-2.2-.3-3.1-.9v6.5c0 3-2.4 5.3-5.3 5.3S2.8 16.7 2.8 13.8s2.4-5.3 5.3-5.3c.5 0 1 .1 1.4.2v2.5c-.4-.2-.9-.3-1.4-.3-1.5 0-2.8 1.2-2.8 2.8s1.2 2.8 2.8 2.8 2.8-1.2 2.8-2.8V2h2z"/>
+                </svg>
+              </a>
             </div>
           </div>
         </div>
@@ -326,5 +362,19 @@ const getUserInitials = (name: string) => {
 </template>
 
 <style scoped>
-/* Smooth transitions for dropdown */
+/* Scroll to Top Button Transitions */
+.scroll-top-enter-active,
+.scroll-top-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-top-enter-from {
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+}
+
+.scroll-top-leave-to {
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+}
 </style>
