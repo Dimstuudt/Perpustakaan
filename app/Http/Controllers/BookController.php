@@ -156,29 +156,27 @@ public function storeMultiple(Request $request)
 
     // Menampilkan form edit buku
     public function edit(Book $book)
-{
-    $categories = Category::all();
+    {
+        $categories = Category::where('name', '!=', 'default')->get();
 
-    // Tambahkan data rack & cabinet untuk form
-    $racks = Rack::with('cabinet')->get();
+        $racks = Rack::with('cabinet')->get();
 
-    // Tambahkan URL cover & file untuk preview
-    $book->cover_url = $book->cover_path ? asset('storage/' . $book->cover_path) : null;
-    $book->file_url  = $book->file_path ? asset('storage/' . $book->file_path) : null;
+        $book->cover_url = $book->cover_path ? asset('storage/' . $book->cover_path) : null;
+        $book->file_url  = $book->file_path ? asset('storage/' . $book->file_path) : null;
 
-    // Muat relasi rack -> cabinet dari buku saat ini
-    $book->load('rack.cabinet');
+        $book->load('rack.cabinet');
 
-    return Inertia::render('Books/Edit', [
-        'book'       => $book,
-        'categories' => $categories,
-        'racks'      => $racks,        // ← penting untuk dropdown
-    ]);
-}
+        return Inertia::render('Books/Edit', [
+            'book'       => $book,
+            'categories' => $categories,
+            'racks'      => $racks,
+        ]);
+    }
+
 
 
     // Update data buku
-public function update(Request $request, Book $book)
+    public function update(Request $request, Book $book)
 {
     $validated = $request->validate([
         'isbn'        => 'required|string|max:20|unique:books,isbn,' . $book->id,
