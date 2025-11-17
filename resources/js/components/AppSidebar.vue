@@ -46,6 +46,7 @@ const mainNavItems: NavItem[] = [
   { title: 'Categories', href: '/categories', icon: Folder, permission: 'categories.view' },
   { title: 'Loans Admin', href: '/loans', icon: Book, permission: 'loans.view' },
   { title: 'Loans User', href: '/user/loansuser', icon: BookCopyIcon, permission: 'loans.user' },
+  { title: 'Status Loans', href: '/user/loans/status', icon: BookCopyIcon, permission: 'loans.user' },
 ]
 
 // footer menu bebas (tanpa permission)

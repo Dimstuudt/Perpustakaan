@@ -22,7 +22,8 @@ const breadcrumbs = [
   { title: 'Status Peminjaman', href: '/user/loans/status' },
 ]
 
-const calculateTotal = (loan: Loan) => loan.fee + loan.fine
+const calculateTotal = (loan: Loan) => Number(loan.fee) + Number(loan.fine)
+
 
 // Group loans by status
 const groupedLoans = computed(() => {
