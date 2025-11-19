@@ -168,7 +168,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-  public function update(Request $request, string $id)
+ public function update(Request $request, string $id)
 {
     $user = User::findOrFail($id);
 
@@ -200,37 +200,38 @@ class UserController extends Controller
         ],
         'verified_email' => ['nullable', 'boolean'],
         'password' => [
-            'nullable', // kalau kosong berarti tidak update password
+            'nullable',
             'confirmed',
             Password::min(8)->numbers()->symbols()->mixedCase(),
             'regex:/^[A-Za-z0-9_\-!@#$%^&*()+=\[\]{}]+$/',
         ],
     ], [
-        'username.unique' => 'Username is already taken.',
-        'username.regex' => 'Username can only contain letters, numbers, and underscores.',
-        'email.unique' => 'Email is already taken.',
+        'username.unique'    => 'Username is already taken.',
+        'username.regex'     => 'Username can only contain letters, numbers, and underscores.',
+        'email.unique'       => 'Email is already taken.',
         'password.confirmed' => 'Passwords do not match',
-        'password.regex' => 'Password cannot contain spaces',
+        'password.regex'     => 'Password cannot contain spaces',
     ]);
 
     // Update email_verified_at
-    if ($request->boolean('verified_email')) {
-        $user->email_verified_at = now();
-    } else {
-        $user->email_verified_at = null;
+    $user->email_verified_at = $request->boolean('verified_email') ? now() : null;
+
+    // Jika password kosong → jangan ikut fill / jangan ubah password
+    if (!$request->filled('password')) {
+        unset($validated['password']);
     }
 
-    // Update field lain
+    // Fill semua field kecuali password (kalau kosong)
     $user->fill($validated);
 
-    // Update password jika diisi
+    // Kalau ada password baru → hash
     if ($request->filled('password')) {
         $user->password = Hash::make($request->password);
     }
 
     $user->save();
 
-    // Cek role assignment
+    // Validasi role assignment
     if (!auth()->user()->hasRole('Super Admin')) {
         if ($user->hasAnyRole(['admin', 'Super Admin'])) {
             abort(403, 'You are not allowed to edit another admin or super admin.');

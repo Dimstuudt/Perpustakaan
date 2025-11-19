@@ -50,10 +50,10 @@ const mainNavItems: NavItem[] = [
 ]
 
 // footer menu bebas (tanpa permission)
-const footerNavItems: NavItem[] = [
-  { title: 'Landing', href: '/welcome', icon: Layers },
-  { title: 'Documentation', href: 'https://github.com/Dimstuudt/Perpustakaan', icon: BookOpen },
-]
+// const footerNavItems: NavItem[] = [
+//   { title: 'Landing', href: '/welcome', icon: Layers },
+//   { title: 'Documentation', href: 'https://github.com/Dimstuudt/Perpustakaan', icon: BookOpen },
+// ]
 
 // filter menu sesuai permission
 const filteredNavItems = computed(() => {

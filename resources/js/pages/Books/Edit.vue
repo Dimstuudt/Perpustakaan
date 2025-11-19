@@ -29,7 +29,8 @@ const props = defineProps<{
   }
 
   categories: { id: number; name: string }[]
-  racks: { id: number; name: string; cabinet: { id: number; name: string } }[]
+  racks: { id: number; name: string; cabinet: { id: number; name: string } | null }[]
+
 }>()
 
 // Breadcrumbs
@@ -186,8 +187,9 @@ const parseToForm = (text: string) => {
 // rack assignment
 const selectedCabinet = computed(() => {
   const rack = props.racks.find(r => r.id === form.rack_id)
-  return rack ? rack.cabinet : null
+  return rack?.cabinet ?? null
 })
+
 
 </script>
 
@@ -306,7 +308,8 @@ const selectedCabinet = computed(() => {
     <option disabled value="">-- Pilih Rak --</option>
 
     <option v-for="rack in props.racks" :key="rack.id" :value="rack.id">
-      {{ rack.name }} - Cabinet: {{ rack.cabinet.name }}
+     {{ rack.name }} - Cabinet: {{ rack.cabinet?.name ?? 'Tidak ada cabinet' }}
+
     </option>
   </select>
 
@@ -316,9 +319,10 @@ const selectedCabinet = computed(() => {
 </div>
 
 <!-- Info cabinet kecil, ga perlu card -->
-<p v-if="selectedCabinet" class="text-xs text-gray-500 mt-1">
+<p v-if="selectedCabinet?.name" class="text-xs text-gray-500 mt-1">
   Cabinet otomatis: <strong>{{ selectedCabinet.name }}</strong>
 </p>
+
 
 
         <!-- Stok Buku -->

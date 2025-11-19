@@ -1,3 +1,4 @@
+
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue'
 import { type BreadcrumbItem } from '@/types'
@@ -8,7 +9,7 @@ import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Checkbox from 'primevue/checkbox'
 import Divider from 'primevue/divider'
-import { reactive, watch, ref, computed } from 'vue'
+import { reactive, watch, ref, computed, onMounted } from 'vue'
 
 interface Role {
   id: number
@@ -106,46 +107,76 @@ const toggleAllRoles = () => {
     form.roles = props.roles.map(r => r.name)
   }
 }
+
+// Dark mode logic
+const isDark = ref(false)
+
+const toggleDarkMode = () => {
+  isDark.value = !isDark.value
+  if (isDark.value) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+  localStorage.setItem('darkMode', isDark.value.toString())
+}
+
+onMounted(() => {
+  const savedDarkMode = localStorage.getItem('darkMode')
+  if (savedDarkMode === 'true') {
+    isDark.value = true
+    document.documentElement.classList.add('dark')
+  }
+})
 </script>
 
 <template>
   <Head title="Edit User" />
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="min-h-screen bg-gray-50 py-8">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Header -->
         <div class="mb-6">
           <div class="flex items-center justify-between">
             <div>
-              <h1 class="text-3xl font-bold text-gray-900">Edit User</h1>
-              <p class="text-gray-600 mt-1">Update user information and permissions</p>
+              <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Edit User</h1>
+              <p class="text-gray-600 dark:text-gray-400 mt-1">Update user information and permissions</p>
             </div>
-            <Button
-              label="Back"
-              icon="pi pi-arrow-left"
-              outlined
-              size="small"
-              @click="$inertia.visit(route('users.index'))"
-            />
+            <div class="flex items-center gap-3">
+              <Button
+                :label="isDark ? 'Light Mode' : 'Dark Mode'"
+                icon="pi pi-moon"
+                outlined
+                size="small"
+                @click="toggleDarkMode"
+              />
+              <Button
+                label="Back"
+                icon="pi pi-arrow-left"
+                outlined
+                size="small"
+                @click="$inertia.visit(route('users.index'))"
+              />
+            </div>
           </div>
         </div>
 
         <!-- Form Card -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           <form @submit.prevent="submit">
 
             <!-- Basic Information Section -->
-            <div class="p-6 border-b border-gray-200">
-              <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <i class="pi pi-user text-indigo-600"></i>
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <i class="pi pi-user text-indigo-600 dark:text-indigo-400"></i>
                 Basic Information
               </h3>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Full Name -->
                 <div class="space-y-2">
-                  <label for="name" class="block text-sm font-medium text-gray-900">
+                  <label for="name" class="block text-sm font-medium text-gray-900 dark:text-gray-100">
                     Full Name <span class="text-red-500">*</span>
                   </label>
                   <InputText
@@ -163,7 +194,7 @@ const toggleAllRoles = () => {
 
                 <!-- Username -->
                 <div class="space-y-2">
-                  <label for="username" class="block text-sm font-medium text-gray-900">
+                  <label for="username" class="block text-sm font-medium text-gray-900 dark:text-gray-100">
                     Username <span class="text-red-500">*</span>
                   </label>
                   <InputText
@@ -180,7 +211,7 @@ const toggleAllRoles = () => {
 
                 <!-- Email -->
                 <div class="space-y-2 md:col-span-2">
-                  <label for="email" class="block text-sm font-medium text-gray-900">
+                  <label for="email" class="block text-sm font-medium text-gray-900 dark:text-gray-100">
                     Email Address <span class="text-red-500">*</span>
                   </label>
                   <InputText
@@ -197,16 +228,16 @@ const toggleAllRoles = () => {
 
                 <!-- Email Verification -->
                 <div class="md:col-span-2">
-                  <div class="flex items-center gap-3 bg-gray-50 rounded-lg px-4 py-3 border border-gray-200">
+                  <div class="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 rounded-lg px-4 py-3 border border-gray-200 dark:border-gray-600">
                     <Checkbox
                       inputId="verified_email"
                       v-model="form.verified_email"
                       :binary="true"
                     />
-                    <label for="verified_email" class="text-sm font-medium text-gray-700 cursor-pointer">
+                    <label for="verified_email" class="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
                       Mark email as verified
                     </label>
-                    <i class="pi pi-info-circle text-gray-400 text-sm ml-auto"
+                    <i class="pi pi-info-circle text-gray-400 dark:text-gray-500 text-sm ml-auto"
                        title="User can access features without email verification"></i>
                   </div>
                 </div>
@@ -214,20 +245,20 @@ const toggleAllRoles = () => {
             </div>
 
             <!-- Password Section -->
-            <div class="p-6 border-b border-gray-200">
-              <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <i class="pi pi-lock text-indigo-600"></i>
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <i class="pi pi-lock text-indigo-600 dark:text-indigo-400"></i>
                 Change Password
               </h3>
 
-              <p class="text-sm text-gray-500 mb-4">
+              <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
                 Leave blank if you don't want to change the password
               </p>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- New Password -->
                 <div class="space-y-2">
-                  <label for="password" class="block text-sm font-medium text-gray-900">
+                  <label for="password" class="block text-sm font-medium text-gray-900 dark:text-gray-100">
                     New Password
                   </label>
                   <Password
@@ -242,39 +273,39 @@ const toggleAllRoles = () => {
                     <template #footer>
                       <Divider />
                       <div class="space-y-2 text-sm">
-                        <p class="font-semibold">Password Requirements:</p>
+                        <p class="font-semibold text-gray-900 dark:text-gray-100">Password Requirements:</p>
                         <ul class="space-y-1">
-                          <li :class="rules.minLength ? 'text-green-600' : 'text-gray-600'">
+                          <li :class="rules.minLength ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'">
                             <i :class="rules.minLength ? 'pi pi-check' : 'pi pi-times'"></i>
                             Minimum 8 characters
                           </li>
-                          <li :class="rules.hasUppercase ? 'text-green-600' : 'text-gray-600'">
+                          <li :class="rules.hasUppercase ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'">
                             <i :class="rules.hasUppercase ? 'pi pi-check' : 'pi pi-times'"></i>
                             At least one uppercase letter
                           </li>
-                          <li :class="rules.hasLowercase ? 'text-green-600' : 'text-gray-600'">
+                          <li :class="rules.hasLowercase ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'">
                             <i :class="rules.hasLowercase ? 'pi pi-check' : 'pi pi-times'"></i>
                             At least one lowercase letter
                           </li>
-                          <li :class="rules.hasNumber ? 'text-green-600' : 'text-gray-600'">
+                          <li :class="rules.hasNumber ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'">
                             <i :class="rules.hasNumber ? 'pi pi-check' : 'pi pi-times'"></i>
                             At least one number
                           </li>
-                          <li :class="rules.hasSymbol ? 'text-green-600' : 'text-gray-600'">
+                          <li :class="rules.hasSymbol ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'">
                             <i :class="rules.hasSymbol ? 'pi pi-check' : 'pi pi-times'"></i>
                             At least one symbol (!@#$%^&*)
                           </li>
                         </ul>
                         <div v-if="form.password" class="mt-3">
-                          <div class="flex items-center justify-between text-xs mb-1">
+                          <div class="flex items-center justify-between text-xs mb-1 text-gray-900 dark:text-gray-100">
                             <span>Strength:</span>
                             <span :class="{
-                              'text-red-600': passwordStrength <= 40,
-                              'text-yellow-600': passwordStrength > 40 && passwordStrength <= 80,
-                              'text-green-600': passwordStrength > 80
+                              'text-red-600 dark:text-red-400': passwordStrength <= 40,
+                              'text-yellow-600 dark:text-yellow-400': passwordStrength > 40 && passwordStrength <= 80,
+                              'text-green-600 dark:text-green-400': passwordStrength > 80
                             }">{{ passwordStrengthLabel }}</span>
                           </div>
-                          <div class="w-full bg-gray-200 rounded-full h-2">
+                          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                             <div
                               class="h-2 rounded-full transition-all"
                               :class="{
@@ -294,7 +325,7 @@ const toggleAllRoles = () => {
 
                 <!-- Confirm Password -->
                 <div class="space-y-2">
-                  <label for="password_confirmation" class="block text-sm font-medium text-gray-900">
+                  <label for="password_confirmation" class="block text-sm font-medium text-gray-900 dark:text-gray-100">
                     Confirm Password
                   </label>
                   <Password
@@ -317,18 +348,18 @@ const toggleAllRoles = () => {
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <div>
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                      <i class="pi pi-users text-indigo-600"></i>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                      <i class="pi pi-users text-indigo-600 dark:text-indigo-400"></i>
                       User Roles
                     </h3>
-                    <p class="text-sm text-gray-500 mt-1">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       Assign roles to define user permissions ({{ form.roles.length }} selected)
                     </p>
                   </div>
                   <button
                     type="button"
                     @click="toggleAllRoles"
-                    class="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
+                    class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
                   >
                     {{ isAllRolesSelected() ? 'Deselect All' : 'Select All' }}
                   </button>
@@ -341,7 +372,7 @@ const toggleAllRoles = () => {
                   <div
                     v-for="role in roles"
                     :key="role.name"
-                    class="flex items-center gap-3 bg-gray-50 rounded-lg px-4 py-3 border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all cursor-pointer"
+                    class="flex items-center gap-3 bg-gray-50 dark:bg-gray-700 rounded-lg px-4 py-3 border border-gray-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all cursor-pointer"
                     @click="() => {
                       const index = form.roles.indexOf(role.name)
                       if (index > -1) {
@@ -358,7 +389,7 @@ const toggleAllRoles = () => {
                     />
                     <label
                       :for="'role-' + role.name"
-                      class="text-sm font-medium text-gray-700 cursor-pointer flex-1"
+                      class="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer flex-1"
                     >
                       {{ role.name }}
                     </label>
@@ -367,16 +398,16 @@ const toggleAllRoles = () => {
 
                 <!-- Empty State -->
                 <div v-if="roles.length === 0" class="text-center py-8">
-                  <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <i class="pi pi-users text-2xl text-gray-400"></i>
+                  <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="pi pi-users text-2xl text-gray-400 dark:text-gray-500"></i>
                   </div>
-                  <p class="text-sm text-gray-500">No roles available</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">No roles available</p>
                 </div>
               </div>
             </div>
 
             <!-- Actions -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-end gap-3">
+            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center justify-end gap-3">
               <Button
                 label="Cancel"
                 severity="secondary"
@@ -396,12 +427,12 @@ const toggleAllRoles = () => {
         </div>
 
         <!-- Info Card -->
-        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
           <div class="flex items-start gap-3">
-            <i class="pi pi-info-circle text-blue-600 mt-0.5"></i>
+            <i class="pi pi-info-circle text-blue-600 dark:text-blue-400 mt-0.5"></i>
             <div>
-              <h4 class="text-sm font-semibold text-blue-900 mb-1">Important Notes</h4>
-              <ul class="text-sm text-blue-800 space-y-1">
+              <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">Important Notes</h4>
+              <ul class="text-sm text-blue-800 dark:text-blue-200 space-y-1">
                 <li>• Username cannot contain spaces or special characters</li>
                 <li>• Password is optional - leave blank to keep current password</li>
                 <li>• Users need at least one role to access the system</li>

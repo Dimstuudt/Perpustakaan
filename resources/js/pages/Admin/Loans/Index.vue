@@ -118,7 +118,6 @@ const returned = (loan: Loan) => {
   })
 }
 
-
 const formatDate = (date: string | null) => {
   if (!date) return '-'
   return new Date(date).toLocaleDateString('id-ID', {
@@ -128,7 +127,6 @@ const formatDate = (date: string | null) => {
   })
 }
 
-// Format harga tanpa desimal (1000 bukan 1000,00)
 const formatPrice = (price: any) => {
   const numPrice = Number(price) || 0
   return new Intl.NumberFormat('id-ID', {
@@ -139,14 +137,14 @@ const formatPrice = (price: any) => {
   }).format(numPrice)
 }
 
-const getStatusIcon = (status: string) => {
-  const icons = {
-    pending: 'pi-clock',
-    dipinjam: 'pi-book',
-    dikembalikan: 'pi-check-circle',
-    ditolak: 'pi-times-circle'
+const getStatusClass = (status: string) => {
+  const classes = {
+    pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    dipinjam: 'bg-blue-100 text-blue-800 border-blue-200',
+    dikembalikan: 'bg-green-100 text-green-800 border-green-200',
+    ditolak: 'bg-red-100 text-red-800 border-red-200'
   }
-  return icons[status] || 'pi-circle'
+  return classes[status] || 'bg-gray-100 text-gray-800 border-gray-200'
 }
 </script>
 
@@ -154,255 +152,229 @@ const getStatusIcon = (status: string) => {
   <AppLayout :breadcrumbs="breadcrumbs">
     <Head title="Daftar Peminjaman" />
 
-    <div class="p-6 max-w-7xl mx-auto">
-      <!-- Header Section -->
-      <div class="mb-8">
-        <div class="flex items-center justify-between mb-6">
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Manajemen Peminjaman</h1>
-            <p class="text-gray-600">Kelola dan pantau semua aktivitas peminjaman buku</p>
+    <div class="p-6 mx-auto" style="max-width: 100%; width: 100%;">
+      <!-- Header -->
+      <div class="mb-6 max-w-7xl mx-auto">
+        <h1 class="text-2xl font-bold text-gray-900 mb-1">Manajemen Peminjaman</h1>
+        <p class="text-sm text-gray-600">Kelola dan pantau semua aktivitas peminjaman buku</p>
+      </div>
+
+      <!-- Statistics Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 max-w-7xl mx-auto">
+        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs text-gray-600 font-medium mb-1">Pending</p>
+              <p class="text-2xl font-bold text-yellow-600">{{ stats?.pending || 0 }}</p>
+            </div>
+            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <i class="pi pi-clock text-xl text-yellow-600"></i>
+            </div>
           </div>
         </div>
 
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs text-gray-600 font-medium mb-1">Dipinjam</p>
+              <p class="text-2xl font-bold text-blue-600">{{ stats?.dipinjam || 0 }}</p>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <i class="pi pi-book text-xl text-blue-600"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs text-gray-600 font-medium mb-1">Dikembalikan</p>
+              <p class="text-2xl font-bold text-green-600">{{ stats?.dikembalikan || 0 }}</p>
+            </div>
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <i class="pi pi-check-circle text-xl text-green-600"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-xs text-gray-600 font-medium mb-1">Ditolak</p>
+              <p class="text-2xl font-bold text-red-600">{{ stats?.ditolak || 0 }}</p>
+            </div>
+            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+              <i class="pi pi-times-circle text-xl text-red-600"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Filter -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 max-w-7xl mx-auto">
+        <div class="flex border-b border-gray-200 overflow-x-auto">
+          <button
+            @click="selectedStatus = 'all'"
+            class="px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap"
+            :class="selectedStatus === 'all'
+              ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+          >
+            <i class="pi pi-list mr-2"></i>
+            Semua ({{ (stats?.pending || 0) + (stats?.dipinjam || 0) + (stats?.dikembalikan || 0) + (stats?.ditolak || 0) }})
+          </button>
           <button
             @click="selectedStatus = 'pending'"
-            class="bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl p-4 text-white shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
-            :class="{ 'ring-4 ring-yellow-300': selectedStatus === 'pending' }"
+            class="px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap"
+            :class="selectedStatus === 'pending'
+              ? 'text-yellow-600 border-b-2 border-yellow-600 bg-yellow-50'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
           >
-            <div class="flex items-center justify-between">
-              <div class="text-left">
-                <p class="text-yellow-100 text-sm font-medium">Pending</p>
-                <p class="text-3xl font-bold mt-1">{{ stats?.pending || 0 }}</p>
-              </div>
-              <i class="pi pi-clock text-3xl opacity-80"></i>
-            </div>
+            <i class="pi pi-clock mr-2"></i>
+            Pending ({{ stats?.pending || 0 }})
           </button>
-
           <button
             @click="selectedStatus = 'dipinjam'"
-            class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
-            :class="{ 'ring-4 ring-blue-300': selectedStatus === 'dipinjam' }"
+            class="px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap"
+            :class="selectedStatus === 'dipinjam'
+              ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
           >
-            <div class="flex items-center justify-between">
-              <div class="text-left">
-                <p class="text-blue-100 text-sm font-medium">Dipinjam</p>
-                <p class="text-3xl font-bold mt-1">{{ stats?.dipinjam || 0 }}</p>
-              </div>
-              <i class="pi pi-book text-3xl opacity-80"></i>
-            </div>
+            <i class="pi pi-book mr-2"></i>
+            Dipinjam ({{ stats?.dipinjam || 0 }})
           </button>
-
           <button
             @click="selectedStatus = 'dikembalikan'"
-            class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
-            :class="{ 'ring-4 ring-green-300': selectedStatus === 'dikembalikan' }"
+            class="px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap"
+            :class="selectedStatus === 'dikembalikan'
+              ? 'text-green-600 border-b-2 border-green-600 bg-green-50'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
           >
-            <div class="flex items-center justify-between">
-              <div class="text-left">
-                <p class="text-green-100 text-sm font-medium">Dikembalikan</p>
-                <p class="text-3xl font-bold mt-1">{{ stats?.dikembalikan || 0 }}</p>
-              </div>
-              <i class="pi pi-check-circle text-3xl opacity-80"></i>
-            </div>
+            <i class="pi pi-check-circle mr-2"></i>
+            Dikembalikan ({{ stats?.dikembalikan || 0 }})
           </button>
-
           <button
             @click="selectedStatus = 'ditolak'"
-            class="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-4 text-white shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
-            :class="{ 'ring-4 ring-red-300': selectedStatus === 'ditolak' }"
+            class="px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap"
+            :class="selectedStatus === 'ditolak'
+              ? 'text-red-600 border-b-2 border-red-600 bg-red-50'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
           >
-            <div class="flex items-center justify-between">
-              <div class="text-left">
-                <p class="text-red-100 text-sm font-medium">Ditolak</p>
-                <p class="text-3xl font-bold mt-1">{{ stats?.ditolak || 0 }}</p>
-              </div>
-              <i class="pi pi-times-circle text-3xl opacity-80"></i>
-            </div>
-          </button>
-        </div>
-
-        <!-- Filter Bar -->
-        <div class="flex items-center gap-3 bg-white rounded-xl shadow-sm p-4 border border-gray-200">
-          <i class="pi pi-filter text-gray-500"></i>
-          <select
-            v-model="selectedStatus"
-            class="flex-1 border-0 focus:ring-2 focus:ring-indigo-500 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50"
-          >
-            <option value="all">🔍 Tampilkan Semua Status</option>
-            <option value="pending">⏳ Pending</option>
-            <option value="dipinjam">📖 Dipinjam</option>
-            <option value="dikembalikan">✅ Dikembalikan</option>
-            <option value="ditolak">❌ Ditolak</option>
-          </select>
-          <button
-            v-if="selectedStatus !== 'all'"
-            @click="selectedStatus = 'all'"
-            class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            Reset
+            <i class="pi pi-times-circle mr-2"></i>
+            Ditolak ({{ stats?.ditolak || 0 }})
           </button>
         </div>
       </div>
 
-      <!-- Loan Cards with Enhanced Design -->
-      <div v-if="props.loans.data.length > 0" class="space-y-4">
-        <div
-          v-for="loan in props.loans.data"
-          :key="loan.id"
-          class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all border border-gray-200 overflow-hidden group"
-        >
-          <div class="flex flex-col md:flex-row">
-            <!-- Left Side - Status Indicator & Icon -->
-            <div
-              class="w-full md:w-48 p-6 flex items-center justify-center relative"
-              :class="{
-                'bg-gradient-to-br from-yellow-50 to-yellow-100': loan.status === 'pending',
-                'bg-gradient-to-br from-blue-50 to-blue-100': loan.status === 'dipinjam',
-                'bg-gradient-to-br from-green-50 to-green-100': loan.status === 'dikembalikan',
-                'bg-gradient-to-br from-red-50 to-red-100': loan.status === 'ditolak'
-              }"
-            >
-              <div class="text-center">
-                <div
-                  class="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-3 shadow-lg"
-                  :class="{
-                    'bg-yellow-400 text-yellow-900': loan.status === 'pending',
-                    'bg-blue-500 text-white': loan.status === 'dipinjam',
-                    'bg-green-500 text-white': loan.status === 'dikembalikan',
-                    'bg-red-500 text-white': loan.status === 'ditolak'
-                  }"
-                >
-                  <i :class="`pi ${getStatusIcon(loan.status)} text-3xl`"></i>
-                </div>
-                <span
-                  class="px-4 py-1.5 text-xs font-bold rounded-full uppercase tracking-wider"
-                  :class="{
-                    'bg-yellow-400 text-yellow-900': loan.status === 'pending',
-                    'bg-blue-500 text-white': loan.status === 'dipinjam',
-                    'bg-green-500 text-white': loan.status === 'dikembalikan',
-                    'bg-red-500 text-white': loan.status === 'ditolak'
-                  }"
-                >
-                  {{ loan.status }}
-                </span>
-              </div>
-            </div>
-
-            <!-- Right Side - Content -->
-            <div class="flex-1 p-6">
-              <!-- Book & User Info -->
-              <div class="mb-4">
-                <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
+      <!-- Table - FULL WIDTH, break dari container -->
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 -mx-6" style="width: calc(100% + 3rem);">
+        <div class="w-full" style="overflow-x: scroll !important; -webkit-overflow-scrolling: touch;">
+          <table class="border-collapse" style="width: 100%; min-width: 1350px; table-layout: fixed;">
+            <thead class="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th style="width: 60px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">ID</th>
+                <th style="width: 150px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Peminjam</th>
+                <th style="width: 200px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Judul Buku</th>
+                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tgl Pinjam</th>
+                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Batas Kembali</th>
+                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tgl Kembali</th>
+                <th style="width: 110px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Biaya</th>
+                <th style="width: 110px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Denda</th>
+                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Total</th>
+                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                <th style="width: 120px;" class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr v-if="props.loans.data.length === 0">
+                <td colspan="11" class="px-4 py-12 text-center">
+                  <div class="flex flex-col items-center justify-center">
+                    <i class="pi pi-inbox text-4xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-500 font-medium">Tidak ada data peminjaman</p>
+                    <p class="text-gray-400 text-sm mt-1">Belum ada peminjaman dengan status "{{ selectedStatus === 'all' ? 'apapun' : selectedStatus }}"</p>
+                  </div>
+                </td>
+              </tr>
+              <tr
+                v-for="loan in props.loans.data"
+                :key="loan.id"
+                class="hover:bg-gray-50 transition-colors"
+              >
+                <td class="px-4 py-3 text-sm text-gray-900 font-medium whitespace-nowrap">#{{ loan.id }}</td>
+                <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
+                  <div class="flex items-center">
+                    <i class="pi pi-user text-gray-400 mr-2 text-xs"></i>
+                    {{ loan.user.username }}
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-900 font-medium" style="width: 200px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" :title="loan.book.title">
                   {{ loan.book.title }}
-                </h3>
-                <div class="flex items-center gap-2 text-gray-600">
-                  <i class="pi pi-user text-sm"></i>
-                  <span class="text-sm font-medium">{{ loan.user.username }}</span>
-                </div>
-              </div>
-
-              <!-- Details Grid -->
-              <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                <div class="bg-gray-50 rounded-lg p-3">
-                  <p class="text-xs text-gray-500 mb-1 flex items-center gap-1">
-                    <i class="pi pi-calendar"></i> Tanggal Pinjam
-                  </p>
-                  <p class="text-sm font-semibold text-gray-900">{{ formatDate(loan.borrowed_at) }}</p>
-                </div>
-
-                <div class="bg-gray-50 rounded-lg p-3">
-                  <p class="text-xs text-gray-500 mb-1 flex items-center gap-1">
-                    <i class="pi pi-calendar-times"></i> Batas Kembali
-                  </p>
-                  <p class="text-sm font-semibold text-gray-900">{{ formatDate(loan.due_date) }}</p>
-                </div>
-
-                <div class="bg-gray-50 rounded-lg p-3">
-                  <p class="text-xs text-gray-500 mb-1 flex items-center gap-1">
-                    <i class="pi pi-check"></i> Dikembalikan
-                  </p>
-                  <p class="text-sm font-semibold text-gray-900">{{ formatDate(loan.returned_at) }}</p>
-                </div>
-              </div>
-
-              <!-- Payment Info -->
-              <div class="flex items-center justify-between bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 mb-4">
-                <div class="flex gap-6">
-                  <div>
-                    <p class="text-xs text-gray-600 mb-1">Biaya Pinjam</p>
-                    <p class="text-lg font-bold text-indigo-600">{{ formatPrice(loan.fee) }}</p>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{{ formatDate(loan.borrowed_at) }}</td>
+                <td class="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{{ formatDate(loan.due_date) }}</td>
+                <td class="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{{ formatDate(loan.returned_at) }}</td>
+                <td class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">{{ formatPrice(loan.fee) }}</td>
+                <td class="px-4 py-3 text-sm font-medium text-red-600 whitespace-nowrap">{{ formatPrice(loan.fine) }}</td>
+                <td class="px-4 py-3 text-sm font-bold text-indigo-600 whitespace-nowrap">
+                  {{ formatPrice((Number(loan.fee) || 0) + (Number(loan.fine) || 0)) }}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  <span
+                    class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border"
+                    :class="getStatusClass(loan.status)"
+                  >
+                    {{ loan.status }}
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-center whitespace-nowrap">
+                  <div class="flex items-center justify-center gap-2">
+                    <template v-if="loan.status === 'pending'">
+                      <Button
+                        icon="pi pi-check"
+                        severity="success"
+                        size="small"
+                        rounded
+                        title="Setujui"
+                        @click="approve(loan)"
+                      />
+                      <Button
+                        icon="pi pi-times"
+                        severity="danger"
+                        size="small"
+                        rounded
+                        outlined
+                        title="Tolak"
+                        @click="reject(loan)"
+                      />
+                    </template>
+                    <Button
+                      v-else-if="loan.status === 'dipinjam'"
+                      icon="pi pi-undo"
+                      severity="info"
+                      size="small"
+                      rounded
+                      title="Terima Pengembalian"
+                      @click="returned(loan)"
+                    />
+                    <span v-else class="text-xs text-gray-400 italic">-</span>
                   </div>
-                  <div>
-                    <p class="text-xs text-gray-600 mb-1">Denda</p>
-                    <p class="text-lg font-bold text-red-600">{{ formatPrice(loan.fine) }}</p>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <p class="text-xs text-gray-600 mb-1">Total Bayar</p>
-                  <p class="text-2xl font-bold text-purple-600">{{ formatPrice((Number(loan.fee) || 0) + (Number(loan.fine) || 0)) }}</p>
-                </div>
-              </div>
-
-              <!-- Action Buttons -->
-              <div class="flex gap-3">
-                <template v-if="loan.status === 'pending'">
-                  <Button
-                    icon="pi pi-check"
-                    label="Setujui"
-                    severity="success"
-                    size="small"
-                    class="flex-1"
-                    @click="approve(loan)"
-                  />
-                  <Button
-                    icon="pi pi-times"
-                    label="Tolak"
-                    severity="danger"
-                    size="small"
-                    outlined
-                    class="flex-1"
-                    @click="reject(loan)"
-                  />
-                </template>
-                <Button
-                  v-if="loan.status === 'dipinjam'"
-                  icon="pi pi-undo"
-                  label="Terima Pengembalian"
-                  severity="info"
-                  size="small"
-                  class="w-full"
-                  @click="returned(loan)"
-                />
-                <div v-if="loan.status === 'dikembalikan' || loan.status === 'ditolak'" class="text-center w-full py-2 text-sm text-gray-500 italic">
-                  {{ loan.status === 'dikembalikan' ? 'Peminjaman telah selesai' : 'Peminjaman ditolak' }}
-                </div>
-              </div>
-            </div>
-          </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
-
-      <!-- Empty State -->
-      <div v-else class="text-center py-16">
-        <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-          <i class="pi pi-inbox text-4xl text-gray-400"></i>
-        </div>
-        <h3 class="text-xl font-semibold text-gray-700 mb-2">Tidak ada data</h3>
-        <p class="text-gray-500">Belum ada peminjaman dengan status "{{ selectedStatus === 'all' ? 'apapun' : selectedStatus }}"</p>
       </div>
 
       <!-- Pagination -->
-      <div v-if="props.loans.links.length > 3" class="flex justify-center mt-8 gap-2">
+      <div v-if="props.loans.links.length > 3" class="flex justify-center items-center mt-6 gap-2 max-w-7xl mx-auto">
         <Link
           v-for="link in props.loans.links"
           :key="link.label"
           :href="link.url || ''"
-          class="px-4 py-2 rounded-lg text-sm font-medium transition-all"
+          class="px-3 py-2 rounded-md text-sm font-medium transition-all"
           :class="{
-            'bg-indigo-600 text-white shadow-lg': link.active,
-            'bg-white text-gray-700 hover:bg-gray-50 shadow-sm border border-gray-200': !link.active && link.url,
+            'bg-indigo-600 text-white': link.active,
+            'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300': !link.active && link.url,
             'bg-gray-100 text-gray-400 cursor-not-allowed': !link.url
           }"
           v-html="link.label"
@@ -413,7 +385,51 @@ const getStatusIcon = (status: string) => {
 </template>
 
 <style scoped>
-.group:hover .group-hover\:text-indigo-600 {
-  transition: color 0.3s ease;
+/* Force horizontal scroll */
+div[style*="overflow-x: scroll"] {
+  display: block !important;
+  overflow-x: scroll !important;
+  overflow-y: visible !important;
+  width: 100% !important;
+}
+
+/* Custom Scrollbar - lebih gede */
+div[style*="overflow-x: scroll"]::-webkit-scrollbar {
+  height: 14px !important;
+}
+
+div[style*="overflow-x: scroll"]::-webkit-scrollbar-track {
+  background: #e2e8f0 !important;
+  border-radius: 6px !important;
+}
+
+div[style*="overflow-x: scroll"]::-webkit-scrollbar-thumb {
+  background: #64748b !important;
+  border-radius: 6px !important;
+  border: 2px solid #e2e8f0 !important;
+}
+
+div[style*="overflow-x: scroll"]::-webkit-scrollbar-thumb:hover {
+  background: #475569 !important;
+}
+
+/* Table styles */
+table {
+  border-collapse: collapse !important;
+  table-layout: fixed !important;
+}
+
+table td,
+table th {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+}
+
+/* Khusus kolom judul buku */
+table td:nth-child(3) {
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  max-width: 200px !important;
 }
 </style>

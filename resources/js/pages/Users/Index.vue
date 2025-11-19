@@ -84,7 +84,7 @@ function toggleStatus(id: number) {
         text: 'Status pengguna berhasil diperbarui.',
         timer: 1500,
         showConfirmButton: false,
-      }).then(() => router.reload()) // ✅ reload setelah swal ditutup
+      }).then(() => router.reload())
     },
     onError: () => {
       Swal.fire({
@@ -100,9 +100,9 @@ function toggleStatus(id: number) {
 // Show roles (popup)
 function showRoles(user: any) {
   const rolesList = user.roles.map((r: any) => `
-    <div class="flex items-center gap-2 py-2 px-3 bg-gray-50 rounded-lg">
-      <i class="pi pi-shield text-indigo-600"></i>
-      <span class="font-medium">${r.name}</span>
+    <div class="flex items-center gap-2 py-2 px-3 bg-gray-50 dark:bg-slate-700 rounded-lg">
+      <i class="pi pi-shield text-indigo-600 dark:text-indigo-400"></i>
+      <span class="font-medium dark:text-slate-200">${r.name}</span>
     </div>
   `).join('')
 
@@ -181,81 +181,81 @@ const truncateRole = (roleName) => {
 <template>
   <Head title="Users" />
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="min-h-screen bg-gray-50 py-8">
+    <div class="min-h-screen bg-gray-50 dark:bg-slate-900 py-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Header -->
         <div class="mb-6">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h1 class="text-3xl font-bold text-gray-900">Users Management</h1>
-              <p class="text-gray-600 mt-1">Manage user accounts and permissions</p>
+              <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100">Users Management</h1>
+              <p class="text-gray-600 dark:text-slate-400 mt-1">Manage user accounts and permissions</p>
             </div>
             <Button
               v-if="can('users.create')"
               label="Add User"
               icon="pi pi-plus"
-              class="bg-indigo-600 hover:bg-indigo-700"
+              class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
               @click="router.get(route('users.create'))"
             />
           </div>
 
           <!-- Stats -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white rounded-xl p-4 border border-gray-200">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-gray-600">Total Users</p>
-                  <p class="text-2xl font-bold text-gray-900">{{ users.total }}</p>
+                  <p class="text-sm text-gray-600 dark:text-slate-400">Total Users</p>
+                  <p class="text-2xl font-bold text-gray-900 dark:text-slate-100">{{ users.total }}</p>
                 </div>
-                <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                  <i class="pi pi-users text-indigo-600 text-xl"></i>
+                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+                  <i class="pi pi-users text-indigo-600 dark:text-indigo-400 text-xl"></i>
                 </div>
               </div>
             </div>
 
-            <div class="bg-white rounded-xl p-4 border border-gray-200">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-gray-600">Active Users</p>
-                  <p class="text-2xl font-bold text-green-600">
+                  <p class="text-sm text-gray-600 dark:text-slate-400">Active Users</p>
+                  <p class="text-2xl font-bold text-green-600 dark:text-green-400">
                     {{ users.data.filter(u => u.is_active).length }}
                   </p>
                 </div>
-                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <i class="pi pi-check-circle text-green-600 text-xl"></i>
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                  <i class="pi pi-check-circle text-green-600 dark:text-green-400 text-xl"></i>
                 </div>
               </div>
             </div>
 
-            <div class="bg-white rounded-xl p-4 border border-gray-200">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-gray-600">Inactive Users</p>
-                  <p class="text-2xl font-bold text-red-600">
+                  <p class="text-sm text-gray-600 dark:text-slate-400">Inactive Users</p>
+                  <p class="text-2xl font-bold text-red-600 dark:text-red-400">
                     {{ users.data.filter(u => !u.is_active).length }}
                   </p>
                 </div>
-                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-                  <i class="pi pi-times-circle text-red-600 text-xl"></i>
+                <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+                  <i class="pi pi-times-circle text-red-600 dark:text-red-400 text-xl"></i>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Filters -->
-          <div class="bg-white rounded-xl p-4 border border-gray-200">
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
             <div class="flex flex-wrap gap-3 items-center">
               <div class="flex items-center gap-2">
-                <i class="pi pi-filter text-gray-500"></i>
-                <span class="text-sm font-medium text-gray-700">Filters:</span>
+                <i class="pi pi-filter text-gray-500 dark:text-slate-400"></i>
+                <span class="text-sm font-medium text-gray-700 dark:text-slate-300">Filters:</span>
               </div>
 
               <Dropdown
                 v-model="perPage"
-                :options="[ 5,10,20,50]"
+                :options="[5,10,20,50]"
                 placeholder="Per page"
-                class="w-28"
+                class="w-28 dark-dropdown"
               />
 
               <Dropdown
@@ -264,7 +264,7 @@ const truncateRole = (roleName) => {
                 optionLabel="label"
                 optionValue="value"
                 placeholder="Filter by Role"
-                class="w-48"
+                class="w-48 dark-dropdown"
               />
 
               <div class="flex-1 min-w-[200px]">
@@ -272,7 +272,7 @@ const truncateRole = (roleName) => {
                   <InputText
                     v-model="form.search"
                     placeholder="Search by name, username, or email..."
-                    class="w-full"
+                    class="w-full dark-input"
                   />
                 </span>
               </div>
@@ -283,13 +283,14 @@ const truncateRole = (roleName) => {
                 icon="pi pi-times"
                 text
                 size="small"
+                class="dark:text-slate-300 dark:hover:bg-slate-700"
                 @click="() => { form.search = ''; form.role = null }"
               />
             </div>
           </div>
         </div>
 
-        <!-- Table Card -->
+       <!-- Table Card -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <DataTable
             :value="users.data"
@@ -427,6 +428,7 @@ const truncateRole = (roleName) => {
 </template>
 
 <style scoped>
+/* DataTable light mode */
 :deep(.custom-datatable .p-datatable-header) {
   background: transparent;
   border: none;
@@ -444,6 +446,7 @@ const truncateRole = (roleName) => {
 
 :deep(.custom-datatable .p-datatable-tbody > tr) {
   transition: all 0.2s;
+  background: white;
 }
 
 :deep(.custom-datatable .p-datatable-tbody > tr:hover) {
@@ -453,11 +456,130 @@ const truncateRole = (roleName) => {
 :deep(.custom-datatable .p-datatable-tbody > tr > td) {
   padding: 1rem;
   border-bottom: 1px solid #e5e7eb;
+  color: #374151;
 }
 
 :deep(.p-paginator) {
   background: transparent;
   border: none;
   padding: 1rem;
+}
+
+/* Dark mode styles - MORE SPECIFIC */
+.dark :deep(.custom-datatable .p-datatable-wrapper) {
+  background: #1e293b !important;
+}
+
+.dark :deep(.custom-datatable .p-datatable-table) {
+  background: #1e293b !important;
+}
+
+.dark :deep(.custom-datatable .p-datatable-thead > tr > th) {
+  background: rgba(51, 65, 85, 0.5) !important;
+  color: #cbd5e1 !important;
+  border-bottom-color: #475569 !important;
+}
+
+.dark :deep(.custom-datatable .p-datatable-tbody > tr) {
+  background: #1e293b !important;
+}
+
+.dark :deep(.custom-datatable .p-datatable-tbody > tr:hover) {
+  background: rgba(51, 65, 85, 0.5) !important;
+}
+
+.dark :deep(.custom-datatable .p-datatable-tbody > tr.p-row-odd) {
+  background: rgba(30, 41, 59, 0.8) !important;
+}
+
+.dark :deep(.custom-datatable .p-datatable-tbody > tr > td) {
+  border-bottom-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+.dark :deep(.custom-datatable .p-datatable-tbody > tr > td .text-gray-900) {
+  color: #e2e8f0 !important;
+}
+
+.dark :deep(.custom-datatable .p-datatable-tbody > tr > td .text-gray-700) {
+  color: #cbd5e1 !important;
+}
+
+.dark :deep(.custom-datatable .p-datatable-tbody > tr > td .text-gray-500) {
+  color: #94a3b8 !important;
+}
+
+.dark :deep(.custom-datatable .p-datatable-tbody > tr > td .text-gray-600) {
+  color: #94a3b8 !important;
+}
+
+.dark :deep(.p-paginator) {
+  color: #cbd5e1 !important;
+  background: transparent !important;
+}
+
+.dark :deep(.p-paginator .p-paginator-pages .p-paginator-page) {
+  color: #cbd5e1 !important;
+}
+
+.dark :deep(.p-paginator .p-paginator-pages .p-paginator-page:hover) {
+  background: #334155 !important;
+}
+
+.dark :deep(.p-paginator .p-paginator-pages .p-paginator-page.p-highlight) {
+  background: #6366f1 !important;
+  color: white !important;
+}
+
+.dark :deep(.p-paginator button) {
+  color: #cbd5e1 !important;
+}
+
+.dark :deep(.p-paginator button:hover) {
+  background: #334155 !important;
+}
+
+.dark :deep(.p-paginator .p-dropdown) {
+  background: #334155 !important;
+  border-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+.dark :deep(.p-paginator .p-dropdown .p-dropdown-trigger) {
+  color: #94a3b8 !important;
+}
+
+.dark :deep(.dark-input.p-inputtext) {
+  background: #334155 !important;
+  border-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+.dark :deep(.dark-dropdown .p-dropdown) {
+  background: #334155 !important;
+  border-color: #475569 !important;
+  color: #e2e8f0 !important;
+}
+
+.dark :deep(.dark-dropdown .p-dropdown-trigger) {
+  color: #94a3b8 !important;
+}
+
+.dark :deep(.p-dropdown-panel) {
+  background: #334155 !important;
+  border-color: #475569 !important;
+}
+
+.dark :deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item) {
+  color: #e2e8f0 !important;
+}
+
+.dark :deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item:hover) {
+  background: #475569 !important;
+}
+
+.dark :deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight) {
+  background: #6366f1 !important;
+  color: white !important;
 }
 </style>
