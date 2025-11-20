@@ -154,58 +154,58 @@ const truncateRole = (roleName: string) => {
 <template>
   <Head title="Permissions" />
   <AppLayout :breadcrumbs="breadcrumbs">
-    <div class="min-h-screen bg-gray-50 py-8">
+    <div class="min-h-screen bg-gray-50 dark:bg-slate-900 py-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Header -->
         <div class="mb-6">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h1 class="text-3xl font-bold text-gray-900">Permissions Management</h1>
-              <p class="text-gray-600 mt-1">Manage system permissions and assign to roles</p>
+              <h1 class="text-3xl font-bold text-gray-900 dark:text-slate-100">Permissions Management</h1>
+              <p class="text-gray-600 dark:text-slate-400 mt-1">Manage system permissions and assign to roles</p>
             </div>
             <Button
               v-if="can('permissions.create')"
               label="Create Permission"
               icon="pi pi-plus"
-              class="bg-indigo-600 hover:bg-indigo-700"
+              class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600"
               @click="router.get(route('permissions.create'))"
             />
           </div>
 
           <!-- Stats -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="bg-white rounded-xl p-4 border border-gray-200">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-gray-600">Total Permissions</p>
-                  <p class="text-2xl font-bold text-gray-900">{{ permissions.total }}</p>
+                  <p class="text-sm text-gray-600 dark:text-slate-400">Total Permissions</p>
+                  <p class="text-2xl font-bold text-gray-900 dark:text-slate-100">{{ permissions.total }}</p>
                 </div>
-                <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                  <i class="pi pi-key text-indigo-600 text-xl"></i>
+                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+                  <i class="pi pi-key text-indigo-600 dark:text-indigo-400 text-xl"></i>
                 </div>
               </div>
             </div>
 
-            <div class="bg-white rounded-xl p-4 border border-gray-200">
+            <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
               <div class="flex items-center justify-between">
                 <div>
-                  <p class="text-sm text-gray-600">Total Roles</p>
-                  <p class="text-2xl font-bold text-indigo-600">{{ roles.length }}</p>
+                  <p class="text-sm text-gray-600 dark:text-slate-400">Total Roles</p>
+                  <p class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{{ roles.length }}</p>
                 </div>
-                <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                  <i class="pi pi-shield text-indigo-600 text-xl"></i>
+                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+                  <i class="pi pi-shield text-indigo-600 dark:text-indigo-400 text-xl"></i>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Filters -->
-          <div class="bg-white rounded-xl p-4 border border-gray-200">
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
             <div class="flex flex-wrap gap-3 items-center">
               <div class="flex items-center gap-2">
-                <i class="pi pi-filter text-gray-500"></i>
-                <span class="text-sm font-medium text-gray-700">Filters:</span>
+                <i class="pi pi-filter text-gray-500 dark:text-slate-400"></i>
+                <span class="text-sm font-medium text-gray-700 dark:text-slate-300">Filters:</span>
               </div>
 
               <!-- Per Page -->
@@ -213,7 +213,7 @@ const truncateRole = (roleName: string) => {
                 v-model="perPage"
                 :options="[5,10,20,50]"
                 placeholder="Per page"
-                class="w-28"
+                class="w-28 dark-dropdown"
               />
 
               <!-- Role Filter -->
@@ -223,7 +223,7 @@ const truncateRole = (roleName: string) => {
                 optionLabel="label"
                 optionValue="value"
                 placeholder="Filter by Role"
-                class="w-48"
+                class="w-48 dark-dropdown"
               />
 
               <!-- Search Input -->
@@ -232,7 +232,7 @@ const truncateRole = (roleName: string) => {
                   <InputText
                     v-model="form.search"
                     placeholder="Search by permission name..."
-                    class="w-full"
+                    class="w-full dark-input"
                   />
                 </span>
               </div>
@@ -243,13 +243,14 @@ const truncateRole = (roleName: string) => {
                 icon="pi pi-times"
                 text
                 size="small"
+                class="dark:text-slate-300 dark:hover:bg-slate-700"
                 @click="() => { form.search = ''; form.role = null }"
               />
             </div>
           </div>
         </div>
 
-        <!-- Table Card -->
+        <!-- Table Card - TETAP PUTIH DI DARK MODE -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <DataTable
             :value="permissions.data"
@@ -358,6 +359,42 @@ const truncateRole = (roleName: string) => {
 </template>
 
 <style scoped>
+/* Dark mode untuk input & dropdown */
+.dark :deep(.dark-input.p-inputtext) {
+  background: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.dark :deep(.dark-dropdown .p-dropdown) {
+  background: #334155;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.dark :deep(.dark-dropdown .p-dropdown-trigger) {
+  color: #94a3b8;
+}
+
+.dark :deep(.p-dropdown-panel) {
+  background: #334155;
+  border-color: #475569;
+}
+
+.dark :deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item) {
+  color: #e2e8f0;
+}
+
+.dark :deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item:hover) {
+  background: #475569;
+}
+
+.dark :deep(.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight) {
+  background: #6366f1;
+  color: white;
+}
+
+/* DataTable styling - TETAP LIGHT MODE */
 :deep(.custom-datatable .p-datatable-header) {
   background: transparent;
   border: none;
