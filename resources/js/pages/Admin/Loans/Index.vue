@@ -53,6 +53,8 @@ watch(selectedStatus, (newStatus) => {
 })
 
 const approve = (loan: Loan) => {
+  const isDark = document.documentElement.classList.contains('dark')
+
   Swal.fire({
     title: 'Approve peminjaman?',
     html: `<div class="text-left">
@@ -64,17 +66,33 @@ const approve = (loan: Loan) => {
     confirmButtonText: 'Ya, approve!',
     cancelButtonText: 'Batal',
     confirmButtonColor: '#10b981',
+    background: isDark ? '#1f2937' : '#fff',
+    color: isDark ? '#f3f4f6' : '#000',
   }).then((result) => {
     if (result.isConfirmed) {
       router.post(`/loans/${loan.id}/approve`, {}, {
-        onSuccess: () => Swal.fire('Berhasil', 'Peminjaman disetujui.', 'success'),
-        onError: () => Swal.fire('Gagal', 'Terjadi kesalahan.', 'error')
+        onSuccess: () => Swal.fire({
+          title: 'Berhasil',
+          text: 'Peminjaman disetujui.',
+          icon: 'success',
+          background: isDark ? '#1f2937' : '#fff',
+          color: isDark ? '#f3f4f6' : '#000',
+        }),
+        onError: () => Swal.fire({
+          title: 'Gagal',
+          text: 'Terjadi kesalahan.',
+          icon: 'error',
+          background: isDark ? '#1f2937' : '#fff',
+          color: isDark ? '#f3f4f6' : '#000',
+        })
       })
     }
   })
 }
 
 const reject = (loan: Loan) => {
+  const isDark = document.documentElement.classList.contains('dark')
+
   Swal.fire({
     title: 'Tolak peminjaman?',
     html: `<div class="text-left">
@@ -86,17 +104,33 @@ const reject = (loan: Loan) => {
     confirmButtonText: 'Ya, tolak!',
     cancelButtonText: 'Batal',
     confirmButtonColor: '#ef4444',
+    background: isDark ? '#1f2937' : '#fff',
+    color: isDark ? '#f3f4f6' : '#000',
   }).then((result) => {
     if (result.isConfirmed) {
       router.post(`/loans/${loan.id}/reject`, {}, {
-        onSuccess: () => Swal.fire('Berhasil', 'Peminjaman ditolak.', 'success'),
-        onError: () => Swal.fire('Gagal', 'Terjadi kesalahan.', 'error')
+        onSuccess: () => Swal.fire({
+          title: 'Berhasil',
+          text: 'Peminjaman ditolak.',
+          icon: 'success',
+          background: isDark ? '#1f2937' : '#fff',
+          color: isDark ? '#f3f4f6' : '#000',
+        }),
+        onError: () => Swal.fire({
+          title: 'Gagal',
+          text: 'Terjadi kesalahan.',
+          icon: 'error',
+          background: isDark ? '#1f2937' : '#fff',
+          color: isDark ? '#f3f4f6' : '#000',
+        })
       })
     }
   })
 }
 
 const returned = (loan: Loan) => {
+  const isDark = document.documentElement.classList.contains('dark')
+
   Swal.fire({
     title: 'Konfirmasi pengembalian?',
     html: `<div class="text-left">
@@ -108,11 +142,25 @@ const returned = (loan: Loan) => {
     confirmButtonText: 'Ya, terima!',
     cancelButtonText: 'Batal',
     confirmButtonColor: '#3b82f6',
+    background: isDark ? '#1f2937' : '#fff',
+    color: isDark ? '#f3f4f6' : '#000',
   }).then((result) => {
     if (result.isConfirmed) {
       router.post(`/loans/${loan.id}/return`, {}, {
-        onSuccess: () => Swal.fire('Berhasil', 'Buku dikembalikan.', 'success'),
-        onError: () => Swal.fire('Gagal', 'Terjadi kesalahan.', 'error')
+        onSuccess: () => Swal.fire({
+          title: 'Berhasil',
+          text: 'Buku dikembalikan.',
+          icon: 'success',
+          background: isDark ? '#1f2937' : '#fff',
+          color: isDark ? '#f3f4f6' : '#000',
+        }),
+        onError: () => Swal.fire({
+          title: 'Gagal',
+          text: 'Terjadi kesalahan.',
+          icon: 'error',
+          background: isDark ? '#1f2937' : '#fff',
+          color: isDark ? '#f3f4f6' : '#000',
+        })
       })
     }
   })
@@ -139,12 +187,12 @@ const formatPrice = (price: any) => {
 
 const getStatusClass = (status: string) => {
   const classes = {
-    pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    dipinjam: 'bg-blue-100 text-blue-800 border-blue-200',
-    dikembalikan: 'bg-green-100 text-green-800 border-green-200',
-    ditolak: 'bg-red-100 text-red-800 border-red-200'
+    pending: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-700',
+    dipinjam: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-700',
+    dikembalikan: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-700',
+    ditolak: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-red-200 dark:border-red-700'
   }
-  return classes[status] || 'bg-gray-100 text-gray-800 border-gray-200'
+  return classes[status] || 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-600'
 }
 </script>
 
@@ -155,70 +203,70 @@ const getStatusClass = (status: string) => {
     <div class="p-6 mx-auto" style="max-width: 100%; width: 100%;">
       <!-- Header -->
       <div class="mb-6 max-w-7xl mx-auto">
-        <h1 class="text-2xl font-bold text-gray-900 mb-1">Manajemen Peminjaman</h1>
-        <p class="text-sm text-gray-600">Kelola dan pantau semua aktivitas peminjaman buku</p>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">Manajemen Peminjaman</h1>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Kelola dan pantau semua aktivitas peminjaman buku</p>
       </div>
 
       <!-- Statistics Cards -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 max-w-7xl mx-auto">
-        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs text-gray-600 font-medium mb-1">Pending</p>
-              <p class="text-2xl font-bold text-yellow-600">{{ stats?.pending || 0 }}</p>
+              <p class="text-xs text-gray-600 dark:text-gray-400 font-medium mb-1">Pending</p>
+              <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ stats?.pending || 0 }}</p>
             </div>
-            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <i class="pi pi-clock text-xl text-yellow-600"></i>
+            <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
+              <i class="pi pi-clock text-xl text-yellow-600 dark:text-yellow-400"></i>
             </div>
           </div>
         </div>
 
-        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs text-gray-600 font-medium mb-1">Dipinjam</p>
-              <p class="text-2xl font-bold text-blue-600">{{ stats?.dipinjam || 0 }}</p>
+              <p class="text-xs text-gray-600 dark:text-gray-400 font-medium mb-1">Dipinjam</p>
+              <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ stats?.dipinjam || 0 }}</p>
             </div>
-            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-              <i class="pi pi-book text-xl text-blue-600"></i>
+            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+              <i class="pi pi-book text-xl text-blue-600 dark:text-blue-400"></i>
             </div>
           </div>
         </div>
 
-        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs text-gray-600 font-medium mb-1">Dikembalikan</p>
-              <p class="text-2xl font-bold text-green-600">{{ stats?.dikembalikan || 0 }}</p>
+              <p class="text-xs text-gray-600 dark:text-gray-400 font-medium mb-1">Dikembalikan</p>
+              <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ stats?.dikembalikan || 0 }}</p>
             </div>
-            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <i class="pi pi-check-circle text-xl text-green-600"></i>
+            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <i class="pi pi-check-circle text-xl text-green-600 dark:text-green-400"></i>
             </div>
           </div>
         </div>
 
-        <div class="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs text-gray-600 font-medium mb-1">Ditolak</p>
-              <p class="text-2xl font-bold text-red-600">{{ stats?.ditolak || 0 }}</p>
+              <p class="text-xs text-gray-600 dark:text-gray-400 font-medium mb-1">Ditolak</p>
+              <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ stats?.ditolak || 0 }}</p>
             </div>
-            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
-              <i class="pi pi-times-circle text-xl text-red-600"></i>
+            <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
+              <i class="pi pi-times-circle text-xl text-red-600 dark:text-red-400"></i>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Tab Filter -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6 max-w-7xl mx-auto">
-        <div class="flex border-b border-gray-200 overflow-x-auto">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6 max-w-7xl mx-auto">
+        <div class="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
           <button
             @click="selectedStatus = 'all'"
             class="px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap"
             :class="selectedStatus === 'all'
-              ? 'text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+              ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400 bg-indigo-50 dark:bg-indigo-900/20'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50'"
           >
             <i class="pi pi-list mr-2"></i>
             Semua ({{ (stats?.pending || 0) + (stats?.dipinjam || 0) + (stats?.dikembalikan || 0) + (stats?.ditolak || 0) }})
@@ -227,8 +275,8 @@ const getStatusClass = (status: string) => {
             @click="selectedStatus = 'pending'"
             class="px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap"
             :class="selectedStatus === 'pending'
-              ? 'text-yellow-600 border-b-2 border-yellow-600 bg-yellow-50'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+              ? 'text-yellow-600 dark:text-yellow-400 border-b-2 border-yellow-600 dark:border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50'"
           >
             <i class="pi pi-clock mr-2"></i>
             Pending ({{ stats?.pending || 0 }})
@@ -237,8 +285,8 @@ const getStatusClass = (status: string) => {
             @click="selectedStatus = 'dipinjam'"
             class="px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap"
             :class="selectedStatus === 'dipinjam'
-              ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+              ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/20'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50'"
           >
             <i class="pi pi-book mr-2"></i>
             Dipinjam ({{ stats?.dipinjam || 0 }})
@@ -247,8 +295,8 @@ const getStatusClass = (status: string) => {
             @click="selectedStatus = 'dikembalikan'"
             class="px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap"
             :class="selectedStatus === 'dikembalikan'
-              ? 'text-green-600 border-b-2 border-green-600 bg-green-50'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+              ? 'text-green-600 dark:text-green-400 border-b-2 border-green-600 dark:border-green-400 bg-green-50 dark:bg-green-900/20'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50'"
           >
             <i class="pi pi-check-circle mr-2"></i>
             Dikembalikan ({{ stats?.dikembalikan || 0 }})
@@ -257,8 +305,8 @@ const getStatusClass = (status: string) => {
             @click="selectedStatus = 'ditolak'"
             class="px-6 py-3 text-sm font-medium transition-colors whitespace-nowrap"
             :class="selectedStatus === 'ditolak'
-              ? 'text-red-600 border-b-2 border-red-600 bg-red-50'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+              ? 'text-red-600 dark:text-red-400 border-b-2 border-red-600 dark:border-red-400 bg-red-50 dark:bg-red-900/20'
+              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50'"
           >
             <i class="pi pi-times-circle mr-2"></i>
             Ditolak ({{ stats?.ditolak || 0 }})
@@ -267,55 +315,55 @@ const getStatusClass = (status: string) => {
       </div>
 
       <!-- Table - FULL WIDTH, break dari container -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 -mx-6" style="width: calc(100% + 3rem);">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 -mx-6" style="width: calc(100% + 3rem);">
         <div class="w-full" style="overflow-x: scroll !important; -webkit-overflow-scrolling: touch;">
           <table class="border-collapse" style="width: 100%; min-width: 1350px; table-layout: fixed;">
-            <thead class="bg-gray-50 border-b border-gray-200">
+            <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
               <tr>
-                <th style="width: 60px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">ID</th>
-                <th style="width: 150px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Peminjam</th>
-                <th style="width: 200px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Judul Buku</th>
-                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tgl Pinjam</th>
-                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Batas Kembali</th>
-                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tgl Kembali</th>
-                <th style="width: 110px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Biaya</th>
-                <th style="width: 110px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Denda</th>
-                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Total</th>
-                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
-                <th style="width: 120px;" class="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Aksi</th>
+                <th style="width: 60px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">ID</th>
+                <th style="width: 150px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Peminjam</th>
+                <th style="width: 200px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Judul Buku</th>
+                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Tgl Pinjam</th>
+                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Batas Kembali</th>
+                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Tgl Kembali</th>
+                <th style="width: 110px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Biaya</th>
+                <th style="width: 110px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Denda</th>
+                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                <th style="width: 120px;" class="px-4 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th style="width: 120px;" class="px-4 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Aksi</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
               <tr v-if="props.loans.data.length === 0">
                 <td colspan="11" class="px-4 py-12 text-center">
                   <div class="flex flex-col items-center justify-center">
-                    <i class="pi pi-inbox text-4xl text-gray-300 mb-3"></i>
-                    <p class="text-gray-500 font-medium">Tidak ada data peminjaman</p>
-                    <p class="text-gray-400 text-sm mt-1">Belum ada peminjaman dengan status "{{ selectedStatus === 'all' ? 'apapun' : selectedStatus }}"</p>
+                    <i class="pi pi-inbox text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
+                    <p class="text-gray-500 dark:text-gray-400 font-medium">Tidak ada data peminjaman</p>
+                    <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Belum ada peminjaman dengan status "{{ selectedStatus === 'all' ? 'apapun' : selectedStatus }}"</p>
                   </div>
                 </td>
               </tr>
               <tr
                 v-for="loan in props.loans.data"
                 :key="loan.id"
-                class="hover:bg-gray-50 transition-colors"
+                class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
-                <td class="px-4 py-3 text-sm text-gray-900 font-medium whitespace-nowrap">#{{ loan.id }}</td>
-                <td class="px-4 py-3 text-sm text-gray-900 whitespace-nowrap">
+                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-200 font-medium whitespace-nowrap">#{{ loan.id }}</td>
+                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-200 whitespace-nowrap">
                   <div class="flex items-center">
-                    <i class="pi pi-user text-gray-400 mr-2 text-xs"></i>
+                    <i class="pi pi-user text-gray-400 dark:text-gray-500 mr-2 text-xs"></i>
                     {{ loan.user.username }}
                   </div>
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-900 font-medium" style="width: 200px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" :title="loan.book.title">
+                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-200 font-medium" style="width: 200px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" :title="loan.book.title">
                   {{ loan.book.title }}
                 </td>
-                <td class="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{{ formatDate(loan.borrowed_at) }}</td>
-                <td class="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{{ formatDate(loan.due_date) }}</td>
-                <td class="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{{ formatDate(loan.returned_at) }}</td>
-                <td class="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">{{ formatPrice(loan.fee) }}</td>
-                <td class="px-4 py-3 text-sm font-medium text-red-600 whitespace-nowrap">{{ formatPrice(loan.fine) }}</td>
-                <td class="px-4 py-3 text-sm font-bold text-indigo-600 whitespace-nowrap">
+                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ formatDate(loan.borrowed_at) }}</td>
+                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ formatDate(loan.due_date) }}</td>
+                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">{{ formatDate(loan.returned_at) }}</td>
+                <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-200 whitespace-nowrap">{{ formatPrice(loan.fee) }}</td>
+                <td class="px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400 whitespace-nowrap">{{ formatPrice(loan.fine) }}</td>
+                <td class="px-4 py-3 text-sm font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap">
                   {{ formatPrice((Number(loan.fee) || 0) + (Number(loan.fine) || 0)) }}
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap">
@@ -356,7 +404,7 @@ const getStatusClass = (status: string) => {
                       title="Terima Pengembalian"
                       @click="returned(loan)"
                     />
-                    <span v-else class="text-xs text-gray-400 italic">-</span>
+                    <span v-else class="text-xs text-gray-400 dark:text-gray-600 italic">-</span>
                   </div>
                 </td>
               </tr>
@@ -373,9 +421,9 @@ const getStatusClass = (status: string) => {
           :href="link.url || ''"
           class="px-3 py-2 rounded-md text-sm font-medium transition-all"
           :class="{
-            'bg-indigo-600 text-white': link.active,
-            'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300': !link.active && link.url,
-            'bg-gray-100 text-gray-400 cursor-not-allowed': !link.url
+            'bg-indigo-600 dark:bg-indigo-500 text-white': link.active,
+            'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600': !link.active && link.url,
+            'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed': !link.url
           }"
           v-html="link.label"
         />
@@ -403,14 +451,27 @@ div[style*="overflow-x: scroll"]::-webkit-scrollbar-track {
   border-radius: 6px !important;
 }
 
+.dark div[style*="overflow-x: scroll"]::-webkit-scrollbar-track {
+  background: #374151 !important;
+}
+
 div[style*="overflow-x: scroll"]::-webkit-scrollbar-thumb {
   background: #64748b !important;
   border-radius: 6px !important;
   border: 2px solid #e2e8f0 !important;
 }
 
+.dark div[style*="overflow-x: scroll"]::-webkit-scrollbar-thumb {
+  background: #6b7280 !important;
+  border: 2px solid #374151 !important;
+}
+
 div[style*="overflow-x: scroll"]::-webkit-scrollbar-thumb:hover {
   background: #475569 !important;
+}
+
+.dark div[style*="overflow-x: scroll"]::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af !important;
 }
 
 /* Table styles */
