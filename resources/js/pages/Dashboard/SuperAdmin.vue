@@ -82,6 +82,15 @@ const goTo = (url) => {
   router.visit(url)
 }
 
+
+// Helper function to format fee (remove trailing .00)
+const formatFee = (fee: any) => {
+  const numFee = Number(fee) || 0
+  // Format dengan toLocaleString untuk separator ribuan
+  const formatted = numFee.toLocaleString('id-ID')
+  // Hapus .00 atau ,00 di belakang jika ada
+  return formatted.replace(/[.,]00$/, '')
+}
 </script>
 
 <template>
@@ -146,18 +155,18 @@ const goTo = (url) => {
 
         <!-- Total Fee -->
         <div class="group relative bg-gradient-to-br from-amber-500 to-orange-600 dark:from-amber-600 dark:to-orange-700 rounded-2xl p-6 shadow-lg hover:shadow-2xl dark:shadow-slate-900/50 transition-all duration-300 overflow-hidden">
-          <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 dark:bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-300"></div>
-          <div class="relative z-10">
-            <div class="flex items-center justify-between mb-4">
-              <div class="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center text-2xl shadow-lg">
-                💰
-              </div>
-              <span class="text-xs font-semibold text-white bg-white/20 backdrop-blur px-3 py-1 rounded-full">Revenue</span>
-            </div>
-            <h3 class="text-white/90 text-sm font-medium mb-1">Total Pendapatan</h3>
-            <p class="text-1xl font-bold text-white">Rp {{ props.stats.totalFee.toLocaleString() }}</p>
-          </div>
+    <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 dark:bg-white/5 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-300"></div>
+    <div class="relative z-10">
+      <div class="flex items-center justify-between mb-4">
+        <div class="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center text-2xl shadow-lg">
+          💰
         </div>
+        <span class="text-xs font-semibold text-white bg-white/20 backdrop-blur px-3 py-1 rounded-full">Revenue</span>
+      </div>
+      <h3 class="text-white/90 text-sm font-medium mb-1">Total Pendapatan</h3>
+      <p class="text-1xl font-bold text-white">Rp {{ formatFee(props.stats.totalFee) }}</p>
+    </div>
+  </div>
       </div>
 
       <!-- Chart + Top Borrowers -->

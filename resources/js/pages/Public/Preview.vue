@@ -85,6 +85,19 @@ function goBack() {
     router.visit('/koleksi')
   }
 }
+
+// Helper function to format fee (remove trailing .00)
+const formatFee = (fee: any) => {
+  const numFee = Number(fee) || 0
+
+  // Jika 0, return 'GRATIS'
+  if (numFee === 0) return 'GRATIS'
+
+  // Format dengan toLocaleString untuk separator ribuan
+  const formatted = numFee.toLocaleString('id-ID')
+  // Hapus .00 atau ,00 di belakang jika ada
+  return 'Rp ' + formatted.replace(/[.,]00$/, '')
+}
 </script>
 
 <template>
@@ -199,17 +212,17 @@ function goBack() {
                   </div>
                 </div>
 
-                <div class="flex items-center space-x-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg">
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                  <div>
-                    <div class="text-xs text-blue-100">Biaya Pinjam</div>
-                    <div class="text-xl font-bold text-white">
-                      {{ props.book.fee && props.book.fee > 0 ? 'Rp ' + props.book.fee.toLocaleString() : 'GRATIS' }}
-                    </div>
-                  </div>
-                </div>
+               <div class="flex items-center space-x-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 rounded-xl shadow-lg dark:shadow-slate-900/50">
+    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <div>
+      <div class="text-xs text-blue-100 dark:text-blue-200">Biaya Pinjam</div>
+      <div class="text-xl font-bold text-white">
+        {{ formatFee(props.book.fee) }}
+      </div>
+    </div>
+  </div>
               </div>
 
               <!-- Description -->
